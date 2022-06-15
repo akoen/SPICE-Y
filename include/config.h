@@ -1,0 +1,1 @@
+#define BLUEPILL_CLOCK_SPEED 72
