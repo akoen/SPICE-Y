@@ -26,6 +26,7 @@ void Heartbeat()
 
 void testMotor()
 {
+  // placeholder fn
 }
 
 void UpdateMotor1State()

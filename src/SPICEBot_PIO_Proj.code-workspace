@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "SPICEBot_PIO_Proj",
+			"path": "..\\..\\..\\Documents\\PlatformIO\\Projects\\SPICEBot_PIO_Proj"
+		},
+		{
+			"name": "SPICEBot",
+			"path": ".."
+		}
+	],
+	"settings": {}
+}

@@ -33,3 +33,9 @@
 *.exe
 *.out
 *.app
+
+__Previews/
+History/
+* Logs*
+Project Outputs *
+*.DSNlck
