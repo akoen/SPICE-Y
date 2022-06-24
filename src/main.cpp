@@ -1,7 +1,8 @@
 #include "Arduino.h"
+#include "HardwareTimer.h"
 
 /* Private define ------------------------------------------------------------*/
-#define ADCCONVERTEDVALUES_BUFFER_SIZE ((uint32_t) 256)     /* Size of array containing ADC converted values */
+#define ADCCONVERTEDVALUES_BUFFER_SIZE ((uint32_t) 2)     /* Size of array containing ADC converted values */
 #define RANGE_12BITS                   ((uint32_t) 4095)    /* Max value with a full range of 12 bits */
 
 /* Private variables ---------------------------------------------------------*/
@@ -13,6 +14,22 @@ __IO uint16_t   aADCxConvertedValues[ADCCONVERTEDVALUES_BUFFER_SIZE];
 /*   RESET <=> voltage into AWD window   */
 /*   SET   <=> voltage out of AWD window */
 uint8_t         ubAnalogWatchdogStatus = RESET;  /* Set into analog watchdog interrupt callback */
+
+
+HardwareTimer timerHeartbeat(TIM1);
+bool ledOn = false;
+
+void timerHeartbeatInterrupt() {
+  ledOn = !ledOn;
+  digitalWrite(LED_BUILTIN, ledOn ? HIGH : LOW);
+}
+
+HardwareTimer timerSensorReadFast(TIM2);
+void timerSensorReadFastInterrupt() {
+  digitalWrite(PB0, HIGH);
+  Serial.println(aADCxConvertedValues[0]);
+  digitalWrite(PB0, LOW);
+}
 
 /**
     @brief  This function handles ADC interrupt request.
@@ -174,6 +191,7 @@ static void ADC_Config(void)
   AdcHandle.Init.ExternalTrigConv      = ADC_SOFTWARE_START;            /* Software start to trig the 1st conversion manually, without external event */
 #endif
 
+
   if (HAL_ADC_Init(&AdcHandle) != HAL_OK)
   {
     /* ADC initialization error */
@@ -188,6 +206,7 @@ static void ADC_Config(void)
   sConfig.Channel      = ADC_CHANNEL_4;
   sConfig.Rank         = ADC_REGULAR_RANK_1;
   sConfig.SamplingTime = ADC_SAMPLETIME_41CYCLES_5;
+  //sConfig.SamplingTime = ADC_SAMPLETIME_239CYCLES_5;
 
   if (HAL_ADC_ConfigChannel(&AdcHandle, &sConfig) != HAL_OK)
   {
@@ -218,13 +237,10 @@ static void ADC_Config(void)
     @brief  Conversion complete callback in non blocking mode
     @param  AdcHandle : AdcHandle handle
     @note   This example shows a simple way to report end of conversion
-            and get conversion result. You can add your own implementation.
+            and get convers100 Hzion result. You can add your own implementation.
     @retval None
 */
 extern "C" void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef * ) {
-   for(int i = 0; i < 2; i++) {
-     Serial.println(aADCxConvertedValues[i]);
-  }
 }
 
 /**
@@ -261,8 +277,18 @@ extern "C" void HAL_ADC_ErrorCallback(ADC_HandleTypeDef * )
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(PA4, INPUT_ANALOG);
+  pinMode(PB0, OUTPUT);
 
   Serial.begin(115200);
+
+
+  timerHeartbeat.setOverflow(2, HERTZ_FORMAT);
+  timerHeartbeat.attachInterrupt(timerHeartbeatInterrupt);
+  timerHeartbeat.resume();
+
+  timerSensorReadFast.setOverflow(40000, HERTZ_FORMAT);
+  timerSensorReadFast.attachInterrupt(timerSensorReadFastInterrupt);
+  timerSensorReadFast.resume();
 
   /* Configure the ADC peripheral */
   ADC_Config();
@@ -284,18 +310,5 @@ void setup() {
 
 // the loop routine runs over and over again forever:
 void loop() {
-  /* Turn-on/off LED_BUILTIN in function of ADC conversion result */
-  /*  - Turn-off if voltage is into AWD window */
-  /*  - Turn-on if voltage is out of AWD window */
 
-  /* Variable of analog watchdog status is set into analog watchdog         */
-  /* interrupt callback                                                     */
-  if (ubAnalogWatchdogStatus == RESET) {
-    digitalWrite(LED_BUILTIN, LOW);   // turn the LED on (HIGH is the voltage level)
-  }
-  else {
-    digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
-    /* Reset analog watchdog status for next loop iteration */
-    ubAnalogWatchdogStatus = RESET;
-  }
 }
