@@ -18,30 +18,30 @@ void setup()
     pinMode(LED_BUILTIN, OUTPUT);
     pinMode(SONAR_TRIG, OUTPUT);
     pinMode(SONAR_ECHO, INPUT);
-
-    Serial.begin(9600);
-    Serial.println("Serial comms up");
-
+    
     HB_TIM->setOverflow(5, HERTZ_FORMAT); //5hz blink
     HB_TIM->attachInterrupt(Heartbeat);
     HB_TIM->resume(); //start timer
+    
+    Serial.begin(9600);
+    Serial.println("Serial comms up");
 
 }
 
 void loop()
 { 
   //trigger sonar
+  digitalWrite(SONAR_TRIG, LOW);
+  delayMicroseconds(2);
   digitalWrite(SONAR_TRIG, HIGH);
   delayMicroseconds(10);
   digitalWrite(SONAR_TRIG, LOW);
 
-/*
-  uint32_t echo_time = pulseIn(SONAR_ECHO, HIGH); //measures duration of high pulse on echo pin
-  float distance_cm = (echo_time/2) / 29.1;
+  float duration = pulseIn(SONAR_ECHO, HIGH); //measures duration of high pulse on echo pin
+  float distance = (duration*.0343)/2; //distance in cm d = speed of sound in cm/s times time (duration) divide 2 (round trip)
 
-  Serial.println(distance_cm);
+  Serial.println(distance);
 
-*/
-  //delay(60);
+  delay(70);
 
 }
