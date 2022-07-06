@@ -77,9 +77,14 @@ extern "C" void HAL_ADC_MspInit(ADC_HandleTypeDef *hadc)
 
   /*##-2- Configure peripheral GPIO ##########################################*/
   /* Configure GPIO pin of the selected ADC channel */
-  GPIO_InitStruct.Pin = ADC_CHANNEL_4;
+  GPIO_InitStruct.Pin = ADC_CHANNEL_0;
   GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
-  GPIO_InitStruct.Pull = GPIO_PIN_4;
+  GPIO_InitStruct.Pull = GPIO_PIN_0;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  GPIO_InitStruct.Pin = ADC_CHANNEL_1;
+  GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+  GPIO_InitStruct.Pull = GPIO_PIN_1;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*##-3- Configure the DMA ##################################################*/
@@ -132,7 +137,7 @@ extern "C" void HAL_ADC_MspDeInit(ADC_HandleTypeDef *hadc)
 
   /*##-2- Disable peripherals and GPIO Clocks ################################*/
   /* De-initialize GPIO pin of the selected ADC channel */
-  HAL_GPIO_DeInit(GPIOA, GPIO_PIN_4);
+  HAL_GPIO_DeInit(GPIOA, GPIO_PIN_0);
 
   /*##-3- Disable the DMA ####################################################*/
   /* De-Initialize the DMA associated to the peripheral */
@@ -161,12 +166,11 @@ static void ADC_Config(void)
   /* Configuration of ADCx init structure: ADC parameters and regular group */
   AdcHandle.Instance = ADC1;
   AdcHandle.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  AdcHandle.Init.ScanConvMode = ADC_SCAN_DISABLE;                  /* Sequencer disabled (ADC conversion on only 1 channel: channel set on rank 1) */
+  AdcHandle.Init.ScanConvMode = ADC_SCAN_ENABLE;                  /* Sequencer disabled (ADC conversion on only 1 channel: channel set on rank 1) */
   AdcHandle.Init.ContinuousConvMode = ENABLE;                    /* Continuous mode to have maximum conversion speed (no delay between conversions) */
-  AdcHandle.Init.NbrOfConversion = 1;                             /* Parameter discarded because sequencer is disabled */
+  AdcHandle.Init.NbrOfConversion = 2;                             /* Parameter discarded because sequencer is disabled */
   AdcHandle.Init.DiscontinuousConvMode = DISABLE;                 /* Parameter discarded because sequencer is disabled */
   AdcHandle.Init.NbrOfDiscConversion = 1;                         /* Parameter discarded because sequencer is disabled */
-  // AdcHandle.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T3_TRGO; /* Trig of conversion start done by external event */
   AdcHandle.Init.ExternalTrigConv      = ADC_SOFTWARE_START;            /* Software start to trig the 1st conversion manually, without external event */
 
   if (HAL_ADC_Init(&AdcHandle) != HAL_OK)
@@ -180,11 +184,14 @@ static void ADC_Config(void)
   /*       conversion is out of the analog watchdog window selected (ADC IT   */
   /*       enabled), select sampling time and ADC clock with sufficient       */
   /*       duration to not create an overhead situation in IRQHandler.        */
-  sConfig.Channel = ADC_CHANNEL_4;
+  sConfig.Channel = ADC_CHANNEL_0;
   sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_71CYCLES_5;
-  // sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+  sConfig.SamplingTime = ADC_SAMPLETIME_7CYCLES_5;
+  HAL_ADC_ConfigChannel(&AdcHandle, &sConfig);
 
+  sConfig.Channel = ADC_CHANNEL_1;
+  sConfig.Rank = ADC_REGULAR_RANK_2;
+  sConfig.SamplingTime = ADC_SAMPLETIME_7CYCLES_5;
   HAL_ADC_ConfigChannel(&AdcHandle, &sConfig);
 }
 
