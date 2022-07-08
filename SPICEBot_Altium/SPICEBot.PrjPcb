@@ -141,6 +141,10 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=ISFXJAKK
 
+[GeneratedDocument1]
+DocumentPath=Project Outputs for SPICEBot\Design Rule Check - BP and Sensors.html
+DItemRevisionGUID=
+
 [Configuration1]
 Name=Sources
 ParameterCount=0
