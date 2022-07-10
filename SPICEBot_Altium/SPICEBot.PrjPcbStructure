@@ -1,2 +1,7 @@
-Record=TopLevelDocument|FileName=Main.SchDoc|SheetNumber=1
-Record=NoMainPathDocument|SourceDocument=Main.SchDoc|FileName=Motors.SchDoc|SheetNumber=2
+Record=TopLevelDocument|FileName=(OLD) Main.SchDoc|SheetNumber=1
+Record=NoMainPathDocument|SourceDocument=(OLD) Main.SchDoc|FileName=(OLD) Motors.SchDoc|SheetNumber=2
+Record=NoMainPathDocument|SourceDocument=(OLD) Main.SchDoc|FileName=Bluepill and Power.SchDoc|SheetNumber=3
+Record=NoMainPathDocument|SourceDocument=(OLD) Main.SchDoc|FileName=IR.SchDoc|SheetNumber=4
+Record=NoMainPathDocument|SourceDocument=(OLD) Main.SchDoc|FileName=Rear Motors.SchDoc|SheetNumber=6
+Record=NoMainPathDocument|SourceDocument=(OLD) Main.SchDoc|FileName=Reflectance.SchDoc|SheetNumber=5
+Record=NoMainPathDocument|SourceDocument=(OLD) Main.SchDoc|FileName=Servos.SchDoc|SheetNumber=7
