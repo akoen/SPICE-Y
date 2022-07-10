@@ -1,0 +1,9 @@
+All rear motors stuff on one board
+
+All servo stuff on one board
+
+All IR stuff on one board
+
+All reflectance sensor stuff on one board
+
+Everything goes to bluepill
