@@ -270,7 +270,27 @@ GenerateClassCluster=0
 DocumentUniqueId=
 
 [GeneratedDocument1]
+DocumentPath=Project Outputs for SPICEBot\Design Rule Check - BP.html
+DItemRevisionGUID=
+
+[GeneratedDocument2]
 DocumentPath=Project Outputs for SPICEBot\Design Rule Check - BP and Sensors.html
+DItemRevisionGUID=
+
+[GeneratedDocument3]
+DocumentPath=Project Outputs for SPICEBot\Design Rule Check - IR Sensors.html
+DItemRevisionGUID=
+
+[GeneratedDocument4]
+DocumentPath=Project Outputs for SPICEBot\Design Rule Check - Rear Motors.html
+DItemRevisionGUID=
+
+[GeneratedDocument5]
+DocumentPath=Project Outputs for SPICEBot\Design Rule Check - Reflectance.html
+DItemRevisionGUID=
+
+[GeneratedDocument6]
+DocumentPath=Project Outputs for SPICEBot\Design Rule Check - Servos.html
 DItemRevisionGUID=
 
 [Configuration1]
@@ -1263,10 +1283,34 @@ UpdateToLatestRevision=1
 PartTypes=0
 ComponentLibIdentifierKind0=Library Name And Type
 ComponentLibraryIdentifier0=SPICEBot_SchLib.SchLib
-ComponentDesignItemID0=5pos Conn
-ComponentSymbolReference0=5pos Conn
+ComponentDesignItemID0=Cap_Generic
+ComponentSymbolReference0=Cap_Generic
 ComponentUpdate0=1
 ComponentIsDeviceSheet0=0
+ComponentLibIdentifierKind1=Library Name And Type
+ComponentLibraryIdentifier1=SPICEBot_SchLib.SchLib
+ComponentDesignItemID1=Pot_Generic
+ComponentSymbolReference1=Pot_Generic
+ComponentUpdate1=1
+ComponentIsDeviceSheet1=0
+ComponentLibIdentifierKind2=Library Name And Type
+ComponentLibraryIdentifier2=SPICEBot_SchLib.SchLib
+ComponentDesignItemID2=Res_Generic
+ComponentSymbolReference2=Res_Generic
+ComponentUpdate2=1
+ComponentIsDeviceSheet2=0
+ComponentLibIdentifierKind3=Library Name And Type
+ComponentLibraryIdentifier3=SPICEBot_SchLib.SchLib
+ComponentDesignItemID3=TL082IP Op Amp
+ComponentSymbolReference3=TL082IP Op Amp
+ComponentUpdate3=1
+ComponentIsDeviceSheet3=0
+ComponentLibIdentifierKind4=Library Name And Type
+ComponentLibraryIdentifier4=SPICEBot_SchLib.SchLib
+ComponentDesignItemID4=Zener_Generic
+ComponentSymbolReference4=Zener_Generic
+ComponentUpdate4=1
+ComponentIsDeviceSheet4=0
 FullReplace=1
 UpdateDesignatorLock=1
 UpdatePartIDLock=1
@@ -1288,6 +1332,27 @@ ParameterName2=Description
 ParameterUpdate2=1
 ParameterName3=Library Reference
 ParameterUpdate3=1
+ParameterName4=Supplier 1
+ParameterUpdate4=1
+ParameterName5=Supplier Part Number 1
+ParameterUpdate5=1
+ModelTypeGroup0=PCBLIB
+ModelTypeUpdate0=1
+ModelType0=PCBLIB
+ModelName0=DIP8
+ModelUpdate0=1
+ModelType1=PCBLIB
+ModelName1=Non Polarized Cap
+ModelUpdate1=1
+ModelType2=PCBLIB
+ModelName2=Pot Generic
+ModelUpdate2=1
+ModelType3=PCBLIB
+ModelName3=Res_Generic
+ModelUpdate3=1
+ModelType4=PCBLIB
+ModelName4=Zener Generic
+ModelUpdate4=1
 
 [DatabaseUpdateOptions]
 SelectedOnly=0
