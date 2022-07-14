@@ -32,8 +32,8 @@ ReportSuppressedErrorsInMessages=0
 FSMCodingStyle=eFMSDropDownList_OneProcess
 FSMEncodingStyle=eFMSDropDownList_OneHot
 IsProjectConflictPreventionWarningsEnabled=0
-IsVirtualBomDocumentRemoved=0
-OutputPath=
+IsVirtualBomDocumentRemoved=1
+OutputPath=Project Outputs for SPICEBot
 LogFolderPath=
 ManagedProjectGUID=
 IncludeDesignInRelease=0
@@ -269,6 +269,40 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
+[Document14]
+DocumentPath=Reflectance (Single).SchDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=0
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=CCHKNCAI
+
+[Document15]
+DocumentPath=Reflectance (Single).PcbDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=1
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=DGGAKHNS
+
 [GeneratedDocument1]
 DocumentPath=Project Outputs for SPICEBot\Design Rule Check - BP.html
 DItemRevisionGUID=
@@ -286,10 +320,14 @@ DocumentPath=Project Outputs for SPICEBot\Design Rule Check - Rear Motors.html
 DItemRevisionGUID=
 
 [GeneratedDocument5]
-DocumentPath=Project Outputs for SPICEBot\Design Rule Check - Reflectance.html
+DocumentPath=Project Outputs for SPICEBot\Design Rule Check - Reflectance (Single).html
 DItemRevisionGUID=
 
 [GeneratedDocument6]
+DocumentPath=Project Outputs for SPICEBot\Design Rule Check - Reflectance.html
+DItemRevisionGUID=
+
+[GeneratedDocument7]
 DocumentPath=Project Outputs for SPICEBot\Design Rule Check - Servos.html
 DItemRevisionGUID=
 
@@ -340,7 +378,7 @@ SCH_HasExpandLogicalToPhysicalSheets=0
 SaveSettingsToOutJob=-1
 
 [Generic_EDE]
-OutputDir=
+OutputDir=Project Outputs for SPICEBot
 
 [OutputGroup1]
 Name=Netlist Outputs
