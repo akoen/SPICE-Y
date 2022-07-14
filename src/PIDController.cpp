@@ -1,7 +1,8 @@
 #include "PIDController.h"
+
 # define REFLECT_LOWER_THRES_BITS 300
 
-// PID
+// PID tuning
 const double kp = 1;
 const double ki = 0;
 const double kd = 0;
@@ -43,7 +44,7 @@ void PIDController::drive() {
     }
     
     // compute reflectance from sensors and adjust pwm for wheels respectively
-    double pwmChange = compute();
+    double pwmChange = pidBlackTape();
 
     // adjust
     if (pwmChange != 0) {
@@ -56,7 +57,7 @@ void PIDController::drive() {
     
 }
 
-double PIDController::compute() {
+double PIDController::pidBlackTape() {
     // read reflectance of all 3 sensors (0 or 1 for each)
     double voltBitsL = analogRead(sensorL);
     double voltBitsM = analogRead(sensorM);
@@ -67,10 +68,9 @@ double PIDController::compute() {
     onTapeR = voltBitsR > REFLECT_LOWER_THRES_BITS ? false : true;
 
     /* truth table: (-) = left, (+) = right
-     * M true --> error=0, M R false, L true --> error=-1, M R L false, prevL true --> error=-2, 
-     * M L false, R true --> error=1, M L R false, prevR true --> error = 2
+     * M true --> error=0, M R false, L true --> error=1, M R L false, prevL true --> error=2, 
+     * M L false, R true --> error=-1, M L R false, prevR true --> error=-2
      */
-
     if (onTapeM) err = 0;
     else if (!onTapeL && onTapeR) err = -1;
     else if (!onTapeL && !onTapeR && prevOnTapeL) err = -2;
@@ -90,11 +90,6 @@ double PIDController::compute() {
 }
 
 int PIDController::getErr() {return this->err;}
-
 int PIDController::getDutyCycleL() {return this->dutyCycleL;}
 int PIDController::getDutyCycleR() {return this->dutyCycleR;}
-
-void PIDController::setPoint(double setPt) {
-    this->setPt = setPt;
-}
 
