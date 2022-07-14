@@ -25,24 +25,16 @@ NameNetsHierarchically=0
 PowerPortNamesTakePriority=0
 AutoSheetNumbering=1
 AutoCrossReferences=0
-NewIndexingOfSheetSymbols=0
 PushECOToAnnotationFile=1
 DItemRevisionGUID=
 ReportSuppressedErrorsInMessages=0
 FSMCodingStyle=eFMSDropDownList_OneProcess
 FSMEncodingStyle=eFMSDropDownList_OneHot
 IsProjectConflictPreventionWarningsEnabled=0
-IsVirtualBomDocumentRemoved=1
-OutputPath=Project Outputs for SPICEBot
+OutputPath=
 LogFolderPath=
 ManagedProjectGUID=
 IncludeDesignInRelease=0
-CrossRefSheetStyle=1
-CrossRefLocationStyle=1
-CrossRefPorts=3
-CrossRefCrossSheets=1
-CrossRefSheetEntries=0
-CrossRefFollowFromMainSettings=1
 
 [Preferences]
 PrefsVaultGUID=
@@ -303,34 +295,6 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=DGGAKHNS
 
-[GeneratedDocument1]
-DocumentPath=Project Outputs for SPICEBot\Design Rule Check - BP.html
-DItemRevisionGUID=
-
-[GeneratedDocument2]
-DocumentPath=Project Outputs for SPICEBot\Design Rule Check - BP and Sensors.html
-DItemRevisionGUID=
-
-[GeneratedDocument3]
-DocumentPath=Project Outputs for SPICEBot\Design Rule Check - IR Sensors.html
-DItemRevisionGUID=
-
-[GeneratedDocument4]
-DocumentPath=Project Outputs for SPICEBot\Design Rule Check - Rear Motors.html
-DItemRevisionGUID=
-
-[GeneratedDocument5]
-DocumentPath=Project Outputs for SPICEBot\Design Rule Check - Reflectance (Single).html
-DItemRevisionGUID=
-
-[GeneratedDocument6]
-DocumentPath=Project Outputs for SPICEBot\Design Rule Check - Reflectance.html
-DItemRevisionGUID=
-
-[GeneratedDocument7]
-DocumentPath=Project Outputs for SPICEBot\Design Rule Check - Servos.html
-DItemRevisionGUID=
-
 [Configuration1]
 Name=Sources
 ParameterCount=0
@@ -378,7 +342,7 @@ SCH_HasExpandLogicalToPhysicalSheets=0
 SaveSettingsToOutJob=-1
 
 [Generic_EDE]
-OutputDir=Project Outputs for SPICEBot
+OutputDir=
 
 [OutputGroup1]
 Name=Netlist Outputs
@@ -1280,7 +1244,6 @@ Type122=2
 Type123=1
 Type124=1
 Type125=1
-Type126=1
 
 [ERC Connection Matrix]
 L1=NNNNNNNNNNNWNNNWW
