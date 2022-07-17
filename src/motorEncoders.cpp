@@ -107,7 +107,7 @@
 //     // set analog resolution to 12 bits, as Arduino lib decreases to 10
 //     // analogReadResolution(12);
 
-    // attachInterrupt(digitalPinToInterrupt(L_ENCODER_PIN1), ISR_LeftWheel, RISING); // ISR called when pin signal changes 0->1
+//     attachInterrupt(digitalPinToInterrupt(L_ENCODER_PIN1), ISR_LeftWheel, RISING); // ISR called when pin signal changes 0->1
 //     attachInterrupt(digitalPinToInterrupt(R_ENCODER_PIN1), ISR_RightWheel, RISING); // ISR called when pin signal changes 0->1
 //     // attachInterrupt(digitalPinToInterrupt(L_ENCODER_PIN2), checkPos, CHANGE);
     

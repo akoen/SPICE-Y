@@ -9,7 +9,7 @@ SonarSensor::SonarSensor(int trigPin, int echoPin): trigPin(trigPin), echoPin(ec
     digitalWrite(trigPin, LOW);
 }
 
-double SonarSensor::getDistanceSinglePulse(double pulseDuration = 10) {    
+double SonarSensor::getDistanceSinglePulse(double pulseDuration) {    
     // Sets the trigPin on HIGH state for 10 micro seconds
     digitalWrite(trigPin, HIGH);
     delayMicroseconds(pulseDuration);
