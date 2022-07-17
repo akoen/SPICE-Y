@@ -238,17 +238,12 @@ void loop() {
     // onTapeR = digitalRead(SENSOR_PIN_R);
     
     display_handler.println("Sensors(L,M,R): ");
-    // display_handler.print(pidController.getOnTapeL());
-    // display_handler.print(" ");
-    // display_handler.print(pidController.getOnTapeM());
-    // display_handler.print(" ");
-    // display_handler.print(pidController.getOnTapeR());
+    display_handler.print(pidController.getOnTapeL());
+    display_handler.print(" ");
+    display_handler.print(pidController.getOnTapeM());
+    display_handler.print(" ");
+    display_handler.print(pidController.getOnTapeR());
 
-    display_handler.print(pidController.AonTapeL);
-    display_handler.print(" ");
-    display_handler.print(pidController.AonTapeM);
-    display_handler.print(" ");
-    display_handler.print(pidController.AonTapeR);
 
     // display_handler.println("Sensors(L,M,R): ");
     // display_handler.print(onTapeL);
