@@ -18,7 +18,7 @@ template <class T> void deinterleave(T source[], T *dest[], uint16_t sourceLengt
 
 float goertzel_mag(int numSamples, int targetFreq, int sampleFreq, uint16_t data[])
 {
-    int k = (int) (0.5 + numSamples * ((float) targetFreq / sampleFreq));
+    float k = (numSamples * ((float) targetFreq / sampleFreq));
     float omega = (2.0 * PI * k) / numSamples;
     float sine = sin(omega);
     float cosine = cos(omega);
@@ -34,11 +34,11 @@ float goertzel_mag(int numSamples, int targetFreq, int sampleFreq, uint16_t data
         q1 = q0;
     }
 
-    float scalingFactor = numSamples / 2.0;
+    // float scalingFactor = numSamples / 2.0;
 
     // Second stage
-    float real = (q1 - q2 * cosine) / scalingFactor;
-    float imag = (q2 * sine) / scalingFactor;
+    float real = q1 - q2 * cosine;
+    float imag = q2 * sine;
 
     float magnitude = sqrtf(real*real + imag*imag);
     return magnitude;
@@ -49,6 +49,8 @@ void setup()
 {
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(PB0, OUTPUT);
+  pinMode(PB6, OUTPUT);
+  pinMode(PB7, OUTPUT);
 
   Serial.begin(115200, SERIAL_8N1);
 
@@ -63,12 +65,28 @@ void setup()
   /* Start ADC conversion on regular group with transfer by DMA */
   HAL_ADC_Start_DMA(&AdcHandle, (uint32_t *)DMA1Data, IR_SENS_NUM_READINGS);
   // HAL_TIM_Base_Start_IT(timerSensorReadFast.getHandle());
+
+
+}
+
+constexpr uint32_t servoMG90SPercentToDuty(float p) {
+return (uint32_t)((p * 0.05 + 0.05) * 4095);
 }
 
 float magAvg = 0;
-float alpha = 0.05;
+float alpha = 0.2;
 void loop()
 {
+  // pwm_start(PB_6, 50, servoMG90SPercentToDuty(0.1), RESOLUTION_12B_COMPARE_FORMAT);
+  // // pwm_start(PB_6, 50, 2000, RESOLUTION_12B_COMPARE_FORMAT);
+  // delay(1000);
+  // pwm_start(PB_7, 50, servoMG90SPercentToDuty(0.9), RESOLUTION_12B_COMPARE_FORMAT);
+  // delay(1000);
+  // pwm_start(PB_6, 50, servoMG90SPercentToDuty(0.9), RESOLUTION_12B_COMPARE_FORMAT);
+  // delay(1000);
+  // pwm_start(PB_7, 50, servoMG90SPercentToDuty(0.1), RESOLUTION_12B_COMPARE_FORMAT);
+  // delay(1000);
+
   if(DMA1DataAvailable) {
     digitalWrite(PB0, HIGH);
 
@@ -79,10 +97,12 @@ void loop()
 
     deinterleave<uint16_t>(DMA1Data, source, IR_SENS_NUM_READINGS, 2);
 
-    float mag = goertzel_mag(IR_SENS_NUM_READINGS/2, 10000, 14000000/(12.5+71.5), pin1);
+    float mag = goertzel_mag(IR_SENS_NUM_READINGS/2, 10000, (12000000/(12.5+71.5))/2, pin1);
     magAvg = alpha * mag + (1-alpha) * magAvg;
     while (!Serial);
+    // uint8_t tmp = 1000;
     // Serial.write((uint8_t *) pin1, sizeof(pin1));
+    // delay(1000);
     Serial.write((uint8_t *) &magAvg, 4);
     // while (!Serial);
     // Serial.write((uint8_t *) pin2, sizeof(pin2));
