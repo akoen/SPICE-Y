@@ -12,8 +12,8 @@
 #define RAISE_ARM 115
 #define LOWER_ARM 0
 
-Servo clawServo;
-Servo armServo;
+extern Servo *clawServo;
+extern Servo *armServo;
 
 void setupServo();
 void sendServoSignal();

@@ -4,9 +4,13 @@
   Arguments: None
   Returns: None
 */
-void setupServo() {
-  clawServo.attach(CLAW_SERV_PIN);
-  armServo.attach(ARM_SERV_PIN);
+void setupServo()
+{
+  Servo *clawServo = new Servo();
+  Servo *armServo = new Servo();
+
+  clawServo->attach(CLAW_SERV_PIN);
+  armServo->attach(ARM_SERV_PIN);
 }
 
 /*Purpose: Send a pwm position signal to a Servo object
@@ -15,6 +19,7 @@ void setupServo() {
     position: 0 to 180 (degrees)
   Returns: None
 */
-void sendServoSignal(Servo servo, uint8_t position){
+void sendServoSignal(Servo servo, uint8_t position)
+{
   servo.write(position);
 }

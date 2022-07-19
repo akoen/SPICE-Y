@@ -5,12 +5,11 @@
 
 #define TRIG_PIN PB11
 #define ECHO_PIN PB10
-#define SONAR_MEAS_DELAY 70 //milliseconds beforetaking another sonar measurement
+#define SONAR_MEAS_DELAY 70 // milliseconds before taking another sonar measurement
 
-double* pDistance; //pointer to distance
+extern double *pDistance; // pointer to distance value
 
 void setupSonar();
-void getDistance();
-
+void ISR_GetDistance();
 
 #endif
