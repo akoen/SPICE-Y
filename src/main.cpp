@@ -1,31 +1,49 @@
 #include "main.h"
 
+
 // Globals
 HardwareTimer *Timer1 = new HardwareTimer(TIM1);
 volatile bool led_state = false;
+double newDistance = 0;
+double previousDistance = 0;
+timerChannels_t channel1 = CHANNEL1;
+timerChannels_t channel2 = CHANNEL2;
+timerChannels_t channel3 = CHANNEL3;
+timerChannels_t channel4 = CHANNEL4;
 
 void setup()
 {
-  // pin setup
+  //pin modes and interrupts
   pinMode(LED_BUILTIN, OUTPUT);
   setupSonar();
 
-  // timer setup
+  //harware timers
   Timer1->setOverflow(TIMER1_OVERFLOW, MICROSEC_FORMAT);
-  Timer1->attachInterrupt(ISR_Heartbeat);                                                                           // full complete callback
-  Timer1->setMode(channel1, TIMER_DISABLED);                                                                        // TODO: investigate whether this interfere with GPIO on this pin at all?
-  Timer1->setCaptureCompare(channel1, ((SONAR_MEAS_DELAY * 1000) / TIMER1_OVERFLOW) * 100, PERCENT_COMPARE_FORMAT); // 35% complete callback (sonar reading every 70milliseconds)
-  Timer1->attachInterrupt(channel1, ISR_GetDistance);
+  Timer1->attachInterrupt(ISR_Heartbeat); // full complete callback                                                                   // TODO: investigate whether this interfere with GPIO on this pin at all?
+  Timer1->setCaptureCompare(channel1, (SONAR_MEAS_DELAY*1000 / TIMER1_OVERFLOW)*100, PERCENT_COMPARE_FORMAT); // 35% complete callback (sonar reading every 70 milliseconds)
+  Timer1->attachInterrupt(channel1, ISR_SonarTrigger);
   Timer1->resume();
 
-  // serial setup
+  // serial
   Serial.begin(SERIAL_BAUD);
-  Serial.println("Serial comms up");
 }
 
 void loop()
 {
-  Serial.println(*pDistance);
+  if (readyToTrigger){ //set every 70mils by channel associated with hardware timer 1
+    TriggerSonar();
+  }
+
+  if (pulseCaptured){
+    pulseCaptured = false;
+    newDistance = (pulseDuration / 2) * SPEED_SOUND_MICS; //centimeters
+    if (newDistance != previousDistance){
+      Serial.println(newDistance);
+      previousDistance = newDistance;
+    }
+  }
+
+  // Serial.println("Loop");
 }
 
 void ISR_Heartbeat()

@@ -1,24 +1,43 @@
 #include "Sonar.h"
 #include <Arduino.h>
 
-double *pDistance = 0; // necessary to define, only ever redefined in ISR
+volatile bool readyToTrigger = false;
+volatile bool pulseCaptured = false;
+volatile uint32_t pulseDuration = 0;
 
+//called in setup() in main.cpp
 void setupSonar()
 {
   pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
+  attachInterrupt(ECHO_PIN, ISR_SonarEcho, CHANGE); //interrupt triggered when pin high then when pin goes low
 }
 
-// to be called in interrupt associated with hardware timer (every 70 milliseconds)
-void ISR_GetDistance()
-{
+//send sequence of pulses to sonar trigger line. Not to be used in any interrupts
+void TriggerSonar(){
   digitalWrite(TRIG_PIN, LOW);
   delayMicroseconds(2);
   digitalWrite(TRIG_PIN, HIGH);
   delayMicroseconds(10);
   digitalWrite(TRIG_PIN, LOW);
+  readyToTrigger = false;
+}
 
-  float duration = pulseIn(ECHO_PIN, HIGH);    // duration of high pulse proportional to distance sound waves travelled
-  double distance = (duration * 0.0343) / 2.0; // distance in cm d = speed of sound in cm/s times time (duration) divide 2 (round trip)
-  pDistance = &distance;
+
+//called every 70 milliseconds in channel 1 TIM1 associated interrupt
+void ISR_SonarTrigger()
+{
+  readyToTrigger = true;
+}
+
+//called in response to echoPin rising or falling edge
+void ISR_SonarEcho(){
+  static uint32_t startTime;
+  if (digitalRead(ECHO_PIN)){ //pin high means start of echo (return) pulse
+    startTime = micros();
+  }
+  else{ //interrupt only triggered on change (rising or falling). If not rising, must be falling (echo done)
+    pulseDuration = micros() - startTime;
+    pulseCaptured = true;
+  }
 }
