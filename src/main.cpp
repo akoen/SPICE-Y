@@ -1,6 +1,8 @@
 #include <Wire.h>
 #include <Adafruit_SSD1306.h>
 #include "PIDController.h"
+#include "SensorReader.h"
+
 // OLED standard setup
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
@@ -29,8 +31,6 @@ Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET)
 #define L_ENCODER_PIN1 PB11
 #define L_ENCODER_PIN2 PB15 
 
-
-
 // const
 const double maxVolt = 3.3;
 // pulse per rev
@@ -52,9 +52,9 @@ volatile int dirRW = 0;
 volatile double posRW = 0;
 volatile bool isDirFwd = true;
 
-PIDController pidController((int)SENSOR_PIN_L, (int)SENSOR_PIN_M, (int)SENSOR_PIN_R, 
-(int)PWM_MOTOR_FWD_L, (int)PWM_MOTOR_BACK_L, (int)PWM_MOTOR_FWD_R, (int)PWM_MOTOR_BACK_R, PWM_FORMAT_MOTOR_FWD_L, PWM_FORMAT_MOTOR_BACK_L,
-PWM_FORMAT_MOTOR_FWD_R, PWM_FORMAT_MOTOR_BACK_R);
+// PIDController pidController((int)SENSOR_PIN_L, (int)SENSOR_PIN_M, (int)SENSOR_PIN_R, 
+// (int)PWM_MOTOR_FWD_L, (int)PWM_MOTOR_BACK_L, (int)PWM_MOTOR_FWD_R, (int)PWM_MOTOR_BACK_R, PWM_FORMAT_MOTOR_FWD_L, PWM_FORMAT_MOTOR_BACK_L,
+// PWM_FORMAT_MOTOR_FWD_R, PWM_FORMAT_MOTOR_BACK_R);
 
 volatile double refTime = 0;
 volatile double currTime = 0;
@@ -62,6 +62,10 @@ volatile double currTime = 0;
 volatile bool isOnTapeL = false;
 volatile bool isOnTapeM = false;
 volatile bool isOnTapeR = false;
+
+// test
+SensorReader sensorReader(SENSOR_PIN_L, SENSOR_PIN_M, SENSOR_PIN_R);
+
 /**
  * @brief Sets up the OLED display
  */
@@ -83,22 +87,22 @@ void OLEDSetup() {
 }
 
 
-// void checkPosLW(int pin1, int pin2) {
-//     int state1 = digitalRead(pin1);
-//     int state2 = digitalRead(pin2);
-//     if (state1 == 0) {
-//         pulseLW = -99999; // shouldn't occur
-//         dirLW = -1;
-//     }
-//     if (state2 == 0) {  // CW (my def)
-//         pulseLW--;
-//         dirLW = false;
-//     } else {    // CCW
-//         pulseLW++;
-//         dirLW = true;
-//     } 
-//     interruptCountLW++;
-// }
+void checkPosLW(int pin1, int pin2) {
+    int state1 = digitalRead(pin1);
+    int state2 = digitalRead(pin2);
+    if (state1 == 0) {
+        pulseLW = -99999; // shouldn't occur
+        dirLW = -1;
+    }
+    if (state2 == 0) {  // CW (my def)
+        pulseLW--;
+        dirLW = false;
+    } else {    // CCW
+        pulseLW++;
+        dirLW = true;
+    } 
+    interruptCountLW++;
+}
 
 void checkPosLW(int pin1) {
     int state1 = digitalRead(pin1);
@@ -116,22 +120,22 @@ void checkPosLW(int pin1) {
     interruptCountLW++;
 }
 
-// void checkPosRW(int pin1, int pin2) {
-//     int state1 = digitalRead(pin1);
-//     int state2 = digitalRead(pin2);
-//     if (state1 == 0) {
-//         dirRW = -99999; // shouldn't occur
-//         dirRW = -1;
-//     }
-//     if (state2 == 0) {  // CW (my def)
-//         pulseRW--;
-//         dirRW = false;
-//     } else {    // CCW
-//         pulseRW++;
-//         dirRW = true;
-//     } 
-//     interruptCountRW++;
-// }
+void checkPosRW(int pin1, int pin2) {
+    int state1 = digitalRead(pin1);
+    int state2 = digitalRead(pin2);
+    if (state1 == 0) {
+        dirRW = -99999; // shouldn't occur
+        dirRW = -1;
+    }
+    if (state2 == 0) {  // CW (my def)
+        pulseRW--;
+        dirRW = false;
+    } else {    // CCW
+        pulseRW++;
+        dirRW = true;
+    } 
+    interruptCountRW++;
+}
 
 void checkPosRW(int pin1) {
     int state1 = digitalRead(pin1);
@@ -169,8 +173,8 @@ bool firstLoopFlag = true;
  */
 void setup() {
     OLEDSetup();
-    attachInterrupt(digitalPinToInterrupt(L_ENCODER_PIN1), ISR_LeftWheel, RISING); // ISR called when pin signal changes 0->1
-    attachInterrupt(digitalPinToInterrupt(R_ENCODER_PIN1), ISR_RightWheel, RISING); // ISR called when pin signal changes 0->1
+    // attachInterrupt(digitalPinToInterrupt(L_ENCODER_PIN1), ISR_LeftWheel, RISING); // ISR called when pin signal changes 0->1
+    // attachInterrupt(digitalPinToInterrupt(R_ENCODER_PIN1), ISR_RightWheel, RISING); // ISR called when pin signal changes 0->1
     // attachInterrupt(digitalPinToInterrupt(L_ENCODER_PIN2), checkPos, CHANGE);
 }
 
@@ -183,67 +187,73 @@ bool onTapeL, onTapeM, onTapeR;
  */
 void loop() {
     
-    // motor control
-    if (firstLoopFlag) {
-        refTime = millis();
-        currTime = refTime;
-        firstLoopFlag = false;
-        return;
-    }
-    currTime = (millis() - refTime) / 1000.0;
+    // // motor control
+    // if (firstLoopFlag) {
+    //     refTime = millis();
+    //     currTime = refTime;
+    //     firstLoopFlag = false;
+    //     return;
+    // }
+    // currTime = (millis() - refTime) / 1000.0;
 
     display_handler.clearDisplay();
     display_handler.setCursor(0, 0);
 
-    if (currTime < changeDirTime) {
-        pidController.testDriveNoPID(); 
+    // if (currTime < changeDirTime) {
+    //     pidController.testDriveNoPID(); 
 
-        isDirFwd = true;
-    } else if (!changedFlag) {
-        pidController.stopPwm();
-        delay(3000);
-        pidController.testBackDriveNoPID();
-        changedFlag = true;
+    //     isDirFwd = true;
+    // } else if (!changedFlag) {
+    //     pidController.stopPwm();
+    //     delay(3000);
+    //     pidController.testBackDriveNoPID();
+    //     changedFlag = true;
 
-        isDirFwd = false;
-    }
+    //     isDirFwd = false;
+    // }
 
-    display_handler.print("DutyC(L,R): ");
-    display_handler.print(pidController.getDutyCycleL());
-    display_handler.print(", ");
-    display_handler.println(pidController.getDutyCycleR());
+    // display_handler.print("DutyC(L,R): ");
+    // display_handler.print(pidController.getDutyCycleL());
+    // display_handler.print(", ");
+    // display_handler.println(pidController.getDutyCycleR());
 
-    display_handler.print("Time passed (s): ");
-    display_handler.println(currTime);
+    // display_handler.print("Time passed (s): ");
+    // display_handler.println(currTime);
 
-    // encoder after interrupt
-    posLW = (pulseLW / pulsePerRev) * PI*wheelDiameter;
-    posRW = (pulseRW / pulsePerRev) * PI*wheelDiameter;
+    // // encoder after interrupt
+    // posLW = (pulseLW / pulsePerRev) * PI*wheelDiameter;
+    // posRW = (pulseRW / pulsePerRev) * PI*wheelDiameter;
 
-    display_handler.println("Pos cm(L,R):  ");
-    display_handler.print(posLW);
-    display_handler.print(", ");
-    display_handler.println(posRW);
+    // display_handler.println("Pos cm(L,R):  ");
+    // display_handler.print(posLW);
+    // display_handler.print(", ");
+    // display_handler.println(posRW);
 
-    display_handler.print("Dir(L,R):  ");
-    display_handler.print(dirLW);
-    display_handler.print(", ");
-    display_handler.println(dirRW);
+    // display_handler.print("Dir(L,R):  ");
+    // display_handler.print(dirLW);
+    // display_handler.print(", ");
+    // display_handler.println(dirRW);
 
     // read sensors
-    pidController.updateSensorVals();
+    // pidController.updateSensorVals();
 
     // onTapeL = digitalRead(SENSOR_PIN_L);
     // onTapeM = digitalRead(SENSOR_PIN_M);
     // onTapeR = digitalRead(SENSOR_PIN_R);
     
+    // display_handler.println("Sensors(L,M,R): ");
+    // display_handler.print(pidController.getOnTapeL());
+    // display_handler.print(" ");
+    // display_handler.print(pidController.getOnTapeM());
+    // display_handler.print(" ");
+    // display_handler.print(pidController.getOnTapeR());
+    sensorReader.readSensors();
     display_handler.println("Sensors(L,M,R): ");
-    display_handler.print(pidController.getOnTapeL());
+    display_handler.print(sensorReader.sensorLval);
     display_handler.print(" ");
-    display_handler.print(pidController.getOnTapeM());
+    display_handler.print(sensorReader.sensorMval);
     display_handler.print(" ");
-    display_handler.print(pidController.getOnTapeR());
-
+    display_handler.print(sensorReader.sensorRval);
 
     // display_handler.println("Sensors(L,M,R): ");
     // display_handler.print(onTapeL);
