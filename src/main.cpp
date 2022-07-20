@@ -2,6 +2,7 @@
 #include <Adafruit_SSD1306.h>
 #include "PIDController.h"
 #include "SensorReader.h"
+#include <Pins.h>
 
 // OLED standard setup
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
@@ -9,37 +10,14 @@
 #define OLED_RESET 	-1 // This display does not have a reset pin accessible
 Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-// pins
-# define PWM_MOTOR_FWD_L PB0
-# define PWM_MOTOR_BACK_L PB1
-
-# define PWM_MOTOR_FWD_R PA6
-# define PWM_MOTOR_BACK_R PA7
-
-# define PWM_FORMAT_MOTOR_FWD_L PB_0
-# define PWM_FORMAT_MOTOR_BACK_L PB_1
-
-# define PWM_FORMAT_MOTOR_FWD_R PA_6
-# define PWM_FORMAT_MOTOR_BACK_R PA_7
-
-# define SENSOR_PIN_L PA10
-# define SENSOR_PIN_M PA11
-# define SENSOR_PIN_R PA12
-
-#define R_ENCODER_PIN1 PB10
-#define R_ENCODER_PIN2 PB14
-#define L_ENCODER_PIN1 PB11
-#define L_ENCODER_PIN2 PB15 
-
 // const
 const double maxVolt = 3.3;
 // pulse per rev
 const double pulsePerRev = 1389.9185 / 10.0;  // divide by counter at end, increases pulse width
 const double wheelDiameter = 6.4; // cm
 const double changeDirTime = 7; // s
-// vars
-volatile uint32_t loop_counter = 0;
 
+// vars
 volatile uint32_t interruptCountLW = 0;
 volatile uint32_t interruptCountRW = 0;
 
@@ -86,24 +64,6 @@ void OLEDSetup() {
     display_handler.display();
 }
 
-
-void checkPosLW(int pin1, int pin2) {
-    int state1 = digitalRead(pin1);
-    int state2 = digitalRead(pin2);
-    if (state1 == 0) {
-        pulseLW = -99999; // shouldn't occur
-        dirLW = -1;
-    }
-    if (state2 == 0) {  // CW (my def)
-        pulseLW--;
-        dirLW = false;
-    } else {    // CCW
-        pulseLW++;
-        dirLW = true;
-    } 
-    interruptCountLW++;
-}
-
 void checkPosLW(int pin1) {
     int state1 = digitalRead(pin1);
     if (state1 == 0) {
@@ -118,23 +78,6 @@ void checkPosLW(int pin1) {
         dirLW = isDirFwd;
     } 
     interruptCountLW++;
-}
-
-void checkPosRW(int pin1, int pin2) {
-    int state1 = digitalRead(pin1);
-    int state2 = digitalRead(pin2);
-    if (state1 == 0) {
-        dirRW = -99999; // shouldn't occur
-        dirRW = -1;
-    }
-    if (state2 == 0) {  // CW (my def)
-        pulseRW--;
-        dirRW = false;
-    } else {    // CCW
-        pulseRW++;
-        dirRW = true;
-    } 
-    interruptCountRW++;
 }
 
 void checkPosRW(int pin1) {
@@ -155,12 +98,10 @@ void checkPosRW(int pin1) {
 }
 
 void ISR_LeftWheel() {
-    // checkPosLW(L_ENCODER_PIN1, L_ENCODER_PIN2);
     checkPosLW(L_ENCODER_PIN1);
 }
 
 void ISR_RightWheel() {
-    // checkPosRW(R_ENCODER_PIN1, R_ENCODER_PIN2);
     checkPosRW(R_ENCODER_PIN1);
 }
 bool changedFlag = false;

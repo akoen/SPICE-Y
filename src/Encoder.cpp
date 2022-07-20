@@ -1,69 +1,76 @@
-// # include "Encoder.h"
+# include "Pins.h"
+# include <Arduino.h>
 
-// # define ENCODER_LW_A PB0
-// # define ENCODER_LW_B PB1
+const double pulsePerRev = 1389.9185 / 10.0;  // divide by counter at end, increases pulse width
+const double wheelDiameter = 6.4; // cm
 
-// # define ENCODER_RW_A PB2
-// # define ENCODER_RW_B PB3
+volatile int interruptCountLW = 0;
+volatile int interruptCountRW = 0;
 
-// Encoder::Encoder() {
-//     this->interruptCount = 0;
-//     this->revs = 0;
-//     this->dir = true;
-//     this->pos = 0; 
-// }
+volatile long pulseLW = 0;
+volatile double posLW = 0;
 
-// void ISR_LW() {
-//     int encoderAState = digitalRead(ENCODER_LW_A);
-//     int encoderBState = digitalRead(ENCODER_LW_B);
+volatile long pulseRW = 0;
+volatile double posRW = 0;
 
-//     if (encoderAState == 0) {
-//         // shouldn't occur - rising edge
-//         this->revs = -1;
-//     }
-//     if (encoderBState == 0) {  // CW (my def)
-//         this->revs--;
-//         this->dir = false;
-//     } else {    // CCW
-//         this->revs++;
-//         this->dir = true;
-//     } 
-//     interruptCount++;
-// }
+volatile bool isLWdirFwd = true;
+volatile bool isRWdirFwd = true;
 
-// void ISR_RW() {
+void ISR_LW() {
+    int state1 = digitalRead(L_ENCODER_PIN1);
+    if (state1 == 0) {
+        pulseLW = -99999; // shouldn't occur
+    } else {    // CCW
+        if (isLWdirFwd) {
+            pulseLW++;
+        } else {
+            pulseLW--;
+        }
+    } 
+    interruptCountLW++;
+}
 
-// }
+void ISR_RW() {
+    int state1 = digitalRead(R_ENCODER_PIN1);
+    if (state1 == 0) {
+        pulseRW = -99999; // shouldn't occur
+    } else {    // CCW
+        if (isRWdirFwd) {
+            pulseRW++;
+        } else {
+            pulseRW--;
+        }
+    } 
+    interruptCountRW++;
+}
 
-// /**
-//  * @brief Obtains the position of the motor. To be only called by the ISR.
-//  * 
-//  * @param pinA encoder pin A
-//  * @param pinB encoder pin B
-//  */
-//  void Encoder::checkPos(int pinA, int pinB) {
-//     int encoderAState = digitalRead(pinA);
-//     int encoderBState = digitalRead(pinB);
+void configEncoderPins() {
+    pinMode(L_ENCODER_PIN1, INPUT);
+    pinMode(R_ENCODER_PIN1, INPUT);
 
-//     if (encoderAState == 0) {
-//         // shouldn't occur - rising edge
-//         this->revs = -1;
-//     }
-//     if (encoderBState == 0) {  // CW (my def)
-//         this->revs--;
-//         this->dir = false;
-//     } else {    // CCW
-//         this->revs++;
-//         this->dir = true;
-//     } 
-//     interruptCount++;
-// }
+    attachInterrupts();
+}
 
-// void Encoder::configPins() {
-//     pinMode(this->pinA, INPUT);
-//     pinMode(this->pinB, INPUT);
+void attachInterrupts() {
+    attachInterrupt(digitalPinToInterrupt(L_ENCODER_PIN1), ISR_LW, RISING);
+    attachInterrupt(digitalPinToInterrupt(R_ENCODER_PIN1), ISR_RW, RISING);
+}
 
-//     attachInterrupt(digitalPinToInterrupt(pinA), ISR, RISING);
+void detachEncoderInterrupts() {
+    detachInterrupt(digitalPinToInterrupt(L_ENCODER_PIN1));
+    detachInterrupt(digitalPinToInterrupt(R_ENCODER_PIN1));
+}
 
-// }
+void resetAllVals() {
+    volatile int interruptCountLW = 0;
+    volatile int interruptCountRW = 0;
 
+    volatile long pulseLW = 0;
+    volatile double posLW = 0;
+
+    volatile long pulseRW = 0;
+    volatile double posRW = 0;
+
+    volatile bool isLWdirFwd = true;
+    volatile bool isRWdirFwd = true;
+}
