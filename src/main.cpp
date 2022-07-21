@@ -1,7 +1,6 @@
 #include <Wire.h>
 #include <Adafruit_SSD1306.h>
 #include "PIDController.h"
-#include "SensorReader.h"
 #include <Pins.h>
 
 // OLED standard setup
