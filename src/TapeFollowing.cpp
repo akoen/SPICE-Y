@@ -2,15 +2,11 @@
 #include "ReflectanceSensor.cpp"
 #include "Encoder.cpp"
 
-using namespace ReflectanceSensors;
-using namespace Motors;
-using namespace Encoders;
-
 namespace TapeFollow {
     # define REFLECT_LOWER_THRES_BITS 300
 
     // PID tuning
-    const double kp = 1;
+    const double kp = 10;
     const double ki = 0;
     const double kd = 0;
     const double maxI = 0;
@@ -42,9 +38,9 @@ namespace TapeFollow {
         // read reflectance of all 3 sensors (0 or 1 for each)
         ReflectanceSensors::readFrontReflectanceSensors();
 
-        onTapeL = !frontSensorLval;
-        onTapeM = !frontSensorMval;
-        onTapeR = !frontSensorRval;
+        onTapeL = !ReflectanceSensors::frontSensorLval;
+        onTapeM = !ReflectanceSensors::frontSensorMval;
+        onTapeR = !ReflectanceSensors::frontSensorRval;
 
         /* truth table: (-) = left, (+) = right
         * M true --> error=0, M R false, L true --> error=1, M R L false, prevL true --> error=2, 
@@ -70,6 +66,9 @@ namespace TapeFollow {
         return pwmChange;
     }
 
+    /**
+     * Drives the robot with PID for the black tape
+     */
     void driveWithPid() {
         // get error
         double changePwmSigned = calcPidBlackTape();
@@ -78,6 +77,6 @@ namespace TapeFollow {
         // drive (fwd)
         Motors::setDir(true, true);
         Motors::drive();        
-
     }
+
 }

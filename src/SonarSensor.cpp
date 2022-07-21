@@ -1,29 +1,39 @@
-#include "SonarSensor.h"
+#include "Pins.h"
+#include <Arduino.h>
 
-# define SPEED_SOUND 0.0343 // cm/s
 
-SonarSensor::SonarSensor(int trigPin, int echoPin): trigPin(trigPin), echoPin(echoPin) {
-    configPins();
+namespace Sonars {
+    const double SPEED_SOUND = 0.0343; // cm/s
 
-    // clear trig pin
-    digitalWrite(trigPin, LOW);
-}
+    void configSonarPins() {
+        pinMode(SONAR_TRIG_PIN_L, OUTPUT);
+        pinMode(SONAR_ECHO_PIN_L, INPUT);
 
-double SonarSensor::getDistanceSinglePulse(double pulseDuration) {    
-    // Sets the trigPin on HIGH state for 10 micro seconds
-    digitalWrite(trigPin, HIGH);
-    delayMicroseconds(pulseDuration);
-    digitalWrite(trigPin, LOW);
+        pinMode(SONAR_TRIG_PIN_R, OUTPUT);
+        pinMode(SONAR_ECHO_PIN_R, INPUT);
 
-    // Reads the echoPin, returns the sound wave travel time in microseconds
-    this->duration = pulseIn(echoPin, HIGH);
-    // Calculating the distance in cm
-    this->distance = duration * SPEED_SOUND / 2.0;
-    
-    return distance;
-}
+        pinMode(SONAR_TRIG_PIN_F, OUTPUT);
+        pinMode(SONAR_ECHO_PIN_F, INPUT); 
+        
+        // clear trig pin
+        digitalWrite(SONAR_ECHO_PIN_L, LOW);
+        digitalWrite(SONAR_ECHO_PIN_R, LOW);
+        digitalWrite(SONAR_ECHO_PIN_F, LOW);
+    }
+    /**
+     * Gets the distance of a single pulse from the specified
+     * Note: pulse duration min. 10 microseconds, which is default.
+     */
+    double getDistanceSinglePulse(int trigPin, int echoPin, double pulseDuration=10) {    
+        // Sets the trigPin on HIGH state for 10 micro seconds
+        digitalWrite(trigPin, HIGH);
+        delayMicroseconds(pulseDuration);
+        digitalWrite(trigPin, LOW);
 
-void SonarSensor::configPins() {
-    pinMode(trigPin, OUTPUT);
-    pinMode(echoPin, INPUT);
+        // Reads the echoPin, returns the sound wave travel time in microseconds
+        double duration = pulseIn(echoPin, HIGH);
+        // Calculating the distance in cm
+        return duration * SPEED_SOUND / 2.0;
+    }
+
 }

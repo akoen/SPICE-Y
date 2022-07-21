@@ -18,6 +18,9 @@ namespace Motors {
     void configMotorPins() {
         pinMode(PWM_MOTOR_FWD_L, OUTPUT);
         pinMode(PWM_MOTOR_FWD_R, OUTPUT);
+
+        pinMode(PWM_MOTOR_BACK_L, OUTPUT);
+        pinMode(PWM_MOTOR_BACK_R, OUTPUT);
     }
 
     /**
@@ -48,8 +51,11 @@ namespace Motors {
                 dutyRback = dutyCycleR; 
             }
 
-            pwm_start(PWM_FORMAT_MOTOR_FWD_R, PWM_CLOCK_FREQ, (int)(dutyCycleR / 100 * 4096), RESOLUTION_12B_COMPARE_FORMAT);
-            pwm_start(PWM_FORMAT_MOTOR_BACK_R, PWM_CLOCK_FREQ, 0, RESOLUTION_12B_COMPARE_FORMAT);
+            pwm_start(PWM_FORMAT_MOTOR_FWD_R, PWM_CLOCK_FREQ, (int)(dutyRfwd / 100 * 4096), RESOLUTION_12B_COMPARE_FORMAT);
+            pwm_start(PWM_FORMAT_MOTOR_BACK_R, PWM_CLOCK_FREQ, (int)(dutyRback / 100 * 4096), RESOLUTION_12B_COMPARE_FORMAT);
+            
+            pwm_start(PWM_FORMAT_MOTOR_FWD_L, PWM_CLOCK_FREQ, (int)(dutyLfwd / 100 * 4096), RESOLUTION_12B_COMPARE_FORMAT);
+            pwm_start(PWM_FORMAT_MOTOR_BACK_L, PWM_CLOCK_FREQ, (int)(dutyLback / 100 * 4096), RESOLUTION_12B_COMPARE_FORMAT);
         
             hasPwmChanged = false;
         }

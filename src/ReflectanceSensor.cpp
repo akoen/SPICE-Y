@@ -11,26 +11,22 @@ namespace ReflectanceSensors {
     volatile bool sideSensorRval = false;
 
     void configFrontReflectanceSensors() {
-        pinMode(SENSOR_PIN_L, INPUT);
-        pinMode(SENSOR_PIN_M, INPUT);
-        pinMode(SENSOR_PIN_R, INPUT);
+        pinMode(REFLECTANCE_PIN_L, INPUT);
+        pinMode(REFLECTANCE_PIN_M, INPUT);
+        pinMode(REFLECTANCE_PIN_R, INPUT);
     }
-
     void configSideReflectanceSensors() {
-        pinMode(SENSOR_PIN_SIDE_L, INPUT);
-        pinMode(SENSOR_PIN_SIDE_R, INPUT);
+        pinMode(REFLECTANCE_PIN_SIDE_L, INPUT);
+        pinMode(REFLECTANCE_PIN_SIDE_R, INPUT);
     }
-
-
     void readFrontReflectanceSensors() {
-        frontSensorLval = digitalRead(SENSOR_PIN_L);
-        frontSensorMval = digitalRead(SENSOR_PIN_M);
-        frontSensorRval = digitalRead(SENSOR_PIN_R);
-    }
-
+        frontSensorLval = digitalRead(REFLECTANCE_PIN_L);
+        frontSensorMval = digitalRead(REFLECTANCE_PIN_M);
+        frontSensorRval = digitalRead(REFLECTANCE_PIN_R);
+    }  
     void readSideReflectanceSensors() {
-        sideSensorLval = digitalRead(SENSOR_PIN_SIDE_L);
-        sideSensorRval = digitalRead(SENSOR_PIN_SIDE_R);
+        sideSensorLval = digitalRead(REFLECTANCE_PIN_SIDE_L);
+        sideSensorRval = digitalRead(REFLECTANCE_PIN_SIDE_R);
     }
 }
 

@@ -20,12 +20,21 @@
 #define L_ENCODER_PIN1 PB11
 // #define L_ENCODER_PIN2 PB15 
 
-// sensors
-# define SENSOR_PIN_L PA10
-# define SENSOR_PIN_M PA11
-# define SENSOR_PIN_R PA12
+// reflectance
+# define REFLECTANCE_PIN_L PA10
+# define REFLECTANCE_PIN_M PA11
+# define REFLECTANCE_PIN_R PA12
 
-# define SENSOR_PIN_SIDE_L 0    // placeholders
-# define SENSOR_PIN_SIDE_R 0
+# define REFLECTANCE_PIN_SIDE_L 0    // placeholders
+# define REFLECTANCE_PIN_SIDE_R 0
+
+// sonar
+# define SONAR_TRIG_PIN_L PB12
+# define SONAR_TRIG_PIN_R PB13
+# define SONAR_TRIG_PIN_F PB14
+
+# define SONAR_ECHO_PIN_L PB15
+# define SONAR_ECHO_PIN_R PA8
+# define SONAR_ECHO_PIN_F PA9
 
 #endif
