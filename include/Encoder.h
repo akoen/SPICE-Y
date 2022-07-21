@@ -1,17 +1,35 @@
-// #ifndef EncoderFile
-// #define EncoderFile
+#ifndef EncoderFile
+#define EncoderFile
 
-// # include <Arduino.h>
+#include "Pins.h"
+#include "MotorDriver.h"
+#include <Arduino.h>
 
-// class Encoder {
-//     public:
-//         static void ISR_LW();
-//         static void ISR_RW();
-//         static void configPins();
-        
-//         void checkPos(int pinL, int pinR);
-//         // (+): CCW looking from outside, (-): CW looking from outside.
-//         // i.e.) Right wheel forward = CW, left wheel forward = CCW
-// };
+namespace Encoders {
+    extern const double pulse_per_rev;  // divide by counter at end, increases pulse width
+    extern const double wheel_diameter; // cm
 
-// #endif
+    extern volatile int interruptCountLW;
+    extern volatile int interruptCountRW;
+
+    extern volatile long pulseLW;
+    extern volatile double posLW;
+    extern volatile long pulseRW;
+    extern volatile double posRW;
+
+    /**
+     * Interrupt service routine (ISR) that will be called each (left) encoder pulse
+     */
+    void ISR_LW();
+    /**
+     * Interrupt service routine (ISR) that will be called each (right) encoder pulse
+     */
+    void ISR_RW();
+
+    void attachInterrupts();
+    void configEncoderPins();
+    void detachEncoderInterrupts();
+    void resetEncoderVals();
+}
+
+#endif

@@ -1,8 +1,9 @@
 #include <Wire.h>
 #include <Adafruit_SSD1306.h>
-#include <Pins.h>
 
-#include "TapeFollowing.cpp"
+#include "MotorDriver.h"
+#include "TapeFollower.h"
+#include "Encoder.h"
 
 // OLED standard setup
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
@@ -33,8 +34,7 @@ void OLEDSetup() {
     display_handler.display();
 }
 
-using namespace TapeFollow;
-
+using namespace Motors;
 /**
  * @brief Initialize the OLED display.
  * @param none
@@ -43,6 +43,8 @@ using namespace TapeFollow;
 
 void setup() {
     OLEDSetup();
+    configMotorPins();
+    Encoders::configEncoderPins();
 }
 
 void tapeFollowingPidTest();
@@ -61,8 +63,8 @@ void tapeFollowingPidTest() {
     display_handler.clearDisplay();
     display_handler.setCursor(0, 0);
 
-    TapeFollow::driveWithPid();
-
+    // TapeFollow::driveWithPid();
+    Motors::drive();
     display_handler.print("Sensors(L,M,R): ");
     display_handler.print(TapeFollow::onTapeL);
     display_handler.print(" ");

@@ -1,16 +1,17 @@
-// #ifndef SonarSensorFile
-// #define SonarSensorFile
+#ifndef SonarSensorFile
+#define SonarSensorFile
 
-// #include <Arduino.h>
+#include <Arduino.h>
+#include "Pins.h"
 
-// class SonarSensor {
-//     public:
-//         SonarSensor(int echoPin, int trigPin);
-//         double getDistanceSinglePulse(double pulseDuration = 10);
-//     private:
-//         void configPins();
+namespace Sonars {
+    extern const double speed_sound; // cm/s
 
-//         int echoPin, trigPin;
-//         int duration, distance;
-// };       
-// #endif
+    void configSonarPins();
+    /**
+     * Gets the distance of a single pulse from the specified
+     * Note: pulse duration min. 10 microseconds, which is default.
+     */
+    double getDistanceSinglePulse(int trigPin, int echoPin, double pulseDuration=10);
+}
+#endif
