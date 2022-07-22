@@ -1,4 +1,5 @@
 #include "TreasureDetector.h"
+#include "ServoController.h"
 
 const double TreasureDetection::sideSonarTreasureDists[5] = {20, 20, 20, 20, 20}; // cm
 const double TreasureDetection::sideSonarTreasureDistsErr[5] = {0.5}; // cm
@@ -8,6 +9,8 @@ const double TreasureDetection::frontSonarTreasureDistsErr[5] = {0.5}; // cm
 const double TreasureDetection::maxTreasureInClawDist = 10; // cm
 
 bool TreasureDetection::obtainFirstTreasure() {
+
+    Servos::configServoPins();
     double firstSideSonarTreausureDist = sideSonarTreasureDists[0];
     double firstSideSonarTreausureDistErr = sideSonarTreasureDistsErr[0];
     
@@ -15,7 +18,7 @@ bool TreasureDetection::obtainFirstTreasure() {
     double firstFrontSonarTreausureDistErr = frontSonarTreasureDistsErr[0];
     
     TapeFollow::driveWithPid();
-
+    
     double rightSonarDist = Sonars::getDistanceSinglePulse(SONAR_TRIG_PIN_R, SONAR_ECHO_PIN_R);
     
     // treasure found
@@ -44,11 +47,19 @@ bool TreasureDetection::obtainFirstTreasure() {
         } while (distFrontSensorTreasure <= maxTreasureInClawDist);
         Motors::stopMotors();
 
-        // actuate claw
-        
+        // collect
+        Servos::collectTreasure();
+
         return true;
     }
     
     // shouldn't occur - did not obtain treasure
     return false;
 }
+
+/*
+ * Two ways of returning to original location after obtaining first treasure:
+ * Common: Encoders to drive backwards
+ * 1. Rotating to the right until black tape is found --> PID
+ * 2. Undo rotation by using encoders
+ */

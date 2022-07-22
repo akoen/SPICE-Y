@@ -37,4 +37,13 @@
 # define SONAR_ECHO_PIN_R PA8
 # define SONAR_ECHO_PIN_F PA9
 
+// claw-arm
+# define CLAW_SERVO_PIN 0
+# define ARM_SERVO_PIN 0
+# define BRIDGE_SERVO_PIN 0
+# define BOX_SERVO_PIN 0
+
+// hall effect
+# define MAGNETIC_SENSOR_PIN 0
+
 #endif

@@ -72,6 +72,8 @@ void Motors::setDutyCycles(int dutyL, int dutyR) {
 void Motors::setDir(bool isLWdirFwd, bool isRWdirFwd) {
     Motors::isLWdirFwd = isLWdirFwd;
     Motors::isRWdirFwd = isRWdirFwd;
+
+    hasPwmChanged = true;
 }
 
 void Motors::stopMotors() {
