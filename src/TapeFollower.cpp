@@ -1,7 +1,7 @@
 #include "TapeFollower.h"
 
 // PID tuning
-const double TapeFollow::kp = 5;
+const double TapeFollow::kp = 20;
 const double TapeFollow::ki = 0;
 const double TapeFollow::kd = 10;
 const double TapeFollow::maxI = 0;
@@ -26,10 +26,10 @@ long TapeFollow::prevErrTime = 0;
 long TapeFollow::currTime = 0;
 
 double TapeFollow::calcPidBlackTape() {
-    if (!startFlag) {
-        prevErrTime = millis();
-        currTime = prevErrTime;
-    } 
+    // if (!startFlag) {
+    //     prevErrTime = millis();
+    //     currTime = prevErrTime;
+    // } 
     // read reflectance of all 3 sensors (0 or 1 for each)
     ReflectanceSensors::readFrontReflectanceSensors();
 
@@ -41,11 +41,17 @@ double TapeFollow::calcPidBlackTape() {
     * M true --> error=0, M R false, L true --> error=1, M R L false, prevL true --> error=2, 
     * M L false, R true --> error=-1, M L R false, prevR true --> error=-2
     */
-    if (onTapeM) err = 0;
-    else if (!onTapeL && onTapeR) err = -1;
-    else if (!onTapeL && !onTapeR && prevOnTapeL) err = 2;
-    else if (onTapeL && !onTapeR) err = 1;
-    else if (!onTapeL && !onTapeR && prevOnTapeR) err = -2;
+    if (onTapeL && onTapeM && onTapeR) {
+        Motors::setDutyCycles(LW_PWM_DUTY, RW_PWM_DUTY);    // chicken wire
+        return 0;
+    }
+    else if (onTapeL && onTapeM) err = -1;
+    else if (onTapeM && onTapeR) err = 1;
+    else if (onTapeM) err = 0;
+    else if (!onTapeL && onTapeR) err = -2;
+    else if (!onTapeL && !onTapeR && prevOnTapeL) err = 5;
+    else if (onTapeL && !onTapeR) err = 2;
+    else if (!onTapeL && !onTapeR && prevOnTapeR) err = -5;
     else {
         // L M R all off tape, L R previously off tape -- do nothing
     }// should have no other states
@@ -53,7 +59,8 @@ double TapeFollow::calcPidBlackTape() {
     p = kp*err;
     currTime = millis();
     if (startFlag && err != 0) {
-        d = kd*(err - prevErr) / (1.0*(currTime - prevErrTime));   
+        // d = kd*(err - prevErr) / (1.0*(currTime - prevErrTime));   
+        d = kd*(err - prevErr);   
         prevErrTime = currTime;     
     } else {
         d = 0;
@@ -80,6 +87,11 @@ void TapeFollow::driveWithPid() {
     double changePwmSigned = calcPidBlackTape();
     // update pwm
     Motors::setDutyCycles(Motors::dutyCycleL - pwmChange, Motors::dutyCycleR + pwmChange);
+    // if (changePwmSigned > 0) {
+    //     Motors::setDutyCycles(Motors::dutyCycleL-pwmChange, Motors::dutyCycleR);
+    // } else {
+    //     Motors::setDutyCycles(Motors::dutyCycleL, Motors::dutyCycleR+pwmChange);
+    // }
     // drive (fwd)
     Motors::setDir(true, true);
     Motors::drive();        
