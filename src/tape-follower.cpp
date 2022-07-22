@@ -1,7 +1,7 @@
 #include "tape-follower.h"
 
 // PID tuning
-const double TapeFollow::kp = 20;
+const double TapeFollow::kp = 18;
 const double TapeFollow::ki = 0;
 const double TapeFollow::kd = 10;
 const double TapeFollow::maxI = 0;
