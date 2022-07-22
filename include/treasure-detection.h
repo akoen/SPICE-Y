@@ -3,7 +3,6 @@
 
 #include "tape-follower.h"
 #include "sonar-sensor.h"
-#include <Adafruit_SSD1306.h>
 
 namespace TreasureDetection {
     // initial side sonar detection
@@ -17,6 +16,6 @@ namespace TreasureDetection {
     // in claw detection
     extern const double maxTreasureInClawDist; // cm
     
-    bool obtainFirstTreasure(Adafruit_SSD1306 &display_handler);
+    bool obtainFirstTreasure();
 }
 #endif

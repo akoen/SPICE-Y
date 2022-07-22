@@ -7,5 +7,5 @@ void BombDetection::configMagneticSensorPin() {
 }
 
 bool BombDetection::isBombDetected() {
-    return digitalRead(MAGNETIC_SENSOR_PIN);
+    return !digitalRead(MAGNETIC_SENSOR_PIN);
 }
