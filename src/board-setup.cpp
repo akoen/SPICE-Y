@@ -10,6 +10,9 @@ bool DMA1DataAvailable = false;
 
 HardwareTimer timerHeartbeat(TIM1);
 
+Adafruit_SSD1306 OLEDDisplayHandler(OLED_SCREEN_WIDTH, OLED_SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+
 namespace Setup {
     bool ledOn = false;
 
@@ -24,6 +27,22 @@ namespace Setup {
         timerHeartbeat.resume();
     }
 
+    void OLED() {
+        //Initialize OLED display
+        OLEDDisplayHandler.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+
+        // Displays Adafruit logo by default. Call clearDisplay immediately if you don't want this.
+        OLEDDisplayHandler.display();
+        delay(2000);
+
+        // Displays "Hello world!" on the screen
+        OLEDDisplayHandler.clearDisplay();
+        OLEDDisplayHandler.setTextSize(1);
+        OLEDDisplayHandler.setTextColor(SSD1306_WHITE);
+        OLEDDisplayHandler.setCursor(0, 0);
+        OLEDDisplayHandler.println("Hello world!");
+        OLEDDisplayHandler.display();
+    }
 
 /**
     @brief  ADC configuration
