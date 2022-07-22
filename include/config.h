@@ -1,7 +1,5 @@
 #include "stm32f1xx_hal_adc.h"
 
-#define PI 3.1412
-
 #define BLUEPILL_CLOCK_SPEED 72
 #define SERIAL_BAUD_RATE 115200
 

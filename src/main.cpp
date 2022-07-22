@@ -1,9 +1,6 @@
 #include <Arduino.h>
 #include <HardwareTimer.h>
 
-#include <Wire.h>
-#include <Adafruit_SSD1306.h>
-
 #include "motor-driver.h"
 #include "tape-follower.h"
 #include "encoder.h"

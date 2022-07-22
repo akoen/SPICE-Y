@@ -1,4 +1,4 @@
-#include "TreasureDetector.h"
+#include "treasure-detection.h"
 #include "servo-controller.h"
 
 const double TreasureDetection::sideSonarTreasureDists[5] = {20, 20, 20, 20, 20}; // cm
