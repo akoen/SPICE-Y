@@ -9,7 +9,9 @@ extern ADC_HandleTypeDef AdcHandle;
 extern uint16_t DMA1Data[IR_SENS_NUM_READINGS];
 extern bool DMA1DataAvailable;
 
-void ADC_Config();
-void timerHeartbeatInit();
+namespace Setup {
+    void ADC();
+    void timerHeartbeatInit();
+}
 
 #endif
