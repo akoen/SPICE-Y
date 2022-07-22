@@ -23,12 +23,12 @@ namespace TapeFollow {
     extern int err;
     extern int prevErr;
  
-    extern double pwmChange;  // due to PID
-
     extern double p;
     extern double d;
     extern double i;
 
+    extern double pwmChange;
+    
     extern long currTime;
     extern long prevErrTime;
 
