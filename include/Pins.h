@@ -2,14 +2,14 @@
 #define PinsFile
 
 // motors
-# define PWM_MOTOR_FWD_L PB0
-# define PWM_MOTOR_BACK_L PB1
+# define PWM_MOTOR_FWD_L PB1
+# define PWM_MOTOR_BACK_L PB0
 
 # define PWM_MOTOR_FWD_R PA6
 # define PWM_MOTOR_BACK_R PA7
 
-# define PWM_FORMAT_MOTOR_FWD_L PB_0
-# define PWM_FORMAT_MOTOR_BACK_L PB_1
+# define PWM_FORMAT_MOTOR_FWD_L PB_1
+# define PWM_FORMAT_MOTOR_BACK_L PB_0
 
 # define PWM_FORMAT_MOTOR_FWD_R PA_6
 # define PWM_FORMAT_MOTOR_BACK_R PA_7
@@ -21,9 +21,9 @@
 // #define L_ENCODER_PIN2 PB15 
 
 // reflectance
-# define REFLECTANCE_PIN_L PA10
-# define REFLECTANCE_PIN_M PA11
-# define REFLECTANCE_PIN_R PA12
+# define REFLECTANCE_PIN_M PA10
+# define REFLECTANCE_PIN_R PA11
+# define REFLECTANCE_PIN_L PA12
 
 # define REFLECTANCE_PIN_SIDE_L 0    // placeholders
 # define REFLECTANCE_PIN_SIDE_R 0

@@ -35,6 +35,7 @@ void OLEDSetup() {
 }
 
 using namespace Motors;
+using namespace Encoders;
 /**
  * @brief Initialize the OLED display.
  * @param none
@@ -44,7 +45,7 @@ using namespace Motors;
 void setup() {
     OLEDSetup();
     configMotorPins();
-    Encoders::configEncoderPins();
+    configEncoderPins();
 }
 
 void tapeFollowingPidTest();
@@ -63,14 +64,23 @@ void tapeFollowingPidTest() {
     display_handler.clearDisplay();
     display_handler.setCursor(0, 0);
 
-    // TapeFollow::driveWithPid();
-    Motors::drive();
+    TapeFollow::driveWithPid();
+
+    // ReflectanceSensors::readFrontReflectanceSensors();
+    // Motors::drive();
+
     display_handler.print("Sensors(L,M,R): ");
     display_handler.print(TapeFollow::onTapeL);
     display_handler.print(" ");
     display_handler.print(TapeFollow::onTapeM);
     display_handler.print(" ");
     display_handler.println(TapeFollow::onTapeR);
+
+    // display_handler.print(ReflectanceSensors::frontSensorLval);
+    // display_handler.print(" ");
+    // display_handler.print(ReflectanceSensors::frontSensorMval);
+    // display_handler.print(" ");
+    // display_handler.print(ReflectanceSensors::frontSensorRval);
 
     display_handler.print("PWM change: ");
     display_handler.println(TapeFollow::pwmChange);

@@ -12,23 +12,27 @@ namespace TapeFollow {
     extern const double maxI;
 
     // vars
-    extern volatile bool onTapeL;
-    extern volatile bool onTapeM;
-    extern volatile bool onTapeR;
+    extern bool onTapeL;
+    extern bool onTapeM;
+    extern bool onTapeR;
 
-    extern volatile bool prevOnTapeL;
-    extern volatile bool prevOnTapeM;
-    extern volatile bool prevOnTapeR;
+    extern bool prevOnTapeL;
+    extern bool prevOnTapeM;
+    extern bool prevOnTapeR;
 
-    extern volatile int err;
-    extern volatile int prevErr;
+    extern int err;
+    extern int prevErr;
  
-    extern volatile double pwmChange;  // due to PID
+    extern double pwmChange;  // due to PID
 
-    extern volatile double p;
-    extern volatile double d;
-    extern volatile double i;
+    extern double p;
+    extern double d;
+    extern double i;
 
+    extern long currTime;
+    extern long prevErrTime;
+
+    extern bool startFlag;
     /**
      * Calculates PID for black tape
      * Returns: pwm change needed to adjust from current state, 

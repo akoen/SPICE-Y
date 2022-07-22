@@ -13,12 +13,12 @@ namespace Motors {
     extern const int LW_pwm_duty_cycle; // %
     extern const int RW_pwm_duty_cycle; // %
 
-    extern volatile bool hasPwmChanged;    // call pwm start only when changed
-    extern volatile int dutyCycleL;
-    extern volatile int dutyCycleR;
+    extern bool hasPwmChanged;    // call pwm start only when changed
+    extern int dutyCycleL;
+    extern int dutyCycleR;
 
-    extern volatile bool isLWdirFwd;
-    extern volatile bool isRWdirFwd;
+    extern bool isLWdirFwd;
+    extern bool isRWdirFwd;
 
     void configMotorPins();
     /**

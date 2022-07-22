@@ -1,12 +1,11 @@
 #include "TreasureDetector.h"
 
-const double sideSonarTreasureDists[5] = {20, 20, 20, 20, 20}; // cm
-const double sideSonarTreasureDistsErr[5] = {0.5}; // cm
+const double TreasureDetection::sideSonarTreasureDists[5] = {20, 20, 20, 20, 20}; // cm
+const double TreasureDetection::sideSonarTreasureDistsErr[5] = {0.5}; // cm
+const double TreasureDetection::frontSonarTreasureDists[5] = {20, 20, 20, 20, 20}; // cm
+const double TreasureDetection::frontSonarTreasureDistsErr[5] = {0.5}; // cm
 
-const double frontSonarTreasureDists[5] = {20, 20, 20, 20, 20}; // cm
-const double frontSonarTreasureDistsErr[5] = {0.5}; // cm
-
-const double maxTreasureInClawDist = 10; // cm
+const double TreasureDetection::maxTreasureInClawDist = 10; // cm
 
 bool TreasureDetection::obtainFirstTreasure() {
     double firstSideSonarTreausureDist = sideSonarTreasureDists[0];

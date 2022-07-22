@@ -16,6 +16,7 @@ void ReflectanceSensors::configSideReflectanceSensors() {
     pinMode(REFLECTANCE_PIN_SIDE_R, INPUT);
 }
 void ReflectanceSensors::readFrontReflectanceSensors() {
+    // HIGH (1) if not reflected, LOW (0) if reflected
     ReflectanceSensors::frontSensorLval = digitalRead(REFLECTANCE_PIN_L);
     ReflectanceSensors::frontSensorMval = digitalRead(REFLECTANCE_PIN_M);
     ReflectanceSensors::frontSensorRval = digitalRead(REFLECTANCE_PIN_R);

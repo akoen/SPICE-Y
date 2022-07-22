@@ -5,7 +5,7 @@
 #include <Arduino.h>
 
 namespace ReflectanceSensors {
-    // true if HIGH (not reflected), false otherwise
+    // true if HIGH (not reflected - black tape), false if LOW (reflected - white)
     extern volatile bool frontSensorLval;
     extern volatile bool frontSensorMval;
     extern volatile bool frontSensorRval;

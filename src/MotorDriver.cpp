@@ -1,17 +1,17 @@
 #include "MotorDriver.h"
 
 
-const int pwm_clock_freq = 100; // hz
-const int ref_duty_cycle = 80; // %
-const int LW_pwm_duty_cycle = LW_PWM_DUTY; // %
-const int RW_pwm_duty_cycle = RW_PWM_DUTY; // %
+const int Motors::pwm_clock_freq = 100; // hz
+const int Motors::ref_duty_cycle = 80; // %
+const int Motors::LW_pwm_duty_cycle = LW_PWM_DUTY; // %
+const int Motors::RW_pwm_duty_cycle = RW_PWM_DUTY; // %
 
-bool hasPwmChanged = true;    // call pwm start only when changed
-int dutyCycleL = LW_PWM_DUTY;
-int dutyCycleR = RW_PWM_DUTY;
+bool Motors::hasPwmChanged = true;    // call pwm start only when changed
+int Motors::dutyCycleL = LW_PWM_DUTY;
+int Motors::dutyCycleR = RW_PWM_DUTY;
 
-bool isLWdirFwd = true;
-bool isRWdirFwd = true;
+bool Motors::isLWdirFwd = true;
+bool Motors::isRWdirFwd = true;
 
 void Motors::configMotorPins() {
     pinMode(PWM_MOTOR_FWD_L, OUTPUT);
@@ -29,30 +29,30 @@ void Motors::drive() {
     int dutyRback = 0;
 
     // init pwm for both wheels
-    if (hasPwmChanged) {
-        if (isLWdirFwd) {
-            dutyLfwd = dutyCycleL;
+    if (Motors::hasPwmChanged) {
+        if (Motors::isLWdirFwd) {
+            dutyLfwd = Motors::dutyCycleL;
             dutyLback = 0;
         } else {
             dutyLfwd = 0;
-            dutyLback = dutyCycleL;
+            dutyLback = Motors::dutyCycleL;
         }
 
-        if (isRWdirFwd) {
-            dutyRfwd = dutyCycleR;
+        if (Motors::isRWdirFwd) {
+            dutyRfwd = Motors::dutyCycleR;
             dutyRback = 0;
         } else {
             dutyRfwd = 0;
-            dutyRback = dutyCycleR; 
+            dutyRback = Motors::dutyCycleR; 
         }
 
-        pwm_start(PWM_FORMAT_MOTOR_FWD_R, pwm_clock_freq, (int)(dutyRfwd / 100 * 4096), RESOLUTION_12B_COMPARE_FORMAT);
-        pwm_start(PWM_FORMAT_MOTOR_BACK_R, pwm_clock_freq, (int)(dutyRback / 100 * 4096), RESOLUTION_12B_COMPARE_FORMAT);
+        pwm_start(PWM_FORMAT_MOTOR_FWD_R, pwm_clock_freq, (int)(dutyRfwd / 100.0 * 4096), RESOLUTION_12B_COMPARE_FORMAT);
+        pwm_start(PWM_FORMAT_MOTOR_BACK_R, pwm_clock_freq, (int)(dutyRback / 100.0 * 4096), RESOLUTION_12B_COMPARE_FORMAT);
         
-        pwm_start(PWM_FORMAT_MOTOR_FWD_L, pwm_clock_freq, (int)(dutyLfwd / 100 * 4096), RESOLUTION_12B_COMPARE_FORMAT);
-        pwm_start(PWM_FORMAT_MOTOR_BACK_L, pwm_clock_freq, (int)(dutyLback / 100 * 4096), RESOLUTION_12B_COMPARE_FORMAT);
+        pwm_start(PWM_FORMAT_MOTOR_FWD_L, pwm_clock_freq, (int)(dutyLfwd / 100.0 * 4096), RESOLUTION_12B_COMPARE_FORMAT);
+        pwm_start(PWM_FORMAT_MOTOR_BACK_L, pwm_clock_freq, (int)(dutyLback / 100.0 * 4096), RESOLUTION_12B_COMPARE_FORMAT);
     
-        hasPwmChanged = false;
+        Motors::hasPwmChanged = false;
     }
 }
 
@@ -60,10 +60,12 @@ void Motors::setDutyCycles(int dutyL, int dutyR) {
     if (dutyL < 0) dutyL = 0;
     if (dutyR < 0) dutyR = 0;
 
-    dutyCycleL = dutyL;
-    dutyCycleR = dutyR;
+    if (dutyL > 100) dutyL = 100;
+    if (dutyR > 100) dutyR = 100;
+    Motors::dutyCycleL = dutyL;
+    Motors::dutyCycleR = dutyR;
 
-    hasPwmChanged = true;
+    Motors::hasPwmChanged = true;
 }
 
 void Motors::setDir(bool isLWdirFwd, bool isRWdirFwd) {

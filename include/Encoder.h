@@ -13,9 +13,9 @@ namespace Encoders {
     extern volatile int interruptCountRW;
 
     extern volatile long pulseLW;
-    extern volatile double posLW;
+    extern double posLW;
     extern volatile long pulseRW;
-    extern volatile double posRW;
+    extern double posRW;
 
     /**
      * Interrupt service routine (ISR) that will be called each (left) encoder pulse

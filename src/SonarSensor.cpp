@@ -1,6 +1,6 @@
 #include "SonarSensor.h"
 
-const double speed_sound = 0.0343; // cm/s
+const double Sonars::speed_sound = 0.0343; // cm/s
 
 void Sonars::configSonarPins() {
     pinMode(SONAR_TRIG_PIN_L, OUTPUT);
