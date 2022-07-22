@@ -46,8 +46,8 @@ void setup() {
     OLEDSetup();
     configMotorPins();
     configEncoderPins();
-    Motors::setDir(true, true); //left, right
-    Motors::setDutyCycles(0, 50) //left, right
+    Motors::setDir(true, false); //left, right
+    Motors::setDutyCycles(50, 0); //left, right
 }
 
 void tapeFollowingPidTest();
