@@ -62,6 +62,7 @@ void Motors::setDutyCycles(int dutyL, int dutyR) {
 
     if (dutyL > 100) dutyL = 100;
     if (dutyR > 100) dutyR = 100;
+
     Motors::dutyCycleL = dutyL;
     Motors::dutyCycleR = dutyR;
 
@@ -72,3 +73,34 @@ void Motors::setDir(bool isLWdirFwd, bool isRWdirFwd) {
     Motors::isLWdirFwd = isLWdirFwd;
     Motors::isRWdirFwd = isRWdirFwd;
 }
+
+void Motors::stopMotors() {
+    setDir(true, true);
+    setDutyCycles(0, 0);
+    drive();
+}
+
+void Motors::rotateLeft(int dutyCycle) {
+    isLWdirFwd = true;
+    isRWdirFwd = false;
+    
+    int motorsOffset = RW_PWM_DUTY - LW_PWM_DUTY;
+    if (dutyCycle < motorsOffset || dutyCycle > motorsOffset) {
+        dutyCycle = motorsOffset;
+    }
+    setDutyCycles(dutyCycle - (motorsOffset / 2), dutyCycle + (motorsOffset / 2));  // note: offset best to be an even num
+    drive();
+}
+
+void Motors::rotateRight(int dutyCycle) {
+    isLWdirFwd = false;
+    isRWdirFwd = true;
+    
+    int motorsOffset = RW_PWM_DUTY - LW_PWM_DUTY;
+    if (dutyCycle < motorsOffset || dutyCycle > motorsOffset) {
+        dutyCycle = motorsOffset;
+    }
+    setDutyCycles(dutyCycle - (motorsOffset / 2), dutyCycle + (motorsOffset / 2));  // note: offset best to be an even num
+    drive();
+}
+
