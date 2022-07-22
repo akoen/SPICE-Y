@@ -42,10 +42,12 @@ double TapeFollow::calcPidBlackTape() {
     * M L false, R true --> error=-1, M L R false, prevR true --> error=-2
     */
     if (onTapeL && onTapeM && onTapeR) {
-        Motors::setDutyCycles(LW_PWM_DUTY, RW_PWM_DUTY);    // chicken wire
+        // Motors::setDutyCycles(LW_PWM_DUTY-CHICKEN_WIRE_OFFSET_DUTY, RW_PWM_DUTY+CHICKEN_WIRE_OFFSET_DUTY);    // chicken wire
+        Motors::dutyCycleL = LW_PWM_DUTY - CHICKEN_WIRE_OFFSET_DUTY;
+        Motors::dutyCycleL = RW_PWM_DUTY + CHICKEN_WIRE_OFFSET_DUTY;
         return 0;
     }
-    else if (onTapeL && onTapeM) err = -1;
+    if (onTapeL && onTapeM) err = -1;
     else if (onTapeM && onTapeR) err = 1;
     else if (onTapeM) err = 0;
     else if (!onTapeL && onTapeR) err = -2;
@@ -74,7 +76,7 @@ double TapeFollow::calcPidBlackTape() {
     } else if (i < -maxI) {
         i = maxI;
     }
-    pwmChange = p + d + i; // > 0 change for right, < 0 for left
+    pwmChange = p + d + i; // > 0 change for right, < 0 for left    // TODO: bad code - make local
 
     prevOnTapeL = onTapeL;
     prevOnTapeR = onTapeR;
@@ -86,7 +88,7 @@ void TapeFollow::driveWithPid() {
     // get error
     double changePwmSigned = calcPidBlackTape();
     // update pwm
-    Motors::setDutyCycles(Motors::dutyCycleL - pwmChange, Motors::dutyCycleR + pwmChange);
+    Motors::setDutyCycles(Motors::dutyCycleL - changePwmSigned, Motors::dutyCycleR + changePwmSigned);
     // if (changePwmSigned > 0) {
     //     Motors::setDutyCycles(Motors::dutyCycleL-pwmChange, Motors::dutyCycleR);
     // } else {
