@@ -1,7 +1,7 @@
-#ifndef EncoderFile
-#define EncoderFile
+#ifndef ENCODER
+#define ENCODER
 
-#include "Pins.h"
+#include "config.h"
 #include "motor-driver.h"
 #include <Arduino.h>
 
@@ -31,5 +31,4 @@ namespace Encoders {
     void detachEncoderInterrupts();
     void resetEncoderVals();
 }
-
 #endif

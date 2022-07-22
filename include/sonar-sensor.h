@@ -1,8 +1,8 @@
-#ifndef SonarSensorFile
-#define SonarSensorFile
+#ifndef SONAR_SENSOR
+#define SONAR_SENSOR
 
 #include <Arduino.h>
-#include "Pins.h"
+#include "config.h"
 
 namespace Sonars {
     extern const double speed_sound; // cm/s

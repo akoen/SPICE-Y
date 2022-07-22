@@ -1,8 +1,8 @@
-#ifndef MotorDriverFile
-#define MotorDriverFile
+#ifndef MOTOR_DRIVER
+#define MOTOR_DRIVER
 
 #include <Arduino.h>
-#include "Pins.h"
+#include "config.h"
 
 # define LW_PWM_DUTY 84
 # define RW_PWM_DUTY 72

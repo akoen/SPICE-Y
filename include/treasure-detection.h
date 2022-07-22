@@ -1,5 +1,5 @@
-#ifndef TreasureDetectionFile
-#define TerasureDetectionFile
+#ifndef TREASURE_DETECTION
+#define TREASURE_DETECTION
 
 #include "tape-follower.h"
 #include "sonar-sensor.h"

@@ -1,5 +1,5 @@
-#ifndef TapeFollowingFile
-#define TapeFollowingFile
+#ifndef TAPE_FOLLOWER
+#define TAPE_FOLLOWER
 
 #include "motor-driver.h"
 #include "reflectance-sensor.h"
