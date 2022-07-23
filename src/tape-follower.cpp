@@ -4,7 +4,7 @@
 const double TapeFollow::kp = 22;
 const double TapeFollow::ki = 0;
 const double TapeFollow::kd = 15;
-const double TapeFollow::maxI = 0;
+const double TapeFollow::maxI = 100;
 
 // vars
 bool TapeFollow::onTapeL = false;

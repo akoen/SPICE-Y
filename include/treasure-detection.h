@@ -15,6 +15,7 @@ namespace TreasureDetection {
 
     // in claw detection
     extern const double maxTreasureInClawDist; // cm
+    extern const double maxTreasureInClawDistErr; // cm
     
     bool obtainFirstTreasure();
 }

@@ -16,7 +16,7 @@ namespace Encoders {
     extern double posLW;
     extern volatile long pulseRW;
     extern double posRW;
-
+    
     /**
      * Interrupt service routine (ISR) that will be called each (left) encoder pulse
      */

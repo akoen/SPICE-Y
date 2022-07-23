@@ -39,20 +39,20 @@
 // #define L_ENCODER_PIN2 PB15 
 
 // reflectance
-# define REFLECTANCE_PIN_M PA10
-# define REFLECTANCE_PIN_R PA11
-# define REFLECTANCE_PIN_L PA12
+# define REFLECTANCE_PIN_M PA8
+# define REFLECTANCE_PIN_R PA9
+# define REFLECTANCE_PIN_L PA10
 
 # define REFLECTANCE_PIN_SIDE_L 0    // placeholders
 # define REFLECTANCE_PIN_SIDE_R 0
 
 // sonar
 # define SONAR_TRIG_PIN_L PB12
-# define SONAR_TRIG_PIN_R PB13
+# define SONAR_TRIG_PIN_R PA4
 # define SONAR_TRIG_PIN_F PB14
 
 # define SONAR_ECHO_PIN_L PB15
-# define SONAR_ECHO_PIN_R PA8
+# define SONAR_ECHO_PIN_R PA3
 # define SONAR_ECHO_PIN_F PA9
 
 // claw-arm

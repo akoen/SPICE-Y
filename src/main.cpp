@@ -46,8 +46,8 @@ void tapeFollowingPidTest() {
     OLEDDisplayHandler.clearDisplay();
     OLEDDisplayHandler.setCursor(0, 0);
 
-    TapeFollow::driveWithPid();
-
+    // TapeFollow::driveWithPid();
+    TreasureDetection::obtainFirstTreasure();
     // ReflectanceSensors::readFrontReflectanceSensors();
     // Motors::drive();
 
