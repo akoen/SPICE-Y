@@ -37,9 +37,10 @@ void setup() {
 void tapeFollowingPidTest();
 volatile double refTime = 0;
 volatile double currTime = 0;
+
 void loop() {
-    tapeFollowingPidTest();
-    // TreasureDetection::obtainFirstTreasure();
+    // tapeFollowingPidTest();
+    TreasureDetection::obtainFirstTreasure();
 }
 
 void tapeFollowingPidTest() {
@@ -63,7 +64,6 @@ void tapeFollowingPidTest() {
     // OLEDDisplayHandler.print(ReflectanceSensors::frontSensorMval);
     // OLEDDisplayHandler.print(" ");
     // OLEDDisplayHandler.print(ReflectanceSensors::frontSensorRval);
-
 
     OLEDDisplayHandler.print("PWM change: ");
     OLEDDisplayHandler.println(TapeFollow::pwmChange);
