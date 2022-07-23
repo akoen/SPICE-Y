@@ -31,11 +31,11 @@ void setup() {
     configMotorPins();
     configEncoderPins();
 
-      /* Run the ADC calibration */
-      HAL_ADCEx_Calibration_Start(&AdcHandle);
+    /* Run the ADC calibration */
+    HAL_ADCEx_Calibration_Start(&AdcHandle);
 
-      /* Start ADC conversion on regular group with transfer by DMA */
-      HAL_ADC_Start_DMA(&AdcHandle, (uint32_t *)DMA1Data, IR_SENS_NUM_READINGS);
+    /* Start ADC conversion on regular group with transfer by DMA */
+    HAL_ADC_Start_DMA(&AdcHandle, (uint32_t *)DMA1Data, IR_SENS_NUM_READINGS);
 }
 
 void tapeFollowingPidTest();
@@ -43,7 +43,7 @@ void tapeFollowingPidTest();
 volatile double refTime = 0;
 volatile double currTime = 0;
 void loop() {
-    //tapeFollowingPidTest();
+    // tapeFollowingPidTest();
 
     IR::driveWithPID();
     // float tmp = (float) Motors::dutyCycleL;

@@ -13,8 +13,6 @@ namespace IR {
     float prevP = 0;
 
     void getMagnitude(float magnitude[]) {
-        // Wait for DMA buffer to fill up
-        while(!DMA1DataAvailable);
         uint16_t dataL[IR_SENS_NUM_READINGS / 2] = {0};
         uint16_t dataR[IR_SENS_NUM_READINGS / 2] = {0};
         uint16_t *source[] = {dataL, dataR};
@@ -23,13 +21,8 @@ namespace IR {
         magnitude[0] = goertzelMag(IR_SENS_NUM_READINGS / 2, targetFrequency, sampleFrequency, dataL);
         magnitude[1] = goertzelMag(IR_SENS_NUM_READINGS / 2, targetFrequency, sampleFrequency, dataR);
 
-        while(Serial.available()>0) {
-            digitalWrite(LED_GREEN, LOW)
-        } 
+        while(!Serial);
         Serial.write((uint8_t *) magnitude, 8);
-
-        HAL_ADC_Start_DMA(&AdcHandle, (uint32_t *) DMA1Data, IR_SENS_NUM_READINGS);
-        DMA1DataAvailable = false;
     }
 
     float calcPID() {
@@ -45,10 +38,15 @@ namespace IR {
     }
 
     void driveWithPID() {
-        float pid = calcPID();
+        if (DMA1DataAvailable) {
+            float pid = calcPID();
+            // Motors::setDutyCycles(Motors::dutyCycleL + pid, Motors::dutyCycleR - pid);
+            // Motors::setDir(true, true);
+            // Motors::drive();
 
-        // Motors::setDutyCycles(Motors::dutyCycleL + pid, Motors::dutyCycleR - pid);
-//      Motors::setDir(true, true);
-//      Motors::drive();
+            DMA1DataAvailable = false;
+            HAL_ADC_Start_DMA(&AdcHandle, (uint32_t *)DMA1Data, IR_SENS_NUM_READINGS);
+        }
+
     }
 }
