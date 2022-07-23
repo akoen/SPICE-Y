@@ -1,9 +1,9 @@
-#ifndef ServoControllerFile
-#define ServoControllerFile
+#ifndef SERVO_CONTROLLER
+#define SERVO_CONTROLLER
 
 #include <Arduino.h>
 #include <Servo.h>
-#include "Pins.h"
+#include "config.h"
 namespace Servos {
     extern const int claw_close_angle;  // deg
     extern const int claw_part_open_angle;  // so it doesn't hit box when lifted

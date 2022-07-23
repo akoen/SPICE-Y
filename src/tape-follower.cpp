@@ -1,10 +1,10 @@
 #include "tape-follower.h"
 
 // PID tuning
-const double TapeFollow::kp = 20;
+const double TapeFollow::kp = 22;
 const double TapeFollow::ki = 0;
-const double TapeFollow::kd = 10;
-const double TapeFollow::maxI = 0;
+const double TapeFollow::kd = 15;
+const double TapeFollow::maxI = 100;
 
 // vars
 bool TapeFollow::onTapeL = false;
@@ -56,7 +56,7 @@ double TapeFollow::calcPidBlackTape() {
         // should have no other states
     }
 
-    p = kp*err, d = kd*(err - prevErr), i += err;
+    p = kp*err, d = kd*(err - prevErr), i += ki*err;
 
     // currTime = millis();
     // if (startFlag && err != 0) {

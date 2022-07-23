@@ -10,6 +10,18 @@ double Encoders::posLW = 0;
 volatile long Encoders::pulseRW = 0;
 double Encoders::posRW = 0;
 
+volatile long cacheStartPulseLW;
+volatile long cacheStartPulseRW;
+
+volatile long cacheEndPulseLW;
+volatile long cacheEndPulseRW;
+
+std::stack<int>* cachedStackLeftPulses;  
+std::stack<int>* cachedStackRightPulses;
+// TODO: may add pwm speed for each motor as well
+
+bool cacheCreatedFlag = false;
+
 void Encoders::ISR_LW() {
     int state1 = digitalRead(L_ENCODER_PIN1);
     if (state1 == 0) {
@@ -64,4 +76,60 @@ void Encoders::resetEncoderVals() {
 
     Encoders::pulseRW = 0;
     Encoders::posRW = 0;
+}
+
+void Encoders::startAddActionCache() {
+    if (!cacheCreatedFlag) {
+        cachedStackLeftPulses = new std::stack<int>;
+        cachedStackRightPulses = new std::stack<int>;
+
+        cacheCreatedFlag = true;
+    }
+
+    cacheStartPulseLW = pulseLW;
+    cacheStartPulseRW = pulseRW;
+}
+
+void Encoders::endAddActionCache() {
+    if (!cacheCreatedFlag) {
+        // shoulnd't happen - bad
+    }
+
+    cacheEndPulseLW = pulseLW;
+    cacheEndPulseRW = pulseRW;
+    
+    cachedStackLeftPulses->push((int)(cacheEndPulseLW - cacheStartPulseLW));
+    cachedStackRightPulses->push((int)(cacheEndPulseRW - cacheStartPulseRW));
+}
+
+void Encoders::executeReverseCache(int actionDelayMillis) {
+    while (!cachedStackLeftPulses->empty() && !cachedStackRightPulses->empty()) {
+        delay(actionDelayMillis);
+
+        int actionLeftPulse = cachedStackLeftPulses->top();
+        int actionRightPulse = cachedStackRightPulses->top();
+        // do stuff
+
+        cachedStackLeftPulses->pop();
+        cachedStackRightPulses->pop();
+    }
+
+    // clear from heap
+    delete cachedStackLeftPulses;
+    delete cachedStackRightPulses;
+
+    cachedStackLeftPulses = nullptr;
+    cachedStackRightPulses = nullptr;   
+}
+
+void Encoders::driveMotorsEncoderPulses(int pulseIntervalLW, int pulseIntervalRW) {
+    long startPulseLW = pulseLW;
+    long startPulseRW = pulseRW;
+
+    bool dirLW = true, dirRW = true;
+    if (pulseIntervalLW < 0) dirLW = false;
+    if (pulseIntervalRW < 0) dirRW = false;
+    
+    Motors::setDir(dirLW, dirRW);
+    
 }

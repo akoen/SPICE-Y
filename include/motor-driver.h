@@ -1,12 +1,12 @@
-#ifndef MotorDriverFile
-#define MotorDriverFile
+#ifndef MOTOR_DRIVER
+#define MOTOR_DRIVER
 
 #include <Arduino.h>
-#include "Pins.h"
+#include "config.h"
 
 # define LW_PWM_DUTY 84
 # define RW_PWM_DUTY 72
-# define CHICKEN_WIRE_OFFSET_DUTY 20
+# define CHICKEN_WIRE_OFFSET_DUTY 7
 
 namespace Motors {
     extern const int pwm_clock_freq; // hz

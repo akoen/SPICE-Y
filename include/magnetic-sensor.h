@@ -1,5 +1,8 @@
+#ifndef MAGNETIC_SENSOR
+#define MAGNETIC_SENSOR
+
 #include <Arduino.h>
-#include "Pins.h"
+#include "config.h"
 
 namespace BombDetection {
     extern bool bombEncounteredFlag;   // only one bomb
@@ -11,3 +14,4 @@ namespace BombDetection {
      */ 
     bool isBombDetected();
 }
+#endif

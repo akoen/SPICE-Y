@@ -7,10 +7,7 @@
 #include "helpers.h"
 #include "board-setup.h"
 #include "ir.h"
-
-using namespace Motors;
-using namespace Encoders;
-
+#include "treasure-detection.h"
 
 /**
  * @brief Sets up the OLED display
@@ -28,8 +25,8 @@ void setup() {
     Setup::ADC();
     Setup::OLED();
 
-    configMotorPins();
-    configEncoderPins();
+    Motors::configMotorPins();
+    Encoders::configEncoderPins();
 
     /* Run the ADC calibration */
     HAL_ADCEx_Calibration_Start(&AdcHandle);
@@ -42,22 +39,24 @@ void tapeFollowingPidTest();
 
 volatile double refTime = 0;
 volatile double currTime = 0;
+
 void loop() {
     // tapeFollowingPidTest();
 
-    IR::driveWithPID();
+    // IR::driveWithPID();
     // float tmp = (float) Motors::dutyCycleL;
     // Serial.write((uint8_t *) &tmp, 4);
     // tmp = (float) Motors::dutyCycleR;
     // Serial.write((uint8_t *) &tmp, 4);
+    TreasureDetection::obtainFirstTreasure();
 }
 
 void tapeFollowingPidTest() {
     OLEDDisplayHandler.clearDisplay();
     OLEDDisplayHandler.setCursor(0, 0);
 
-    TapeFollow::driveWithPid();
-
+    // TapeFollow::driveWithPid();
+    TreasureDetection::obtainFirstTreasure();
     // ReflectanceSensors::readFrontReflectanceSensors();
     // Motors::drive();
 
@@ -73,7 +72,6 @@ void tapeFollowingPidTest() {
     // OLEDDisplayHandler.print(ReflectanceSensors::frontSensorMval);
     // OLEDDisplayHandler.print(" ");
     // OLEDDisplayHandler.print(ReflectanceSensors::frontSensorRval);
-
 
     OLEDDisplayHandler.print("PWM change: ");
     OLEDDisplayHandler.println(TapeFollow::pwmChange);

@@ -1,7 +1,7 @@
-#ifndef ReflectanceSensorFile
-#define ReflectanceSensorFile
+#ifndef REFLECTANCE_SENSOR
+#define REFLECTANCE_SENSOR
 
-#include "Pins.h"
+#include "config.h"
 #include <Arduino.h>
 
 namespace ReflectanceSensors {

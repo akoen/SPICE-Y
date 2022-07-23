@@ -1,5 +1,5 @@
-#ifndef TreasureDetectionFile
-#define TerasureDetectionFile
+#ifndef TREASURE_DETECTION
+#define TREASURE_DETECTION
 
 #include "tape-follower.h"
 #include "sonar-sensor.h"
@@ -15,6 +15,7 @@ namespace TreasureDetection {
 
     // in claw detection
     extern const double maxTreasureInClawDist; // cm
+    extern const double maxTreasureInClawDistErr; // cm
     
     bool obtainFirstTreasure();
 }
