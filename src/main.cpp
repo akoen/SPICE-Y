@@ -6,6 +6,7 @@
 #include "encoder.h"
 #include "helpers.h"
 #include "board-setup.h"
+#include "ir.h"
 
 using namespace Motors;
 using namespace Encoders;
@@ -39,32 +40,16 @@ void setup() {
 
 void tapeFollowingPidTest();
 
-float magAvg = 0;
 volatile double refTime = 0;
 volatile double currTime = 0;
 void loop() {
+    //tapeFollowingPidTest();
 
-    tapeFollowingPidTest();
-
-    if (DMA1DataAvailable) {
-        digitalWrite(PB0, HIGH);
-
-        uint16_t pin1[IR_SENS_NUM_READINGS/2] = {0};
-        uint16_t pin2[IR_SENS_NUM_READINGS/2] = {0};
-        uint16_t *source[] = {pin1, pin2};
-
-        deinterleave<uint16_t>(DMA1Data, source, IR_SENS_NUM_READINGS, 2);
-        float mag = goertzelMag(IR_SENS_NUM_READINGS / 2, 10000, 14000000 / (12.5 + 71.5), pin1);
-        magAvg = IR_SMOOTHING_ALPHA * mag + (1 - IR_SMOOTHING_ALPHA) * magAvg;
-        while (!Serial);
-        // Serial.write((uint8_t *) pin1, sizeof(pin1));
-        Serial.write((uint8_t *) &magAvg, 4);
-        // while (!Serial);
-        // Serial.write((uint8_t *) pin2, sizeof(pin2));
-
-        HAL_ADC_Start_DMA(&AdcHandle, (uint32_t *) DMA1Data, IR_SENS_NUM_READINGS);
-        DMA1DataAvailable = false;
-    }
+    IR::driveWithPID();
+    // float tmp = (float) Motors::dutyCycleL;
+    // Serial.write((uint8_t *) &tmp, 4);
+    // tmp = (float) Motors::dutyCycleR;
+    // Serial.write((uint8_t *) &tmp, 4);
 }
 
 void tapeFollowingPidTest() {
