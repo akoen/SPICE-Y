@@ -10,17 +10,18 @@ double Encoders::posLW = 0;
 volatile long Encoders::pulseRW = 0;
 double Encoders::posRW = 0;
 
-volatile long cacheStartPulseLW;
-volatile long cacheStartPulseRW;
+volatile long Encoders::cacheStartPulseLW;
+volatile long Encoders::cacheStartPulseRW;
 
-volatile long cacheEndPulseLW;
-volatile long cacheEndPulseRW;
+volatile long Encoders::cacheEndPulseLW;
+volatile long Encoders::cacheEndPulseRW;
 
-std::stack<int>* cachedStackLeftPulses;  
-std::stack<int>* cachedStackRightPulses;
+std::stack<int>* Encoders::cachedActionsLeftPulses;  
+std::stack<int>* Encoders::cachedActionsRightPulses;
 // TODO: may add pwm speed for each motor as well
 
-bool cacheCreatedFlag = false;
+bool Encoders::cacheCreated = false;
+bool Encoders::cacheAddInProgress = false;
 
 void Encoders::ISR_LW() {
     int state1 = digitalRead(L_ENCODER_PIN1);
@@ -78,48 +79,61 @@ void Encoders::resetEncoderVals() {
     Encoders::posRW = 0;
 }
 
-void Encoders::startAddActionCache() {
-    if (!cacheCreatedFlag) {
-        cachedStackLeftPulses = new std::stack<int>;
-        cachedStackRightPulses = new std::stack<int>;
+bool Encoders::startAddActionCache() {
+    if (cacheAddInProgress) return false;
+    
+    if (!cacheCreated) {
+        cachedActionsLeftPulses = new std::stack<int>;
+        cachedActionsRightPulses = new std::stack<int>;
 
-        cacheCreatedFlag = true;
-    }
-
+        cacheCreated = true;
+    } 
     cacheStartPulseLW = pulseLW;
     cacheStartPulseRW = pulseRW;
+
+    cacheAddInProgress = true;
+
+    return true;
 }
 
-void Encoders::endAddActionCache() {
-    if (!cacheCreatedFlag) {
-        // shoulnd't happen - bad
-    }
+bool Encoders::endAddActionCache() {
+    if (!cacheCreated || !cacheAddInProgress) return false;
 
     cacheEndPulseLW = pulseLW;
-    cacheEndPulseRW = pulseRW;
+    cacheEndPulseRW = pulseRW;    
+    cachedActionsLeftPulses->push((int)(cacheEndPulseLW - cacheStartPulseLW));
+    cachedActionsRightPulses->push((int)(cacheEndPulseRW - cacheStartPulseRW));
     
-    cachedStackLeftPulses->push((int)(cacheEndPulseLW - cacheStartPulseLW));
-    cachedStackRightPulses->push((int)(cacheEndPulseRW - cacheStartPulseRW));
+    cacheAddInProgress = false;
+
+    return true;
 }
 
-void Encoders::executeReverseCache(int actionDelayMillis) {
-    while (!cachedStackLeftPulses->empty() && !cachedStackRightPulses->empty()) {
+bool Encoders::executeReverseCache(int actionDelayMillis) {
+    if (!cacheCreated || cacheAddInProgress) return false;
+
+    while (!cachedActionsLeftPulses->empty() && !cachedActionsRightPulses->empty()) {        
+        // execute cached actions in reverse
+        int actionLeftPulse = -1 * cachedActionsLeftPulses->top();
+        int actionRightPulse = -1 * cachedActionsRightPulses->top();
+        cachedActionsLeftPulses->pop();
+        cachedActionsRightPulses->pop();
+
+        driveMotorsEncoderPulses(actionLeftPulse, actionRightPulse);
+
         delay(actionDelayMillis);
-
-        int actionLeftPulse = cachedStackLeftPulses->top();
-        int actionRightPulse = cachedStackRightPulses->top();
-        // do stuff
-
-        cachedStackLeftPulses->pop();
-        cachedStackRightPulses->pop();
     }
 
     // clear from heap
-    delete cachedStackLeftPulses;
-    delete cachedStackRightPulses;
+    delete cachedActionsLeftPulses;
+    delete cachedActionsRightPulses;
 
-    cachedStackLeftPulses = nullptr;
-    cachedStackRightPulses = nullptr;   
+    cachedActionsLeftPulses = nullptr;
+    cachedActionsRightPulses = nullptr; 
+
+    cacheCreated = false;
+    
+    return true;  
 }
 
 void Encoders::driveMotorsEncoderPulses(int pulseIntervalLW, int pulseIntervalRW) {
@@ -129,7 +143,14 @@ void Encoders::driveMotorsEncoderPulses(int pulseIntervalLW, int pulseIntervalRW
     bool dirLW = true, dirRW = true;
     if (pulseIntervalLW < 0) dirLW = false;
     if (pulseIntervalRW < 0) dirRW = false;
-    
-    Motors::setDir(dirLW, dirRW);
-    
+        
+    if (dirLW && !dirRW) {  // rotate right
+        Motors::rotateRight();  // TODO may cache pwm
+    } else if (!dirLW && dirRW) {   // rotate left
+        Motors::rotateLeft();
+    } else {   // fwd or backwards 
+        Motors::setDir(dirLW, dirRW);
+        Motors::setDutyCycles(LW_PWM_DUTY, RW_PWM_DUTY);    // TODO may cache pwm
+        Motors::drive();
+    }   
 }
