@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include <HardwareTimer.h>
 
 #include <board-setup.h>

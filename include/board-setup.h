@@ -2,6 +2,7 @@
 #define INCLUDE_BOARD_SETUP
 
 #include <stm32f1xx_hal.h>
+// #include <Arduino.h>
 #include <Adafruit_SSD1306.h>
 
 #include "config.h"
