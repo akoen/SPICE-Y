@@ -19,6 +19,11 @@ namespace Servos {
     extern Servo bridgeServo;
     extern Servo boxServo;
 
+    extern bool pinsConfiged;
+
+    /**
+     * Configures all servo pins if they have yet been configured.
+     */
     void configServoPins();
 
     /**

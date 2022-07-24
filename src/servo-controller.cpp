@@ -14,8 +14,11 @@ Servo Servos::armServo;
 Servo Servos::bridgeServo;
 Servo Servos::boxServo;
 
+bool Servos::pinsConfiged = false;
 
 void Servos::configServoPins() {
+    if (pinsConfiged) return;
+    
     clawServo.attach(CLAW_SERVO_PIN);
     armServo.attach(ARM_SERVO_PIN);
     bridgeServo.attach(BRIDGE_SERVO_PIN);
