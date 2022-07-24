@@ -11,9 +11,11 @@
 namespace Motors {
     extern const int pwm_clock_freq; // hz
     extern const int ref_duty_cycle; // %
-    extern const int LW_pwm_duty_cycle; // %
-    extern const int RW_pwm_duty_cycle; // %
-    
+    extern const int ref_pwm_duty_cycle_LW; // %
+    extern const int ref_pwm_duty_cycle_RW; // %
+    extern const int default_rotate_pwm; // %
+    extern const int ref_motors_offset; // %, > 0 for RW, < 0 for LW
+
     extern bool hasPwmChanged; // call pwm start only when changed
     extern int dutyCycleL;
     extern int dutyCycleR;
@@ -40,20 +42,24 @@ namespace Motors {
      */ 
     void setDir(bool isLWdirFwd, bool isRWdirFwd);
 
-    void stopMotors();
+    /**
+     * Stops the motors. Halts the program for the specified duration (ms) to account
+     * for motor inertia. 
+     */
+    void stopMotors(int delayMillis=1000);
 
     /**
      * Rotates motor left with the given pwm duty cycle.
      * Accounts for ref duty cycle offset and the given duty cycle saturates
      * if magnitude is larger than motors offset 
      */
-    void rotateLeft(int dutyCycle);
+    void rotateLeft(int dutyCycle=default_rotate_pwm);
     /**
      * Rotates motor right with the given pwm duty cycle
      * Accounts for ref duty cycle offset and the given duty cycle saturates
      * if magnitude is larger than motors offset 
      */
-    void rotateRight(int dutyCycle);
+    void rotateRight(int dutyCycle=default_rotate_pwm);
 }
 
 #endif
