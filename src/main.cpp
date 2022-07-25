@@ -43,20 +43,20 @@ volatile double currTime = 0;
 void loop() {
     // tapeFollowingPidTest();
 
-    // IR::driveWithPID();
+    IR::driveWithPID();
     // float tmp = (float) Motors::dutyCycleL;
     // Serial.write((uint8_t *) &tmp, 4);
     // tmp = (float) Motors::dutyCycleR;
     // Serial.write((uint8_t *) &tmp, 4);
-    TreasureDetection::obtainFirstTreasure();
+    // TreasureDetection::obtainFirstTreasure();
 }
 
 void tapeFollowingPidTest() {
     OLEDDisplayHandler.clearDisplay();
     OLEDDisplayHandler.setCursor(0, 0);
 
-    // TapeFollow::driveWithPid();
-    TreasureDetection::obtainFirstTreasure();
+    TapeFollow::driveWithPid();
+    // TreasureDetection::obtainFirstTreasure();
     // ReflectanceSensors::readFrontReflectanceSensors();
     // Motors::drive();
 

@@ -5,9 +5,9 @@
 
 namespace IR {
     const int targetFrequency = 10000;
-    const float sampleFrequency = (120000 / (12.5 + 71.5)) / 2;
-    const float kp = 20;
-    const float kd = 10;
+    const float sampleFrequency = (12000000 / (12.5 + 71.5)) / 2;
+    const float kp = 25;
+    const float kd = 5;
 
     float magSmoothed[] = {0, 0};
     float prevP = 0;
@@ -21,8 +21,8 @@ namespace IR {
         magnitude[0] = goertzelMag(IR_SENS_NUM_READINGS / 2, targetFrequency, sampleFrequency, dataL);
         magnitude[1] = goertzelMag(IR_SENS_NUM_READINGS / 2, targetFrequency, sampleFrequency, dataR);
 
-        while(!Serial);
-        Serial.write((uint8_t *) magnitude, 8);
+        // while(!Serial);
+        // Serial.write((uint8_t *) magnitude, 8);
     }
 
     float calcPID() {
@@ -40,9 +40,11 @@ namespace IR {
     void driveWithPID() {
         if (DMA1DataAvailable) {
             float pid = calcPID();
-            // Motors::setDutyCycles(Motors::dutyCycleL + pid, Motors::dutyCycleR - pid);
-            // Motors::setDir(true, true);
-            // Motors::drive();
+            while(!Serial);
+            Serial.write((uint8_t *) &pid, 4);
+            Motors::setDutyCycles(Motors::dutyCycleL + pid, Motors::dutyCycleR - pid);
+            Motors::setDir(true, true);
+            Motors::drive();
 
             DMA1DataAvailable = false;
             HAL_ADC_Start_DMA(&AdcHandle, (uint32_t *)DMA1Data, IR_SENS_NUM_READINGS);
