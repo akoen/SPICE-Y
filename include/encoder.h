@@ -74,6 +74,7 @@ namespace Encoders {
     /**
      * Drives the motors for the given interval of pulses.
      * If pulse interval for a wheel < 0, that wheel drives backwards and > 0 for forwrads.
+     * Motors are stopped after execution, with no delay
      */ 
     void driveMotorsEncoderPulses(int pulseIntervalLW, int pulseIntervalRW);
 }

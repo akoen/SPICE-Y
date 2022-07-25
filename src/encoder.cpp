@@ -143,7 +143,10 @@ void Encoders::driveMotorsEncoderPulses(int pulseIntervalLW, int pulseIntervalRW
     bool dirLW = true, dirRW = true;
     if (pulseIntervalLW < 0) dirLW = false;
     if (pulseIntervalRW < 0) dirRW = false;
-        
+    
+    long startEncoderPulsesLW = pulseLW;
+    long startEncoderPulsesRW = pulseRW;
+
     if (dirLW && !dirRW) {  // rotate right
         Motors::rotateRight();  // TODO may cache pwm
     } else if (!dirLW && dirRW) {   // rotate left
@@ -152,5 +155,10 @@ void Encoders::driveMotorsEncoderPulses(int pulseIntervalLW, int pulseIntervalRW
         Motors::setDir(dirLW, dirRW);
         Motors::setDutyCycles(LW_PWM_DUTY, RW_PWM_DUTY);    // TODO may cache pwm
         Motors::drive();
-    }   
+    }
+
+    while (pulseLW < startEncoderPulsesLW + pulseIntervalLW && pulseRW < pulseIntervalRW) {
+        /* pulse LW,RW vals should be updated by interrupts */
+    }
+    Motors::stopMotors();
 }
