@@ -7,7 +7,7 @@ namespace IR {
     const int targetFrequency = 10000;
     const float sampleFrequency = (12000000 / (12.5 + 71.5)) / 2;
     const float kp = 25;
-    const float kd = 5;
+    const float kd = 15;
 
     float magSmoothed[] = {0, 0};
     float prevP = 0;
@@ -29,7 +29,7 @@ namespace IR {
         float magnitude[2];
         getMagnitude(magnitude);
 
-        float p = (magnitude[1] - magnitude[0]) / (magnitude[1] + magnitude[0]);
+        float p = (magnitude[1] - magnitude[0]) / 100;
         float d = p - prevP;
 
         prevP = p;
@@ -40,8 +40,8 @@ namespace IR {
     void driveWithPID() {
         if (DMA1DataAvailable) {
             float pid = calcPID();
-            while(!Serial);
-            Serial.write((uint8_t *) &pid, 4);
+            // while(!Serial);
+            // Serial.write((uint8_t *) &pid, 4);
             Motors::setDutyCycles(Motors::dutyCycleL + pid, Motors::dutyCycleR - pid);
             Motors::setDir(true, true);
             Motors::drive();
