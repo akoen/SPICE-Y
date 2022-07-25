@@ -20,25 +20,26 @@ bool TreasureDetection::obtainFirstTreasure() {
     double firstFrontSonarTreausureDistErr = frontSonarTreasureDistsErr[0];
 
     // tape follow using PID until first treasure located
-    Encoders::startAddActionCache();
-
+    double loopCount = 0;
     double rightSonarDist = 0;
     do {
         OLEDDisplayHandler.clearDisplay();
         OLEDDisplayHandler.setCursor(0, 0);
         
         TapeFollow::driveWithPid();
-        double rightSonarDist = Sonars::getDistanceSinglePulse(SONAR_TRIG_PIN_R, SONAR_ECHO_PIN_R);
+        rightSonarDist = Sonars::getDistanceSinglePulse(SONAR_TRIG_PIN_R, SONAR_ECHO_PIN_R);
 
         OLEDDisplayHandler.println("Right sonar dist: ");
         OLEDDisplayHandler.println(rightSonarDist);
+        
+        OLEDDisplayHandler.println("Loop counter: ");
+        OLEDDisplayHandler.println(loopCount++);
+
         OLEDDisplayHandler.display();
         // if inf loop --> return false
     } while (rightSonarDist > firstSideSonarTreausureDist + firstSideSonarTreausureDistErr || rightSonarDist < firstSideSonarTreausureDist - firstSideSonarTreausureDistErr);
     Motors::stopMotors();
-    
-    Encoders::endAddActionCache();
-    
+        
     OLEDDisplayHandler.clearDisplay();
     OLEDDisplayHandler.setCursor(0, 0);    
     OLEDDisplayHandler.println("found treasure right: ");    
