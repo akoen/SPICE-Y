@@ -4,8 +4,8 @@
 #include <Arduino.h>
 #include "config.h"
 
-# define LW_PWM_DUTY 84
-# define RW_PWM_DUTY 72
+# define LW_PWM_DUTY 84 - 30
+# define RW_PWM_DUTY 72 - 30
 # define CHICKEN_WIRE_OFFSET_DUTY 7
 
 namespace Motors {
@@ -13,7 +13,7 @@ namespace Motors {
     extern const int ref_duty_cycle; // %
     extern const int ref_pwm_duty_cycle_LW; // %
     extern const int ref_pwm_duty_cycle_RW; // %
-    extern const int default_rotate_pwm; // %
+    const int default_rotate_pwm = 30; // %
     extern const int ref_motors_offset; // %, > 0 for RW, < 0 for LW
 
     extern bool hasPwmChanged; // call pwm start only when changed

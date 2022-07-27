@@ -17,5 +17,8 @@ namespace ReflectanceSensors {
     
     void readFrontReflectanceSensors();
     void readSideReflectanceSensors();
+
+    /* testing purposes */
+    void printFrontReflectance();
 }
 #endif

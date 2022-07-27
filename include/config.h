@@ -20,17 +20,17 @@
 /*Pins*/
 
 // motors
-# define PWM_MOTOR_FWD_L PB1
-# define PWM_MOTOR_BACK_L PB0
+# define PWM_MOTOR_FWD_L PB6    
+# define PWM_MOTOR_BACK_L PB7
 
-# define PWM_MOTOR_FWD_R PA6
-# define PWM_MOTOR_BACK_R PA7
+# define PWM_MOTOR_FWD_R PB9
+# define PWM_MOTOR_BACK_R PB8
 
-# define PWM_FORMAT_MOTOR_FWD_L PB_1
-# define PWM_FORMAT_MOTOR_BACK_L PB_0
+# define PWM_FORMAT_MOTOR_FWD_L PB_6
+# define PWM_FORMAT_MOTOR_BACK_L PB_7
 
-# define PWM_FORMAT_MOTOR_FWD_R PA_6
-# define PWM_FORMAT_MOTOR_BACK_R PA_7
+# define PWM_FORMAT_MOTOR_FWD_R PB_9
+# define PWM_FORMAT_MOTOR_BACK_R PB_8
 
 // encoders
 #define R_ENCODER_PIN1 PB10
@@ -39,21 +39,19 @@
 // #define L_ENCODER_PIN2 PB15 
 
 // reflectance
-# define REFLECTANCE_PIN_M PA8
-# define REFLECTANCE_PIN_R PA9
-# define REFLECTANCE_PIN_L PA10
+# define REFLECTANCE_PIN_R PB1
+# define REFLECTANCE_PIN_L PB0
+# define REFLECTANCE_PIN_M PA3
 
 # define REFLECTANCE_PIN_SIDE_L 0    // placeholders
 # define REFLECTANCE_PIN_SIDE_R 0
 
 // sonar
-# define SONAR_TRIG_PIN_L PB12
-# define SONAR_TRIG_PIN_R PA4
-# define SONAR_TRIG_PIN_F PB14
+# define SONAR_TRIG_PIN_ALL PB14
 
-# define SONAR_ECHO_PIN_L PB15
-# define SONAR_ECHO_PIN_R PA3
-# define SONAR_ECHO_PIN_F PA9
+# define SONAR_ECHO_PIN_L PB5
+# define SONAR_ECHO_PIN_R PB4
+# define SONAR_ECHO_PIN_F PA15
 
 // claw-arm
 # define CLAW_SERVO_PIN 0

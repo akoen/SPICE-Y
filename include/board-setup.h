@@ -18,6 +18,8 @@ namespace Setup {
     void ADC();
     void timerHeartbeatInit();
     void OLED();
+    
+    void configAllPins();
 }
 
 #endif

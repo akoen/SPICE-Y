@@ -3,12 +3,12 @@
 #include "board-setup.h"
 #include "encoder.h"
 const double TreasureDetection::sideSonarTreasureDists[5] = {20, 20, 20, 20, 20}; // cm
-const double TreasureDetection::sideSonarTreasureDistsErr[5] = {2}; // cm
-const double TreasureDetection::frontSonarTreasureDists[5] = {20, 20, 20, 20, 20}; // cm
-const double TreasureDetection::frontSonarTreasureDistsErr[5] = {2}; // cm
+const double TreasureDetection::sideSonarTreasureDistsErr[5] = {7}; // cm
+const double TreasureDetection::frontSonarTreasureDists[5] = {17, 20, 20, 20, 20}; // cm
+const double TreasureDetection::frontSonarTreasureDistsErr[5] = {5}; // cm
 
-const double TreasureDetection::maxTreasureInClawDist = 10; // cm
-const double TreasureDetection::maxTreasureInClawDistErr = 0.5; // cm
+const double TreasureDetection::maxTreasureInClawDist = 5; // cm
+const double TreasureDetection::maxTreasureInClawDistErr = 2; // cm
 
 bool TreasureDetection::obtainFirstTreasure() {
     Servos::configServoPins();
@@ -22,57 +22,40 @@ bool TreasureDetection::obtainFirstTreasure() {
     // tape follow using PID until first treasure located
     double loopCount = 0;
     double rightSonarDist = 0;
-    do {
-        OLEDDisplayHandler.clearDisplay();
-        OLEDDisplayHandler.setCursor(0, 0);
-        
+    do {        
         TapeFollow::driveWithPid();
-        rightSonarDist = Sonars::getDistanceSinglePulse(SONAR_TRIG_PIN_R, SONAR_ECHO_PIN_R);
+        delay(60);
+        rightSonarDist = Sonars::getDistanceSinglePulse(SONAR_TRIG_PIN_ALL, SONAR_ECHO_PIN_R);
 
-        OLEDDisplayHandler.println("Right sonar dist: ");
-        OLEDDisplayHandler.println(rightSonarDist);
-        
-        OLEDDisplayHandler.println("Loop counter: ");
-        OLEDDisplayHandler.println(loopCount++);
+        Serial.println("Right sonar dist: ");
+        Serial.println(rightSonarDist);
 
-        OLEDDisplayHandler.display();
+        ReflectanceSensors::printFrontReflectance();
+
         // if inf loop --> return false
     } while (rightSonarDist > firstSideSonarTreausureDist + firstSideSonarTreausureDistErr || rightSonarDist < firstSideSonarTreausureDist - firstSideSonarTreausureDistErr);
     Motors::stopMotors();
-        
-    OLEDDisplayHandler.clearDisplay();
-    OLEDDisplayHandler.setCursor(0, 0);    
-    OLEDDisplayHandler.println("found treasure right: ");    
-    OLEDDisplayHandler.println(rightSonarDist);   
-    OLEDDisplayHandler.display(); 
+    Serial.println("found treasure right: ");    
+    Serial.println(rightSonarDist);    
     delay(1000);
     
     // turn until front sonar detects treasure
     Encoders::startAddActionCache();
 
-    Motors::rotateLeft();
+    Motors::rotateRight();
     double distFrontSonar = 0;
     do {
-        OLEDDisplayHandler.clearDisplay();
-        OLEDDisplayHandler.setCursor(0, 0);
-
-        distFrontSonar = Sonars::getDistanceSinglePulse(SONAR_TRIG_PIN_F, SONAR_ECHO_PIN_F);
+        distFrontSonar = Sonars::getDistanceSinglePulse(SONAR_TRIG_PIN_ALL, SONAR_ECHO_PIN_F);
         // TODO may consider sonar delay for pulses interference
-        OLEDDisplayHandler.println("Front sonar dist: ");
-        OLEDDisplayHandler.println(distFrontSonar);
-        OLEDDisplayHandler.display();
+        delay(60);
         // TODO may need "if fail" handler
-    } while(distFrontSonar > firstFrontSonarTreausureDist + firstFrontSonarTreausureDistErr || 
-    distFrontSonar < firstFrontSonarTreausureDist - firstFrontSonarTreausureDistErr);   
+    } while(distFrontSonar > firstFrontSonarTreausureDist + firstFrontSonarTreausureDistErr || distFrontSonar < firstFrontSonarTreausureDist - firstFrontSonarTreausureDistErr);   
     Motors::stopMotors();
     
     Encoders::endAddActionCache();
 
-    OLEDDisplayHandler.clearDisplay();
-    OLEDDisplayHandler.setCursor(0, 0);    
-    OLEDDisplayHandler.println("found treasure front: ");    
-    OLEDDisplayHandler.println(distFrontSonar);
-    OLEDDisplayHandler.display();    
+    Serial.println("found treasure front: ");    
+    Serial.println(distFrontSonar);
     delay(1000);
     
     // drive fwd when front sonar detects treasure
@@ -87,23 +70,20 @@ bool TreasureDetection::obtainFirstTreasure() {
     do {
         OLEDDisplayHandler.clearDisplay();
         OLEDDisplayHandler.setCursor(0, 0);
+        delay(60);
+        distFrontSonarTreasureClaw = Sonars::getDistanceSinglePulse(SONAR_TRIG_PIN_ALL, SONAR_ECHO_PIN_F);
 
-        distFrontSonarTreasureClaw = Sonars::getDistanceSinglePulse(SONAR_TRIG_PIN_F, SONAR_ECHO_PIN_F);
+        Serial.print("Front sonar dist: ");
+        Serial.println(distFrontSonarTreasureClaw);
 
-        OLEDDisplayHandler.print("Front sonar dist: ");
-        OLEDDisplayHandler.println(distFrontSonarTreasureClaw);
-        OLEDDisplayHandler.display();
-    } while (distFrontSonarTreasureClaw > maxTreasureInClawDist + maxTreasureInClawDistErr || 
-    distFrontSonarTreasureClaw < maxTreasureInClawDist - maxTreasureInClawDistErr);
+        ReflectanceSensors::printFrontReflectance();
+    } while (distFrontSonarTreasureClaw > maxTreasureInClawDist + maxTreasureInClawDistErr);
     Motors::stopMotors();
 
     Encoders::endAddActionCache();
-
-    OLEDDisplayHandler.clearDisplay();
-    OLEDDisplayHandler.setCursor(0, 0);    
-    OLEDDisplayHandler.println("found treasure claw: ");    
-    OLEDDisplayHandler.println(distFrontSonarTreasureClaw);   
-    OLEDDisplayHandler.display();
+ 
+    Serial.println("found treasure claw: ");    
+    Serial.println(distFrontSonarTreasureClaw);   
     
     // collect
     Servos::collectTreasure();

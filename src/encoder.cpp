@@ -1,6 +1,7 @@
 #include "encoder.h"
 
-const double Encoders::pulse_per_rev = 1389.9185 / 10.0;  // divide by counter at end, increases pulse width
+// const double Encoders::pulse_per_rev = 1389.9185 / 10.0;  // divide by counter at end, increases pulse width
+const double Encoders::pulse_per_rev = 131*11 / 10.0;  // divide by counter at end, increases pulse width
 const double Encoders::wheel_diameter = 6.4; // cm
 
 volatile int Encoders::interruptCountLW = 0;

@@ -14,10 +14,11 @@ Adafruit_SSD1306 OLEDDisplayHandler(OLED_SCREEN_WIDTH, OLED_SCREEN_HEIGHT, &Wire
 
 namespace Setup {
     bool ledOn = false;
-
+    
     void timerHeartbeatInterrupt() {
         ledOn = !ledOn;
         digitalWrite(LED_BUILTIN, ledOn ? HIGH : LOW);
+        digitalWrite(PB2, ledOn ? HIGH : LOW);
     }
 
     void timerHeartbeatInit() {
