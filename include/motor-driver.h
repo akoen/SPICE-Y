@@ -16,10 +16,12 @@ namespace Motors {
     extern const int ref_pwm_duty_cycle_LW; // %
     extern const int ref_pwm_duty_cycle_RW; // %
 
-    // const int default_rotate_pwm = 15; // %
-    const int default_rotate_pwm = 16; // %
+    extern const int default_rotate_pwm; // %
 
     extern const int ref_motors_offset; // %, > 0 for RW, < 0 for LW
+
+    extern const double WHEELS_WIDTH;
+    extern const double WHEEL_DIAMETER;
 
     extern bool hasPwmChanged; // call pwm start only when changed
     extern int dutyCycleL;
@@ -55,8 +57,8 @@ namespace Motors {
                 
     /**
      * Rotates motor left with the given pwm duty cycle.
-     * Accounts for ref duty cycle offset and the given duty cycle saturates
-     * if magnitude is larger than motors offset 
+     * Accounts for ref duty cycle offset and the given duty cycle saturates if magnitude is larger than motors offset 
+
      */
     void rotateLeft(int dutyCycle=default_rotate_pwm);
     /**

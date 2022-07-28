@@ -3,7 +3,6 @@
 namespace Encoders {
     // const double Encoders::pulse_per_rev = 1389.9185 / 10.0;  // divide by counter at end, increases pulse width
     const double pulse_per_rev = 131*11 / 10.0;  // divide by counter at end, increases pulse width
-    const double wheel_diameter = 6.4; // cm
 
     volatile int interruptCountLW = 0;
     volatile int interruptCountRW = 0;
@@ -43,7 +42,8 @@ namespace Encoders {
     void ISR_RW() {
         int state1 = digitalRead(R_ENCODER_PIN1);
         if (state1 == 0) {
-            pulseRW = -99999; // shouldn't occur
+            // pulseRW = -99999; 
+            // shouldn't occur
         } else {    // CCW
             if (Motors::isRWdirFwd) {
                 pulseRW++;
@@ -164,4 +164,22 @@ namespace Encoders {
         }
         Motors::stopMotors();
     }
+
+    void driveMotorsDistance(bool dirFwd, double distance) {
+        if (!dirFwd) distance *= -1;
+
+        // convert to pulses - distance per pulse = pi*diameter / pulse per rev
+        double distPerPulse = PI * Motors::WHEEL_DIAMETER / pulse_per_rev;  // cm
+        int pulsesInterval = round(distance/distPerPulse);
+
+        driveMotorsEncoderPulses(pulsesInterval, pulsesInterval);
+    }
+
+    void rotateMotorsDegs(bool dirRight, double angle) {
+        double anglePerPulse = 180 * (PI*Motors::WHEEL_DIAMETER / pulse_per_rev) / Motors::WHEELS_WIDTH;
+        int pulses = round(angle / anglePerPulse);
+        if (dirRight) driveMotorsEncoderPulses(0, pulses);
+        else driveMotorsEncoderPulses(pulses, 0);
+    }
+
 }

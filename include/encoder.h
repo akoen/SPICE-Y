@@ -8,7 +8,6 @@
 
 namespace Encoders {
     extern const double pulse_per_rev;  // divide by counter at end, increases pulse width
-    extern const double wheel_diameter; // cm
 
     extern volatile int interruptCountLW;
     extern volatile int interruptCountRW;
@@ -75,7 +74,33 @@ namespace Encoders {
      * Drives the motors for the given interval of pulses.
      * If pulse interval for a wheel < 0, that wheel drives backwards and > 0 for forwrads.
      * Motors are stopped after execution, with no delay
+     * 
+     * This method is blocking (i.e. all other processes must wait until this finished)
      */ 
     void driveMotorsEncoderPulses(int pulseIntervalLW, int pulseIntervalRW);
+
+    /* degs to pulses: assume arc length = distance of wheel driven (no slipping)
+     * dist = arc length = (deg / 180.0) * wheel width
+     * deg = 180 * dist / wheel width
+     * 
+     * dist to pulses: 
+     * distance per pulse = pi*diameter / pulse per rev
+     * pulses = dist / distances per pulse
+     * 
+     * deg per pulse = 180 * (pi*diameter / pulse per rev) / wheel width
+     * pulses = deg / deg per pulse 
+     */
+
+    /**
+     * Drives the motors fwd (true) or back (false) a certain distance (cm)
+     * 
+     * This method is blocking (i.e. all other processes must wait until this finished)
+     */ 
+    void driveMotorsDistance(bool dirFwd, double distance);
+
+    /**
+     * Rotates the motors right (true) or left (false) a certain angle
+     */ 
+    void rotateMotorsDegs(bool dirRight, double angle);
 }
 #endif

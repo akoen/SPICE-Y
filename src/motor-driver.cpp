@@ -5,8 +5,13 @@ const int Motors::pwm_clock_freq = 100; // hz
 const int Motors::ref_duty_cycle = 80; // %
 const int Motors::ref_pwm_duty_cycle_LW = LW_PWM_DUTY; // %
 const int Motors::ref_pwm_duty_cycle_RW = RW_PWM_DUTY; // %
-// const int Motors::default_rotate_pwm = 40; // %
-const int Motors::ref_motors_offset = Motors::ref_pwm_duty_cycle_RW - Motors::ref_pwm_duty_cycle_LW; // %
+const int Motors::default_rotate_pwm = 16; // %
+const int Motors::ref_motors_offset = Motors::ref_pwm_duty_cycle_RW - Motors::ref_pwm_duty_cycle_LW; // > 0 for RW, < 0 for LW
+
+const double WHEELS_WIDTH = 24.5;   // cm
+const double WHEEL_DIAMETER = 6.4; // cm
+
+
 bool Motors::hasPwmChanged = true;    // call pwm start only when changed
 int Motors::dutyCycleL = LW_PWM_DUTY;
 int Motors::dutyCycleR = RW_PWM_DUTY;
@@ -88,8 +93,8 @@ void Motors::rotateLeft(int dutyCycle) {
     if (dutyCycle < ref_motors_offset) {
         dutyCycle = ref_motors_offset;
     }
-    setDutyCycles(dutyCycle + ref_motors_offset, dutyCycle);  // note: offset best to be an even num
-    setDutyCycles(dutyCycle + ref_motors_offset, 0);  // note: offset best to be an even num
+    setDutyCycles(dutyCycle - ref_motors_offset, dutyCycle);  // note: offset best to be an even num
+    // setDutyCycles(dutyCycle + ref_motors_offset, 0);  // note: offset best to be an even num
     setDir(false, true);
     drive();
 }
@@ -98,8 +103,7 @@ void Motors::rotateRight(int dutyCycle) {
     if (dutyCycle < ref_motors_offset) {
         dutyCycle = ref_motors_offset;
     }
-    // setDutyCycles(dutyCycle + ref_motors_offset, dutyCycle);  // note: offset best to be an even num
-    setDutyCycles(0, dutyCycle);  // note: offset best to be an even num
+    setDutyCycles(0, dutyCycle+ref_motors_offset);  // note: offset best to be an even num
     setDir(true, false);
     drive();
 }

@@ -36,6 +36,7 @@ namespace TreasureDetection {
             // if inf loop --> return false
         } while (rightSonarDist > firstSideSonarTreausureDist + firstSideSonarTreausureDistErr || rightSonarDist < firstSideSonarTreausureDist - firstSideSonarTreausureDistErr);
         Motors::stopMotors();
+        
         Serial.println("found treasure right: ");    
         Serial.println(rightSonarDist);    
         delay(1000);
