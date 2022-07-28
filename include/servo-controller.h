@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <Servo.h>
 #include "config.h"
+
 namespace Servos {
     extern const int claw_close_angle;  // deg
     extern const int claw_part_open_angle;  // so it doesn't hit box when lifted
@@ -19,12 +20,16 @@ namespace Servos {
     extern Servo bridgeServo;
     extern Servo boxServo;
 
-    extern bool pinsConfiged;
-
+    extern bool clawPinsConfiged;
+    extern bool armPinsConfiged;
+    extern bool bridgePinsConfiged;
+    extern bool boxPinsConfiged;
     /**
      * Configures all servo pins if they have yet been configured.
      */
-    void configServoPins();
+    void configAllServoPins();
+    
+    void configArmClawPins();
 
     /**
      * Claw picks up and drops treasure into storage. Handles bomb detection
@@ -33,6 +38,7 @@ namespace Servos {
      */
     void collectTreasure();
 
+    void setServoPos(Servo servoObj, int deg);
 }
 
 #endif

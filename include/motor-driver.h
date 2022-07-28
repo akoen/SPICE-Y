@@ -16,7 +16,8 @@ namespace Motors {
     extern const int ref_pwm_duty_cycle_LW; // %
     extern const int ref_pwm_duty_cycle_RW; // %
 
-    const int default_rotate_pwm = 15; // %
+    // const int default_rotate_pwm = 15; // %
+    const int default_rotate_pwm = 16; // %
 
     extern const int ref_motors_offset; // %, > 0 for RW, < 0 for LW
 

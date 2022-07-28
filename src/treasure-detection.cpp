@@ -8,11 +8,11 @@ namespace TreasureDetection {
     const double sideSonarTreasureDistsErr[5] = {7}; // cm
     const double frontSonarTreasureDists[5] = {20, 20, 20, 20, 20}; // cm
     const double frontSonarTreasureDistsErr[5] = {10}; // cm 
-    const double maxTreasureInClawDist = 11; // cm
-    const double maxTreasureInClawDistErr = 5; // cm
+    const double maxTreasureInClawDist = 11.5; // cm
+    const double maxTreasureInClawDistErr = 2; // cm
 
     bool obtainFirstTreasure() {
-        Servos::configServoPins();
+        Servos::configArmClawPins();
 
         double firstSideSonarTreausureDist = sideSonarTreasureDists[0];
         double firstSideSonarTreausureDistErr = sideSonarTreasureDistsErr[0];
