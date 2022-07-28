@@ -27,7 +27,8 @@ bool Encoders::cacheAddInProgress = false;
 void Encoders::ISR_LW() {
     int state1 = digitalRead(L_ENCODER_PIN1);
     if (state1 == 0) {
-        pulseLW = -99999; // shouldn't occur
+        // pulseLW = -99999; 
+        // shouldn't occur
     } else {    // CCW
         if (Motors::isLWdirFwd) {
             pulseLW++;
@@ -157,7 +158,6 @@ void Encoders::driveMotorsEncoderPulses(int pulseIntervalLW, int pulseIntervalRW
         Motors::setDutyCycles(LW_PWM_DUTY, RW_PWM_DUTY);    // TODO may cache pwm
         Motors::drive();
     }
-
     while (pulseLW < startEncoderPulsesLW + pulseIntervalLW && pulseRW < pulseIntervalRW) {
         /* pulse LW,RW vals should be updated by interrupts */
     }
