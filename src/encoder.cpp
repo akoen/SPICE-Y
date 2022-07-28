@@ -159,7 +159,7 @@ namespace Encoders {
             Motors::setDutyCycles(LW_PWM_DUTY, RW_PWM_DUTY);    // TODO may cache pwm
             Motors::drive();
         }
-        while (pulseLW < startEncoderPulsesLW + pulseIntervalLW && pulseRW < pulseIntervalRW) {
+        while (pulseLW < startEncoderPulsesLW + pulseIntervalLW && pulseRW < startEncoderPulsesRW + pulseIntervalRW) {
             /* pulse LW,RW vals should be updated by interrupts */
         }
         Motors::stopMotors();
