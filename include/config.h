@@ -34,17 +34,17 @@
 
 // encoders
 #define R_ENCODER_PIN1 PB10
-// #define R_ENCODER_PIN2 PB14
+// #define R_ENCODER_PIN2
 #define L_ENCODER_PIN1 PB11
-// #define L_ENCODER_PIN2 PB15 
+// #define L_ENCODER_PIN2 
 
 // reflectance
 # define REFLECTANCE_PIN_R PB1
 # define REFLECTANCE_PIN_L PB0
 # define REFLECTANCE_PIN_M PA3
 
-# define REFLECTANCE_PIN_SIDE_L 0    // placeholders
-# define REFLECTANCE_PIN_SIDE_R 0
+# define REFLECTANCE_PIN_SIDE_L PA6    // placeholders
+# define REFLECTANCE_PIN_SIDE_R PA7
 
 // sonar
 # define SONAR_TRIG_PIN_ALL PB14
@@ -54,12 +54,12 @@
 # define SONAR_ECHO_PIN_F PA15
 
 // claw-arm
-# define CLAW_SERVO_PIN 0
-# define ARM_SERVO_PIN 0
-# define BRIDGE_SERVO_PIN 0
-# define BOX_SERVO_PIN 0
+# define CLAW_SERVO_PIN PA8
+# define ARM_SERVO_PIN PA9
+# define BRIDGE_SERVO_PIN PA10
+# define BOX_SERVO_PIN PA2
 
 // hall effect
-# define MAGNETIC_SENSOR_PIN 0
+# define MAGNETIC_SENSOR_PIN PB15
 
 #endif
