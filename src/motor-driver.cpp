@@ -5,7 +5,7 @@ const int Motors::pwm_clock_freq = 100; // hz
 const int Motors::ref_duty_cycle = 80; // %
 const int Motors::ref_pwm_duty_cycle_LW = LW_PWM_DUTY; // %
 const int Motors::ref_pwm_duty_cycle_RW = RW_PWM_DUTY; // %
-const int Motors::default_rotate_pwm = 15; // %
+const int Motors::default_rotate_pwm = 8; // %
 const int Motors::ref_motors_offset = Motors::ref_pwm_duty_cycle_RW - Motors::ref_pwm_duty_cycle_LW; // > 0 for RW, < 0 for LW
 
 const double Motors::WHEELS_WIDTH = 24.5;   // cm
@@ -93,8 +93,8 @@ void Motors::rotateLeft(int dutyCycle, bool bothWheels) {
     if (dutyCycle < ref_motors_offset) {
         dutyCycle = ref_motors_offset;
     }
-    if (!bothWheels) setDutyCycles(dutyCycle - ref_motors_offset, 0);  // note: offset best to be an even num
-    else setDutyCycles(dutyCycle - ref_motors_offset, dutyCycle);  // note: offset best to be an even num
+    if (!bothWheels) setDutyCycles(dutyCycle, 0);  // note: offset best to be an even num
+    else setDutyCycles(dutyCycle, dutyCycle+ref_duty_cycle);  // note: offset best to be an even num
     setDir(false, true);
     drive();
 }

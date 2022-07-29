@@ -21,7 +21,7 @@ void setup() {
     Sonars::configSonarPins();
     ReflectanceSensors::configFrontReflectanceSensors();
     Servos::configArmClawPins();
-    
+
     /* Run the ADC calibration */
     HAL_ADCEx_Calibration_Start(&AdcHandle);
 
@@ -32,8 +32,8 @@ void pwmServoTest();
 void loop() {
     // ReflectanceSensors::readFrontReflectanceSensors();
     // ReflectanceSensors::printFrontReflectance();
-    // TreasureDetection::obtainFirstTreasure();
-    TapeFollow::driveWithPid();
+    TreasureDetection::obtainFirstTreasure();
+    // TapeFollow::driveWithPid();
     // Serial.print(HIGH);
     // IR::driveWithPID();
 }

@@ -5,11 +5,11 @@
 
 namespace TreasureDetection {
     const double sideSonarTreasureDists[5] = {20, 20, 20, 20, 20}; // cm
-    const double sideSonarTreasureDistsErr[5] = {7}; // cm
+    const double sideSonarTreasureDistsErr[5] = {12}; // cm
     const double frontSonarTreasureDists[5] = {20, 20, 20, 20, 20}; // cm
-    const double frontSonarTreasureDistsErr[5] = {15}; // cm 
+    const double frontSonarTreasureDistsErr[5] = {10}; // cm 
     const double maxTreasureInClawDist = 15; // cm
-    // const double maxTreasureInClawDistErr = 0; // cm
+    const double maxTreasureInClawDistErr = 0; // cm
 
     bool obtainFirstTreasure() {
         Servos::configArmClawPins();
@@ -35,8 +35,8 @@ namespace TreasureDetection {
 
             // if inf loop --> return false
         } while (rightSonarDist > firstSideSonarTreausureDist + firstSideSonarTreausureDistErr || rightSonarDist < firstSideSonarTreausureDist - firstSideSonarTreausureDistErr);
-        delay(100);
-        Motors::stopMotorsWithBrake(Motors::DRIVE_BACK, LW_PWM_DUTY - 10, 40);
+        delay(20);
+        Motors::stopMotorsWithBrake(Motors::DRIVE_BACK, LW_PWM_DUTY - 10, 50);
         // Motors::setDir(false, false);
         // Motors::setDutyCycles(LW_PWM_DUTY-10, RW_PWM_DUTY-10);
         // Motors::drive();
@@ -58,11 +58,13 @@ namespace TreasureDetection {
             delay(60);
             // TODO may need "if fail" handler
         } while(distFrontSonar > firstFrontSonarTreausureDist + firstFrontSonarTreausureDistErr || distFrontSonar < firstFrontSonarTreausureDist - firstFrontSonarTreausureDistErr);   
-        delay(20);
-        Motors::stopMotorsWithBrake(Motors::ROTATE_LEFT, Motors::default_rotate_pwm, 200);
-        // Motors::rotateLeft(Motors::default_rotate_pwm);
-        // delay(100);
-        // Motors::stopMotors();
+        delay(8);
+        // Motors::stopMotorsWithBrake(Motors::ROTATE_LEFT, Motors::default_rotate_pwm+10, 500);
+        Motors::setDir(false, true);
+        Motors::setDutyCycles(0, Motors::default_rotate_pwm);
+        // Motors::rotateLeft(Motors::default_rotate_pwm+25);
+        delay(200);
+        Motors::stopMotors();
         
         Encoders::endAddActionCache();
 
