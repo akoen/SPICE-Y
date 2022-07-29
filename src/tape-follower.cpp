@@ -100,6 +100,10 @@ void TapeFollow::driveWithPid() {
 void TapeFollow::chickenWireRoutine() {
     // drive across bridge
     Encoders::driveMotorsDistance(true, CHICKEN_WIRE_DIST);
+    Motors::setDir(true, true);
+    Motors::setDutyCycles(true, true);
+    Motors::drive();
+    // Encoders::driveMotorsDistance(true, CHICKEN_WIRE_DIST);
     // find black tape
     findBlackTape(DEF_TAPE_SEARCH_ANGLE);
 }

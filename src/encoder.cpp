@@ -164,6 +164,10 @@ namespace Encoders {
         }
         while (pulseLW < startEncoderPulsesLW + pulseIntervalLW && pulseRW < startEncoderPulsesRW + pulseIntervalRW) {
             /* pulse LW,RW vals should be updated by interrupts */
+            Serial.print("Pulses LW, RW");
+            Serial.print(" ");
+            Serial.print(pulseLW);
+            Serial.print(pulseRW);
         }
         Motors::stopMotors();
     }
@@ -172,8 +176,8 @@ namespace Encoders {
         if (!dirFwd) distance *= -1;
 
         // convert to pulses - distance per pulse = pi*diameter / pulse per rev
-        double distPerPulse = PI * Motors::WHEEL_DIAMETER / pulse_per_rev;  // cm
-        int pulsesInterval = round(distance/distPerPulse);
+        double distPerPulse = PI * Motors::WHEEL_DIAMETER / (1.0*pulse_per_rev);  // cm
+        int pulsesInterval = round(distance/(1.0*distPerPulse));
 
         driveMotorsEncoderPulses(pulsesInterval, pulsesInterval);
     }

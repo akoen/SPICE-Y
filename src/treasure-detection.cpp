@@ -8,7 +8,7 @@ namespace TreasureDetection {
     const double sideSonarTreasureDistsErr[5] = {12}; // cm
     const double frontSonarTreasureDists[5] = {20, 20, 20, 20, 20}; // cm
     const double frontSonarTreasureDistsErr[5] = {10}; // cm 
-    const double maxTreasureInClawDist = 15; // cm
+    const double maxTreasureInClawDist = 16; // cm
     const double maxTreasureInClawDistErr = 0; // cm
 
     bool obtainFirstTreasure() {
@@ -35,7 +35,7 @@ namespace TreasureDetection {
 
             // if inf loop --> return false
         } while (rightSonarDist > firstSideSonarTreausureDist + firstSideSonarTreausureDistErr || rightSonarDist < firstSideSonarTreausureDist - firstSideSonarTreausureDistErr);
-        delay(20);
+        delay(10);
         Motors::stopMotorsWithBrake(Motors::DRIVE_BACK, LW_PWM_DUTY - 10, 50);
         // Motors::setDir(false, false);
         // Motors::setDutyCycles(LW_PWM_DUTY-10, RW_PWM_DUTY-10);
@@ -58,10 +58,11 @@ namespace TreasureDetection {
             delay(60);
             // TODO may need "if fail" handler
         } while(distFrontSonar > firstFrontSonarTreausureDist + firstFrontSonarTreausureDistErr || distFrontSonar < firstFrontSonarTreausureDist - firstFrontSonarTreausureDistErr);   
-        delay(8);
+        delay(1);
         // Motors::stopMotorsWithBrake(Motors::ROTATE_LEFT, Motors::default_rotate_pwm+10, 500);
         Motors::setDir(false, true);
         Motors::setDutyCycles(0, Motors::default_rotate_pwm);
+        Motors::drive();
         // Motors::rotateLeft(Motors::default_rotate_pwm+25);
         delay(200);
         Motors::stopMotors();
@@ -74,7 +75,7 @@ namespace TreasureDetection {
         Encoders::startAddActionCache();
 
         Motors::setDir(true, true);
-        Motors::setDutyCycles(15, 15+Motors::ref_motors_offset+3);    // may need to be slower
+        Motors::setDutyCycles(15, 15+Motors::ref_motors_offset);    // may need to be slower
         Motors::drive();
         
         // collect treasure when in range

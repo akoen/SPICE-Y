@@ -6,8 +6,8 @@
 namespace IR {
     const int targetFrequency = 10000;
     const float sampleFrequency = (12000000 / (12.5 + 71.5)) / 2;
-    const float kp = 10*3;
-    const float kd = 25*3;
+    const float kp = 20;
+    const float kd = 8;
 
     float magSmoothed[] = {0, 0};
     float prevP = 0;
@@ -21,7 +21,7 @@ namespace IR {
         magnitude[0] = goertzelMag(IR_SENS_NUM_READINGS / 2, targetFrequency, sampleFrequency, dataL);
         magnitude[1] = goertzelMag(IR_SENS_NUM_READINGS / 2, targetFrequency, sampleFrequency, dataR);
 
-        // while(!Se3ial);
+        // while(!Serial);
         // Serial.write((uint8_t *) magnitude, 8);
     }
 

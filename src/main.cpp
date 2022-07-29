@@ -27,15 +27,23 @@ void setup() {
 
     // /* Start ADC conversion on regular group with transfer by DMA */
     HAL_ADC_Start_DMA(&AdcHandle, (uint32_t *)DMA1Data, IR_SENS_NUM_READINGS);
+    Serial.println("Serial connected");
 }
 void pwmServoTest();
 void loop() {
     // ReflectanceSensors::readFrontReflectanceSensors();
     // ReflectanceSensors::printFrontReflectance();
-    TreasureDetection::obtainFirstTreasure();
+    // TreasureDetection::obtainFirstTreasure();
+    // Encoders::startAddActionCache();
+    // Motors::setDir(true, true);
+    // Motors::setDutyCycles(0,RW_PWM_DUTY);
+    // Motors::drive();
+    // Encoders::driveMotorsDistance(true, 20);
+    // Encoders::endAddActionCache();
+    // Encoders::executeReverseCache();
     // TapeFollow::driveWithPid();
     // Serial.print(HIGH);
-    // IR::driveWithPID();
+    IR::driveWithPID();
 }
 
 void pwmServoTest() {
