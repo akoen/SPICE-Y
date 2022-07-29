@@ -6,7 +6,10 @@
 
 namespace BombDetection {
     extern bool bombEncounteredFlag;   // only one bomb
-
+    extern bool hasConfiged;
+    /**
+     * Configures the magnetic sensor pin once 
+     */
     void configMagneticSensorPin();
     
     /**

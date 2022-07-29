@@ -99,7 +99,8 @@ namespace TreasureDetection {
         // return to original location
         Encoders::executeReverseCache();
 
-        return true;
+        // look for tape
+        return TapeFollow::findBlackTape(60);
     }
 }
 /*

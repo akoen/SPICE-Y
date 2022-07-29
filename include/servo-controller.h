@@ -12,6 +12,7 @@ namespace Servos {
     extern const int claw_bomb_detect_angle;
     
     extern const int arm_bomb_detect_angle;
+    extern const int above_treasure_below_IR_angle;
     extern const int arm_lowered_angle;
     extern const int arm_lifted_angle;
 

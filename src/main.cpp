@@ -21,6 +21,7 @@ void setup() {
     Sonars::configSonarPins();
     ReflectanceSensors::configFrontReflectanceSensors();
     Servos::configArmClawPins();
+    
     /* Run the ADC calibration */
     HAL_ADCEx_Calibration_Start(&AdcHandle);
 
