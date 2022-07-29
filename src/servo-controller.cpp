@@ -1,13 +1,13 @@
 #include "servo-controller.h"
 #include "magnetic-sensor.h"
 
-const int Servos::claw_close_angle = 60;
+const int Servos::claw_close_angle = 50;
 const int Servos::claw_part_open_angle = 100;
 const int Servos::claw_full_open_angle = 180;
 const int Servos::claw_bomb_detect_angle = 110;
-const int Servos::arm_bomb_detect_angle = 70;
+const int Servos::arm_bomb_detect_angle = 50;
 const int Servos::arm_lowered_angle = 15;   // parallel
-const int Servos::arm_lifted_angle = 120;
+const int Servos::arm_lifted_angle = 129;
 
 Servo Servos::clawServo;
 Servo Servos::armServo;
@@ -52,14 +52,12 @@ void Servos::configArmClawPins() {
 void Servos::collectTreasure() {
     // open claw as we lower arm
     clawServo.write(claw_part_open_angle);
-    delay(100);
-    clawServo.write(claw_full_open_angle);
-    delay(2000);
+    delay(1000);
     // hall effect bomb detect condition
     if (!BombDetection::bombEncounteredFlag) {
-        armServo.write(arm_bomb_detect_angle);
-        delay(2000);
         clawServo.write(claw_bomb_detect_angle);
+        delay(1000);
+        armServo.write(arm_bomb_detect_angle);
         delay(2000);
         if (!BombDetection::isBombDetected) {
             clawServo.write(claw_close_angle);
@@ -68,6 +66,12 @@ void Servos::collectTreasure() {
             BombDetection::bombEncounteredFlag = true;
         }
     } else {
+        clawServo.write(claw_bomb_detect_angle);
+        delay(1000);
+        armServo.write(arm_bomb_detect_angle);
+        delay(1000);
+        clawServo.write(claw_full_open_angle);
+        delay(1000);
         armServo.write(arm_lowered_angle);    
         delay(2000);
         clawServo.write(claw_close_angle);
@@ -76,10 +80,14 @@ void Servos::collectTreasure() {
 
     //lift arm  
     armServo.write(arm_lifted_angle);
-    delay(2000);
+    delay(1000);
 
     // partially open claw
     clawServo.write(claw_part_open_angle);
+    delay(1000);
+
+    // close claw
+    clawServo.write(claw_close_angle);
     delay(2000);
 }
 

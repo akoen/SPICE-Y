@@ -72,12 +72,12 @@ namespace Setup {
         /*       conversion is out of the analog watchdog window selected (ADC IT   */
         /*       enabled), select sampling time and ADC clock with sufficient       */
         /*       duration to not create an overhead situation in IRQHandler.        */
-        sConfig.Channel = ADC_CHANNEL_0;
+        sConfig.Channel = ADC_CHANNEL_4;
         sConfig.Rank = ADC_REGULAR_RANK_1;
         sConfig.SamplingTime = ADC_FAST_SAMPLETIME;
         HAL_ADC_ConfigChannel(&AdcHandle, &sConfig);
 
-        sConfig.Channel = ADC_CHANNEL_1;
+        sConfig.Channel = ADC_CHANNEL_5;
         sConfig.Rank = ADC_REGULAR_RANK_2;
         sConfig.SamplingTime = ADC_FAST_SAMPLETIME;
         HAL_ADC_ConfigChannel(&AdcHandle, &sConfig);
@@ -178,7 +178,7 @@ extern "C" void HAL_ADC_MspInit(ADC_HandleTypeDef *hadc) {
     /*##-2- Configure peripheral GPIO ##########################################*/
     /* Configure GPIO pin of the selected ADC channel */
     // TODO: Remove HAL code if works
-    pinMode(PA0, INPUT_ANALOG);
+    pinMode(PA4, INPUT_ANALOG);
     // GPIO_InitStruct.Pin = ADC_CHANNEL_0;
     // GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     // GPIO_InitStruct.Pull = GPIO_PIN_0;
@@ -188,8 +188,7 @@ extern "C" void HAL_ADC_MspInit(ADC_HandleTypeDef *hadc) {
     // GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     // GPIO_InitStruct.Pull = GPIO_PIN_1;
     // HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-    pinMode(PA1, INPUT_ANALOG);
-
+    pinMode(PA5, INPUT_ANALOG);
     /*##-3- Configure the DMA ##################################################*/
     /* Configure DMA parameters */
     DmaHandle.Instance = DMA1_Channel1;

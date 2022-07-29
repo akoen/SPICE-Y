@@ -30,6 +30,10 @@ namespace Motors {
     extern bool isLWdirFwd;
     extern bool isRWdirFwd;
 
+    enum MotorAction {
+        DRIVE_FWD, DRIVE_BACK, ROTATE_LEFT, ROTATE_RIGHT  
+    };
+
     void configMotorPins();
     /**
      * Drives the motors with its duty cycles in the defined direction 
@@ -60,13 +64,21 @@ namespace Motors {
      * Accounts for ref duty cycle offset and the given duty cycle saturates if magnitude is larger than motors offset 
 
      */
-    void rotateLeft(int dutyCycle=default_rotate_pwm);
+    void rotateLeft(int dutyCycle=default_rotate_pwm, bool bothWheels=false);
     /**
      * Rotates motor right with the given pwm duty cycle
      * Accounts for ref duty cycle offset and the given duty cycle saturates
      * if magnitude is larger than motors offset 
      */
-    void rotateRight(int dutyCycle=default_rotate_pwm);
+    void rotateRight(int dutyCycle=default_rotate_pwm, bool bothWheels=false);
+
+    
+    void rotate(int dutyCycle, bool rotateRight, bool bothWheels=false);
+
+    /**
+     * Stops the motors by applying the opposite action at a specifc pwm duty cycle for a specified duration of the driving action.
+     */
+    void stopMotorsWithBrake(MotorAction action, int dutyCycle, int durationMillis, bool rotateBothWheels=false, int stopMotorsDelayMillis=500);
 }
 
 #endif

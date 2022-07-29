@@ -44,7 +44,7 @@ double TapeFollow::calcPidBlackTape() {
     if (onTapeL && onTapeM && onTapeR) {   
         chickenWireRoutine();
         // chickenWireRoutine2(prevErr, err);   
-        // this updates preOnTape and onTape readings - can continue PID
+        // this updates prevOnTape and onTape readings - can continue PID
     }
 
     /* discrete errors truth table: (-) = left, (+) = right */

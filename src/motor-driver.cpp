@@ -5,11 +5,11 @@ const int Motors::pwm_clock_freq = 100; // hz
 const int Motors::ref_duty_cycle = 80; // %
 const int Motors::ref_pwm_duty_cycle_LW = LW_PWM_DUTY; // %
 const int Motors::ref_pwm_duty_cycle_RW = RW_PWM_DUTY; // %
-const int Motors::default_rotate_pwm = 16; // %
+const int Motors::default_rotate_pwm = 15; // %
 const int Motors::ref_motors_offset = Motors::ref_pwm_duty_cycle_RW - Motors::ref_pwm_duty_cycle_LW; // > 0 for RW, < 0 for LW
 
-const double WHEELS_WIDTH = 24.5;   // cm
-const double WHEEL_DIAMETER = 6.4; // cm
+const double Motors::WHEELS_WIDTH = 24.5;   // cm
+const double Motors::WHEEL_DIAMETER = 6.4; // cm
 
 
 bool Motors::hasPwmChanged = true;    // call pwm start only when changed
@@ -89,26 +89,60 @@ void Motors::stopMotors(int delayMillis) {
     delay(delayMillis);
 }
 
-void Motors::rotateLeft(int dutyCycle) {
+void Motors::rotateLeft(int dutyCycle, bool bothWheels) {
     if (dutyCycle < ref_motors_offset) {
         dutyCycle = ref_motors_offset;
     }
-    setDutyCycles(dutyCycle - ref_motors_offset, dutyCycle);  // note: offset best to be an even num
-    // setDutyCycles(dutyCycle + ref_motors_offset, 0);  // note: offset best to be an even num
+    if (!bothWheels) setDutyCycles(dutyCycle - ref_motors_offset, 0);  // note: offset best to be an even num
+    else setDutyCycles(dutyCycle - ref_motors_offset, dutyCycle);  // note: offset best to be an even num
     setDir(false, true);
     drive();
 }
 
-void Motors::rotateRight(int dutyCycle) {    
+void Motors::rotateRight(int dutyCycle, bool bothWheels) {    
     if (dutyCycle < ref_motors_offset) {
         dutyCycle = ref_motors_offset;
     }
-    setDutyCycles(0, dutyCycle+ref_motors_offset);  // note: offset best to be an even num
+    if (!bothWheels) setDutyCycles(0, dutyCycle+ref_motors_offset);  // note: offset best to be an even num
+    else setDutyCycles(dutyCycle, dutyCycle+ref_motors_offset);
     setDir(true, false);
     drive();
 }
 
+void Motors::rotate(int dutyCycle, bool rotateRight, bool bothWheels) {
+    if (dutyCycle < default_rotate_pwm) dutyCycle = default_rotate_pwm;
 
+    if(rotateRight) {
+        setDir(true, false);
+        if (!bothWheels) setDutyCycles(0, dutyCycle+ref_motors_offset);  // note: offset best to be an even num
+        else setDutyCycles(dutyCycle, dutyCycle+ref_motors_offset);
+    } else {
+        setDir(false, true);
+        if (!bothWheels) setDutyCycles(dutyCycle-ref_motors_offset, 0);  // note: offset best to be an even num
+        else setDutyCycles(dutyCycle, dutyCycle+ref_motors_offset);
+    }
+
+    drive();
+}
+
+void Motors::stopMotorsWithBrake(MotorAction action, int dutyCycle, int durationMillis, bool rotateBothWheels, int stopMotorsDelayMillis) {
+    switch(action) {
+        case DRIVE_FWD:
+            setDutyCycles(dutyCycle, dutyCycle+ref_motors_offset);
+            setDir(true, true);
+            drive();
+        case DRIVE_BACK:
+            setDutyCycles(dutyCycle, dutyCycle+ref_motors_offset);
+            setDir(false, false);
+            drive();
+        case ROTATE_LEFT:
+            rotateLeft(dutyCycle, rotateBothWheels);
+        case ROTATE_RIGHT:
+            rotateRight(dutyCycle, rotateBothWheels);
+    }
+    delay(durationMillis);
+    Motors::stopMotors(stopMotorsDelayMillis);
+}
 /*
  * TODO check that pwm offset is constant across all duty cycles
  */

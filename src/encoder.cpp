@@ -144,9 +144,12 @@ namespace Encoders {
         long startPulseRW = pulseRW;
 
         bool dirLW = true, dirRW = true;
-        if (pulseIntervalLW < 0) dirLW = false;
-        if (pulseIntervalRW < 0) dirRW = false;
-        
+        if (pulseIntervalLW < 0) {
+            dirLW = false;
+        }
+        if (pulseIntervalRW < 0) {
+            dirRW = false;
+        }
         long startEncoderPulsesLW = pulseLW;
         long startEncoderPulsesRW = pulseRW;
 
@@ -181,5 +184,4 @@ namespace Encoders {
         if (dirRight) driveMotorsEncoderPulses(0, pulses);
         else driveMotorsEncoderPulses(pulses, 0);
     }
-
 }

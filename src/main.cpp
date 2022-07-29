@@ -20,36 +20,36 @@ void setup() {
     Encoders::configEncoderPins();
     Sonars::configSonarPins();
     ReflectanceSensors::configFrontReflectanceSensors();
-    // pinMode(PB9, OUTPUT);
     Servos::configArmClawPins();
-    // pinMode(BRIDGE_SERVO_PIN, OUTPUT);
-    // pinMode(BOX_SERVO_PIN, OUTPUT);
-    // pinMode(CLAW_SERVO_PIN, OUTPUT);
-    // pinMode(CLAW_SERVO_PIN, OUTPUT);
-
     /* Run the ADC calibration */
     HAL_ADCEx_Calibration_Start(&AdcHandle);
 
     // /* Start ADC conversion on regular group with transfer by DMA */
     HAL_ADC_Start_DMA(&AdcHandle, (uint32_t *)DMA1Data, IR_SENS_NUM_READINGS);
 }
-
+void pwmServoTest();
 void loop() {
-    // pwm_start(PB_9, 100, (int)(0.5*4096), RESOLUTION_12B_COMPARE_FORMAT);
     // ReflectanceSensors::readFrontReflectanceSensors();
     // ReflectanceSensors::printFrontReflectance();
-    TreasureDetection::obtainFirstTreasure();
-    // Servos::clawServo.write(60);
-    // delay(2000);
-    // Servos::clawServo.write(180);
-    // delay(1000);
-    // Motors::drive();
-
-    
+    // TreasureDetection::obtainFirstTreasure();
+    TapeFollow::driveWithPid();
+    // Serial.print(HIGH);
+    // IR::driveWithPID();
 }
 
 void pwmServoTest() {
-    // Servos::setServoPos(Servos::clawServo, Servos::claw_close_angle);
+    Servos::setServoPos(Servos::clawServo, Servos::claw_full_open_angle);
+    Servos::setServoPos(Servos::armServo, Servos::arm_lowered_angle);
+    delay(1000);
+    Servos::setServoPos(Servos::clawServo, Servos::claw_close_angle);
+    delay(1000);
+    Servos::setServoPos(Servos::armServo, Servos::arm_lifted_angle);
+    delay(1000);
+    Servos::setServoPos(Servos::clawServo, Servos::claw_part_open_angle);
+    delay(500);
+    Servos::setServoPos(Servos::armServo, Servos::arm_bomb_detect_angle);
+    delay(1000);
+
     // pwm_start(CLAW_SERVO_PIN_PWM_FORMAT, 50, (uint32_t)(4096 * (1.5/20)), RESOLUTION_12B_COMPARE_FORMAT);
     // pwm_start(BRIDGE_SERVO_PIN_PWM_FORMAT, 50, (uint32_t)(4096 * (1.5/20)), RESOLUTION_12B_COMPARE_FORMAT);
     // pwm_start(BOX_SERVO_PIN_PWM_FORMAT, 50, (uint32_t)(4096 * (1.5/20)), RESOLUTION_12B_COMPARE_FORMAT);

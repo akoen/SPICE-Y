@@ -7,9 +7,9 @@ namespace TreasureDetection {
     const double sideSonarTreasureDists[5] = {20, 20, 20, 20, 20}; // cm
     const double sideSonarTreasureDistsErr[5] = {7}; // cm
     const double frontSonarTreasureDists[5] = {20, 20, 20, 20, 20}; // cm
-    const double frontSonarTreasureDistsErr[5] = {10}; // cm 
-    const double maxTreasureInClawDist = 11.5; // cm
-    const double maxTreasureInClawDistErr = 2; // cm
+    const double frontSonarTreasureDistsErr[5] = {15}; // cm 
+    const double maxTreasureInClawDist = 15; // cm
+    // const double maxTreasureInClawDistErr = 0; // cm
 
     bool obtainFirstTreasure() {
         Servos::configArmClawPins();
@@ -35,7 +35,13 @@ namespace TreasureDetection {
 
             // if inf loop --> return false
         } while (rightSonarDist > firstSideSonarTreausureDist + firstSideSonarTreausureDistErr || rightSonarDist < firstSideSonarTreausureDist - firstSideSonarTreausureDistErr);
-        Motors::stopMotors();
+        delay(100);
+        Motors::stopMotorsWithBrake(Motors::DRIVE_BACK, LW_PWM_DUTY - 10, 40);
+        // Motors::setDir(false, false);
+        // Motors::setDutyCycles(LW_PWM_DUTY-10, RW_PWM_DUTY-10);
+        // Motors::drive();
+        // delay(40);
+        // Motors::stopMotors();
         
         Serial.println("found treasure right: ");    
         Serial.println(rightSonarDist);    
@@ -48,23 +54,25 @@ namespace TreasureDetection {
         double distFrontSonar = 0;
         do {
             distFrontSonar = Sonars::getDistanceSinglePulse(SONAR_TRIG_PIN_ALL, SONAR_ECHO_PIN_F);
-            // TODO may consider sonar delay for pulses interference
+            // sonar delay for pulses interference
             delay(60);
             // TODO may need "if fail" handler
         } while(distFrontSonar > firstFrontSonarTreausureDist + firstFrontSonarTreausureDistErr || distFrontSonar < firstFrontSonarTreausureDist - firstFrontSonarTreausureDistErr);   
-        Motors::stopMotors();
+        delay(20);
+        Motors::stopMotorsWithBrake(Motors::ROTATE_LEFT, Motors::default_rotate_pwm, 200);
+        // Motors::rotateLeft(Motors::default_rotate_pwm);
+        // delay(100);
+        // Motors::stopMotors();
         
         Encoders::endAddActionCache();
 
         Serial.println("found treasure front: ");    
         Serial.println(distFrontSonar);
-        delay(1000);
-        
         // drive fwd when front sonar detects treasure
         Encoders::startAddActionCache();
 
         Motors::setDir(true, true);
-        Motors::setDutyCycles(15, 15+Motors::ref_motors_offset);    // may need to be slower
+        Motors::setDutyCycles(15, 15+Motors::ref_motors_offset+3);    // may need to be slower
         Motors::drive();
         
         // collect treasure when in range
@@ -77,8 +85,8 @@ namespace TreasureDetection {
             Serial.println(distFrontSonarTreasureClaw);
 
             ReflectanceSensors::printFrontReflectance();
-        } while (distFrontSonarTreasureClaw > maxTreasureInClawDist + maxTreasureInClawDistErr);
-        Motors::stopMotors();
+        } while (distFrontSonarTreasureClaw > maxTreasureInClawDist);
+        Motors::stopMotorsWithBrake(Motors::DRIVE_BACK, 15, 30);
 
         Encoders::endAddActionCache();
     
