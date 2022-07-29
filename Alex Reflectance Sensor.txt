@@ -1,0 +1,5 @@
+Heat shrink individual leads of the sensor
+One big heat shrink over the entire thing, up to and covering the black housing (but not the leds)
+Heat shrink the whole thing including a shroud
+Thick red for collector and positive of LED
+Thick blue for emitter and negative of LED
