@@ -43,7 +43,7 @@ double TapeFollow::calcPidBlackTape() {
     // chicken wire routine
     if (onTapeL && onTapeM && onTapeR) {   
         chickenWireRoutine();
-        // chickenWireRoutine2();   
+        // chickenWireRoutine2(prevErr, err);   
         // this updates preOnTape and onTape readings - can continue PID
     }
 
@@ -181,6 +181,6 @@ void TapeFollow::chickenWireRoutine2(int prevErrEntering, int errEntering) {
     // drive straight
     Encoders::driveMotorsDistance(true, CHICKEN_WIRE_DIST / 2.0);
 
-    // now exiting chicken wire with opposite error as incident, so set these errors
-    err = -errEntering, prevErr = -prevErrEntering;
+    // now exiting chicken wire with the same error as incident, so set these errors
+    err = errEntering, prevErr = prevErrEntering;
 }
