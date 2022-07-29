@@ -42,10 +42,8 @@ double TapeFollow::calcPidBlackTape() {
 
     // chicken wire routine
     if (onTapeL && onTapeM && onTapeR) {   
-        // pwmChange = CHICKEN_WIRE_OFFSET_DUTY;
-        // Encoders::driveMotorsDistance(true, CHICKEN_WIRE_DIST);
-        // return pwmChange;
-        chickenWireRoutine();   
+        chickenWireRoutine();
+        // chickenWireRoutine2();   
         // this updates preOnTape and onTape readings - can continue PID
     }
 
@@ -164,4 +162,25 @@ bool TapeFollow::findBlackTape(double angle) {
     // didn't find tape
     Motors::stopMotors();    
     return false;
+}
+
+void TapeFollow::chickenWireRoutine2(int prevErrEntering, int errEntering) {
+    Motors::stopMotors();
+    // first half - drive straight
+    Encoders::driveMotorsDistance(true, CHICKEN_WIRE_DIST / 2.0);
+
+    // second half -- drive straight in the other way, so rotate using the pwm change due to the inverse errors
+    Motors::stopMotors();
+    // the pwm change due to PID when entering tape (using the input errs), + if right increase
+    int pwmChange = kp*errEntering + kd*(errEntering-prevErrEntering);  
+    // rotate to the opposite direction of incoming direction (the pwm change entering)
+    if (pwmChange > 0) Motors::rotateRight(pwmChange);  // was rotating left coming in, so rotate left
+    else Motors::rotateRight(-pwmChange);   // was rotating right coming in, so rotate left
+    Motors::stopMotors();
+
+    // drive straight
+    Encoders::driveMotorsDistance(true, CHICKEN_WIRE_DIST / 2.0);
+
+    // now exiting chicken wire with opposite error as incident, so set these errors
+    err = -errEntering, prevErr = -prevErrEntering;
 }

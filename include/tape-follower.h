@@ -56,7 +56,7 @@ namespace TapeFollow {
      * 
      */ 
     void chickenWireRoutine();
-
+    
     /**
      * Attempts to find the black tape, with a specified search angle (deg) in front.
      * 
@@ -68,5 +68,21 @@ namespace TapeFollow {
      * Returns true if tape found
      */
     bool findBlackTape(double angle);
+
+    /**
+     * To be called when 1 1 1 is read by sensors.
+     * 
+     * prevErr, err are the result of PID error obtained just prior to 1 1 1 encounter
+     * The motors are driving as a result of the PID from this error
+     * 
+     * Edge of chicken wires show uncertain results
+     * Chicken wire (1 1 1) to be set to drive straight (ref duty)
+     * For the first half of the chicken wire, drive with pwm of the err from the reading before chicken wire
+     * Second half of the chicken wire, drive with the opposite to that error
+     * After chicken wire, continue pid with the second half error. May also consider calling find black tape method
+     *
+     * Note: doesn't do integral for inverse PWM change
+     */ 
+    void chickenWireRoutine2(int prevErr, int err);
 }
 #endif
