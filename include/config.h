@@ -33,9 +33,11 @@
 # define PWM_FORMAT_MOTOR_BACK_R PB_8
 
 // encoders
-#define R_ENCODER_PIN1 PA11
+// #define R_ENCODER_PIN1 PA11
+#define R_ENCODER_PIN1 PA0
 // #define R_ENCODER_PIN2
-#define L_ENCODER_PIN1 PA12
+#define L_ENCODER_PIN1 PA1
+// #define L_ENCODER_PIN1 PA12
 // #define L_ENCODER_PIN2 
 
 // reflectance

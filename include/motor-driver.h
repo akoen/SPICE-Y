@@ -8,7 +8,7 @@
 // # define RW_PWM_DUTY 72 - 45
 # define LW_PWM_DUTY 42
 # define RW_PWM_DUTY 50
-# define CHICKEN_WIRE_OFFSET_DUTY 7
+# define CHICKEN_WIRE_OFFSET_DUTY 14
 
 namespace Motors {
     extern const int pwm_clock_freq; // hz

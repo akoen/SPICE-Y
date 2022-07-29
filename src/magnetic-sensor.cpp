@@ -2,7 +2,7 @@
 
 // bool BombDetection::bombEncounteredFlag = false;
 namespace BombDetection {
-    bool bombEncounteredFlag = true;
+    bool bombEncounteredFlag = false;
     bool hasConfiged = false;
 
     void configMagneticSensorPin() {

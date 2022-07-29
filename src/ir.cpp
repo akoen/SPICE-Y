@@ -21,8 +21,8 @@ namespace IR {
         magnitude[0] = goertzelMag(IR_SENS_NUM_READINGS / 2, targetFrequency, sampleFrequency, dataL);
         magnitude[1] = goertzelMag(IR_SENS_NUM_READINGS / 2, targetFrequency, sampleFrequency, dataR);
 
-        // while(!Serial);
-        // Serial.write((uint8_t *) magnitude, 8);
+        while(!Serial);
+        Serial.write((uint8_t *) magnitude, 8);
     }
 
     float calcPID() {

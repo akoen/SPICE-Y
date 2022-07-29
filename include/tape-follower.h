@@ -84,5 +84,7 @@ namespace TapeFollow {
      * Note: doesn't do integral for inverse PWM change
      */ 
     void chickenWireRoutine2(int prevErr, int err);
+
+    bool chickenWireCrossNonEncoder(int rotateTime);
 }
 #endif

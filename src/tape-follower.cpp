@@ -41,10 +41,12 @@ double TapeFollow::calcPidBlackTape() {
     onTapeR = ReflectanceSensors::frontSensorRval;
 
     // chicken wire routine
-    if (onTapeL && onTapeM && onTapeR) {   
-        chickenWireRoutine();
+    if ((onTapeL && onTapeM && onTapeR)) {   
+        // chickenWireRoutine();
         // chickenWireRoutine2(prevErr, err);   
         // this updates prevOnTape and onTape readings - can continue PID
+        Motors::setDir(true, true);
+        Motors::setDutyCycles(20, 20 + Motors::ref_motors_offset + CHICKEN_WIRE_OFFSET_DUTY);
     }
 
     /* discrete errors truth table: (-) = left, (+) = right */
@@ -188,3 +190,87 @@ void TapeFollow::chickenWireRoutine2(int prevErrEntering, int errEntering) {
     // now exiting chicken wire with the same error as incident, so set these errors
     err = errEntering, prevErr = prevErrEntering;
 }
+
+// bool TapeFollow::chickenWireCrossNonEncoder(int rotateTime) {
+//     // cross 
+//     Motors::setDir(true, true);
+//     Motors::setDutyCycles(LW_PWM_DUTY, RW_PWM_DUTY);
+//     Motors::drive();
+
+//     do {
+//         ReflectanceSensors::readFrontReflectanceSensors();
+//         onTapeL = ReflectanceSensors::frontSensorLval;
+//         onTapeM = ReflectanceSensors::frontSensorLval;
+//         onTapeR = ReflectanceSensors::frontSensorLval;
+//     } while (onTapeL && onTapeM && onTapeR);
+//     Motors::stopMotors(1000);
+
+//     // do {
+//     //     ReflectanceSensors::readFrontReflectanceSensors();
+//     //     onTapeL = ReflectanceSensors::frontSensorLval;
+//     //     onTapeM = ReflectanceSensors::frontSensorLval;
+//     //     onTapeR = ReflectanceSensors::frontSensorLval;
+//     // } while (onTapeL && onTapeM && onTapeR);
+//     int rotateCount = 0;
+
+//     int tapeReadingsCount;
+//     bool firstTapeReadingL;
+//     bool firstTapeReadingM;
+//     bool firstTapeReadingR;
+//     // rotate until tape found
+//     // left
+//     Motors::rotateLeft();
+//     long prevTime = millis();
+//     long currTime = prevTime;
+//     while (currTime < prevTime + rotateTime) {
+//         ReflectanceSensors::readFrontReflectanceSensors();
+//         onTapeL = ReflectanceSensors::frontSensorLval;
+//         onTapeM = ReflectanceSensors::frontSensorLval;
+//         onTapeR = ReflectanceSensors::frontSensorLval;
+
+//     }
+//     int rotateCount = 0;
+//     // rotate left - left wheel rotates back, right wheel at rest
+//     // rotate right after
+//     while (rotateCount < 2) {
+//         tapeReadingsCount = 0;
+//         firstTapeReadingL = false;
+//         firstTapeReadingM = false;
+//         firstTapeReadingR = false;
+
+//         if (rotateCount == 0) {
+//             Motors::rotateLeft();
+//         } else {
+//             Motors::rotateRight();
+//         }
+//         while (Encoders::pulseLW >= startEncoderPulses - turnPulsesInterval) {
+//             // look for tape while turning
+//             ReflectanceSensors::readFrontReflectanceSensors();
+//             if (!ReflectanceSensors::frontSensorLval && !ReflectanceSensors::frontSensorMval
+//             && !ReflectanceSensors::frontSensorRval) {
+//                 if (tapeReadingsCount < 1) {
+//                     firstTapeReadingL = ReflectanceSensors::frontSensorLval;
+//                     firstTapeReadingM = ReflectanceSensors::frontSensorMval;
+//                     firstTapeReadingR = ReflectanceSensors::frontSensorRval;
+                    
+//                     tapeReadingsCount++;
+//                 } else {
+//                     // update reflectance values
+//                     prevOnTapeL = firstTapeReadingL;
+//                     prevOnTapeM = firstTapeReadingM;
+//                     prevOnTapeR = firstTapeReadingR;
+//                     onTapeL = ReflectanceSensors::frontSensorLval;
+//                     onTapeM = ReflectanceSensors::frontSensorMval;
+//                     onTapeR = ReflectanceSensors::frontSensorRval;
+//                     Motors::stopMotors();
+//                     return true;
+//                 }
+//             }
+//         }
+//         Motors::stopMotors();
+//     }
+    
+//     // didn't find tape
+//     Motors::stopMotors();    
+//     return false;
+// }
