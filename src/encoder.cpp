@@ -139,6 +139,7 @@ namespace Encoders {
         return true;  
     }
 
+    // TODO: braking and delay option for stopping
     void driveMotorsEncoderPulses(int pulseIntervalLW, int pulseIntervalRW) {
         long startPulseLW = pulseLW;
         long startPulseRW = pulseRW;
@@ -155,21 +156,37 @@ namespace Encoders {
 
         if (dirLW && !dirRW) {  // rotate right
             Motors::rotateRight();  // TODO may cache pwm
+            while (pulseLW < startEncoderPulsesLW + pulseIntervalLW && pulseRW > startEncoderPulsesRW + pulseIntervalRW) {
+
+            }
         } else if (!dirLW && dirRW) {   // rotate left
             Motors::rotateLeft();
+            while (pulseLW > startEncoderPulsesLW + pulseIntervalLW && pulseRW < startEncoderPulsesRW + pulseIntervalRW) {
+                
+            }
         } else {   // fwd or backwards 
             Motors::setDir(dirLW, dirRW);
             Motors::setDutyCycles(LW_PWM_DUTY, RW_PWM_DUTY);    // TODO may cache pwm
             Motors::drive();
+            if (dirLW && dirRW) {
+                while (pulseLW < startEncoderPulsesLW + pulseIntervalLW && pulseRW < startEncoderPulsesRW + pulseIntervalRW) {
+                    /* pulse LW,RW vals should be updated by interrupts */
+                }
+            } else {
+                while (pulseLW > startEncoderPulsesLW + pulseIntervalLW && pulseRW > startEncoderPulsesRW + pulseIntervalRW) {
+                    /* pulse LW,RW vals should be updated by interrupts */
+                }
+            }
         }
-        while (pulseLW < startEncoderPulsesLW + pulseIntervalLW && pulseRW < startEncoderPulsesRW + pulseIntervalRW) {
-            /* pulse LW,RW vals should be updated by interrupts */
-            Serial.print("Pulses LW, RW");
-            Serial.print(" ");
-            Serial.print(pulseLW);
-            Serial.print(pulseRW);
-        }
-        Motors::stopMotors();
+        // TODO fix - negative
+        // while (pulseLW < startEncoderPulsesLW + pulseIntervalLW && pulseRW < startEncoderPulsesRW + pulseIntervalRW) {
+        //     /* pulse LW,RW vals should be updated by interrupts */
+        //     Serial.print("Pulses LW, RW");
+        //     Serial.print(" ");
+        //     Serial.print(pulseLW);
+        //     Serial.print(pulseRW);
+        // }
+        Motors::stopMotors(2000);
     }
 
     void driveMotorsDistance(bool dirFwd, double distance) {
