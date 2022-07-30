@@ -1,5 +1,5 @@
 #include "encoder.h"
-
+sdsdffsdsf
 namespace Encoders {
     // const double Encoders::pulse_per_rev = 1389.9185 / 10.0;  // divide by counter at end, increases pulse width
     const double pulse_per_rev = 131*11 / 10.0;  // divide by counter at end, increases pulse width
@@ -119,6 +119,9 @@ namespace Encoders {
             // execute cached actions in reverse
             int actionLeftPulse = -1 * cachedActionsLeftPulses->top();
             int actionRightPulse = -1 * cachedActionsRightPulses->top();
+
+            // get modes
+
             cachedActionsLeftPulses->pop();
             cachedActionsRightPulses->pop();
 
@@ -139,70 +142,77 @@ namespace Encoders {
         return true;  
     }
 
-    // TODO: braking and delay option for stopping
-    void driveMotorsEncoderPulses(int pulseIntervalLW, int pulseIntervalRW) {
+    void driveMotorsEncoderPulses(int dutyCycle, Motors::MotorAction motorAction, Motors::RotateMode rotateMode, int pulseInterval) {
+        // bad input
+        if ((motorAction == Motors::MotorAction::DRIVE_BACK || motorAction == Motors::MotorAction::DRIVE_FWD) && rotateMode != Motors::RotateMode::NONE) {
+            return;
+        }
+        if ((motorAction == Motors::MotorAction::ROTATE_LEFT || motorAction == Motors::MotorAction::ROTATE_RIGHT) && rotateMode == Motors::RotateMode::NONE) {
+            return;
+        }
+        if (pulseInterval < 0) return;
+
         long startPulseLW = pulseLW;
         long startPulseRW = pulseRW;
 
-        bool dirLW = true, dirRW = true;
-        if (pulseIntervalLW < 0) {
-            dirLW = false;
-        }
-        if (pulseIntervalRW < 0) {
-            dirRW = false;
-        }
-        long startEncoderPulsesLW = pulseLW;
-        long startEncoderPulsesRW = pulseRW;
-
-        if (dirLW && !dirRW) {  // rotate right
-            Motors::rotateRight();  // TODO may cache pwm
-            while (pulseLW < startEncoderPulsesLW + pulseIntervalLW && pulseRW > startEncoderPulsesRW + pulseIntervalRW) {
-
-            }
-        } else if (!dirLW && dirRW) {   // rotate left
-            Motors::rotateLeft();
-            while (pulseLW > startEncoderPulsesLW + pulseIntervalLW && pulseRW < startEncoderPulsesRW + pulseIntervalRW) {
-                
-            }
-        } else {   // fwd or backwards 
-            Motors::setDir(dirLW, dirRW);
-            Motors::setDutyCycles(LW_PWM_DUTY, RW_PWM_DUTY);    // TODO may cache pwm
-            Motors::drive();
-            if (dirLW && dirRW) {
-                while (pulseLW < startEncoderPulsesLW + pulseIntervalLW && pulseRW < startEncoderPulsesRW + pulseIntervalRW) {
-                    /* pulse LW,RW vals should be updated by interrupts */
+        switch (motorAction) {
+            case Motors::FORWARDS:
+                Motors::setDir(true, true);
+                Motors::setDutyCycles(dutyCycle, dutyCycle);
+                Motors::drive();
+                while (pulseLW < startPulseLW + pulseInterval && pulseRW < startPulseRW + pulseInterval);
+            case Motors::BACKWARDS:
+                Motors::setDir(false, false);
+                Motors::setDutyCycles(dutyCycle, dutyCycle);
+                Motors::drive();
+                while (pulseLW > startPulseLW - pulseInterval && pulseRW > startPulseRW - pulseInterval);
+            case Motors::ROTATE_LEFT:
+            case Motors::ROTATE_RIGHT:
+                switch(rotateMode) {
+                    case Motors::BACKWARDS:
+                        if (motorAction == Motors::ROTATE_LEFT) {
+                            Motors::rotate(dutyCycle, false, rotateMode);
+                            while (pulseLW > startPulseLW - pulseInterval);
+                        } else {
+                            Motors::rotate(dutyCycle, true, rotateMode);
+                            while (pulseRW > startPulseRW - pulseInterval);
+                        }
+                    case Motors::FORWARDS:
+                        if (motorAction == Motors::ROTATE_LEFT) {
+                            Motors::rotate(dutyCycle, false, rotateMode);
+                            while (pulseLW > startPulseLW + pulseInterval);
+                        } else {
+                            Motors::rotate(dutyCycle, true, rotateMode);
+                            while (pulseRW > startPulseRW + pulseInterval);
+                        }
+                    case Motors::BOTH_WHEELS:
+                        if (motorAction == Motors::ROTATE_LEFT) {
+                            Motors::rotate(dutyCycle, false, rotateMode);
+                            while (pulseLW > startPulseLW - pulseInterval && pulseRW < startPulseRW + pulseInterval);
+                        } else {
+                            Motors::rotate(dutyCycle, true, rotateMode);
+                            while (pulseLW > startPulseLW + pulseInterval && pulseRW > startPulseRW - pulseInterval);
+                        }
+                    case Motors::NONE:
+                        // bad input
                 }
-            } else {
-                while (pulseLW > startEncoderPulsesLW + pulseIntervalLW && pulseRW > startEncoderPulsesRW + pulseIntervalRW) {
-                    /* pulse LW,RW vals should be updated by interrupts */
-                }
-            }
         }
-        // TODO fix - negative
-        // while (pulseLW < startEncoderPulsesLW + pulseIntervalLW && pulseRW < startEncoderPulsesRW + pulseIntervalRW) {
-        //     /* pulse LW,RW vals should be updated by interrupts */
-        //     Serial.print("Pulses LW, RW");
-        //     Serial.print(" ");
-        //     Serial.print(pulseLW);
-        //     Serial.print(pulseRW);
-        // }
-        Motors::stopMotors(2000);
     }
 
-    void driveMotorsDistance(bool dirFwd, double distance) {
-        if (!dirFwd) distance *= -1;
-
+    void driveMotorsDistance(int dutyCycle, bool dirFwd, double distance) {
         // convert to pulses - distance per pulse = pi*diameter / pulse per rev
-        double distPerPulse = PI * Motors::WHEEL_DIAMETER / (1.0*pulse_per_rev);  // cm
-        int pulsesInterval = round(distance/(1.0*distPerPulse));
+        double distPerPulse = PI * Motors::WHEEL_DIAMETER / pulse_per_rev;  // cm
+        int pulsesInterval = round(distance/distPerPulse);
 
-        driveMotorsEncoderPulses(pulsesInterval, pulsesInterval);
+        Motors::MotorAction driveAction = dirFwd ? Motors::MotorAction::DRIVE_FWD : Motors::MotorAction::DRIVE_BACK;
+        driveMotorsEncoderPulses(dutyCycle, driveAction, Motors::RotateMode::NONE, pulsesInterval);
     }
 
-    void rotateMotorsDegs(bool dirRight, double angle) {
+    void rotateMotorsDegs(int dutyCycle, bool dirRight, Motors::RotateMode rotateMode, double angle) {
         double anglePerPulse = 180 * (PI*Motors::WHEEL_DIAMETER / pulse_per_rev) / Motors::WHEELS_WIDTH;
+        
         int pulses = round(angle / anglePerPulse);
-        if (dirRight) driveMotorsEncoderPulses(0, pulses);
-        else driveMotorsEncoderPulses(pulses, 0);
+        Motors::MotorAction driveAction = dirRight ? Motors::MotorAction::ROTATE_RIGHT : Motors::MotorAction::ROTATE_LEFT;
+        driveMotorsEncoderPulses(dutyCycle, driveAction, rotateMode, pulses);
     }
 }

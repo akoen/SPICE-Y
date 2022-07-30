@@ -5,7 +5,7 @@
 #include "motor-driver.h"
 #include <Arduino.h>
 #include <stack>
-
+#include <tuple>
 namespace Encoders {
     extern const double pulse_per_rev;  // divide by counter at end, increases pulse width
 
@@ -54,7 +54,7 @@ namespace Encoders {
      * Action is added to the cache once it has ended and must be ended prior to starting a new action.
      * Returns true if above statement is satisfed. 
      */ 
-    bool startAddActionCache();
+    bool startAddActionCache(Motors::MotorAction motorAction, Motors::RotateMode rotateMode);
     
     /**
      * Current action in progress is ended and added to the cache.
@@ -77,7 +77,7 @@ namespace Encoders {
      * 
      * This method is blocking (i.e. all other processes must wait until this finished)
      */ 
-    void driveMotorsEncoderPulses(int pulseIntervalLW, int pulseIntervalRW);
+    void driveMotorsEncoderPulses(int dutyCycle, Motors::MotorAction motorAction, Motors::RotateMode rotateMode, int pulseInterval);
 
     /* degs to pulses: assume arc length = distance of wheel driven (no slipping)
      * dist = arc length = (deg / 180.0) * wheel width
@@ -96,11 +96,11 @@ namespace Encoders {
      * 
      * This method is blocking (i.e. all other processes must wait until this finished)
      */ 
-    void driveMotorsDistance(bool dirFwd, double distance);
+    void driveMotorsDistance(int dutyCycle, bool dirFwd, double distance);
 
     /**
      * Rotates the motors right (true) or left (false) a certain angle
      */ 
-    void rotateMotorsDegs(bool dirRight, double angle);
+    void rotateMotorsDegs(int dutyCycle, bool dirRight, Motors::RotateMode mode, double angle);
 }
 #endif

@@ -12,38 +12,33 @@
 
 // the setup routine runs once when you press reset:
 void setup() {
-    Serial.begin(115200, SERIAL_8N1);
-    Setup::timerHeartbeatInit();
-    Setup::ADC();
+    // Serial.begin(115200, SERIAL_8N1);
+    // Setup::timerHeartbeatInit();
+    // Setup::ADC();
 
     Motors::configMotorPins();
     Encoders::configEncoderPins();
-    Sonars::configSonarPins();
-    ReflectanceSensors::configFrontReflectanceSensors();
-    Servos::configArmClawPins();
+    // Sonars::configSonarPins();
+    // ReflectanceSensors::configFrontReflectanceSensors();
+    // Servos::configArmClawPins();
 
-    /* Run the ADC calibration */
-    HAL_ADCEx_Calibration_Start(&AdcHandle);
-
-    // /* Start ADC conversion on regular group with transfer by DMA */
-    HAL_ADC_Start_DMA(&AdcHandle, (uint32_t *)DMA1Data, IR_SENS_NUM_READINGS);
-    Serial.println("Serial connected");
+    // /* Run the ADC calibration */
+    // HAL_ADCEx_Calibration_Start(&AdcHandle);
+    // pinMode(PA12, OUTPUT);
+    // // /* Start ADC conversion on regular group with transfer by DMA */
+    // HAL_ADC_Start_DMA(&AdcHandle, (uint32_t *)DMA1Data, IR_SENS_NUM_READINGS);
+    // Serial.println("Serial connected");
 }
 void pwmServoTest();
 void loop() {
-    // ReflectanceSensors::readFrontReflectanceSensors();
-    // ReflectanceSensors::printFrontReflectance();
-    // TreasureDetection::obtainFirstTreasure();
-    // Encoders::startAddActionCache();
-    // Motors::setDir(true, true);
-    // Motors::setDutyCycles(0,RW_PWM_DUTY);
-    // Motors::drive();
-    // Encoders::driveMotorsDistance(true, 20);
-    // Encoders::endAddActionCache();
-    // Encoders::executeReverseCache();
+    Encoders::startAddActionCache();
+    Encoders::driveMotorsDistance(true, 20);
+    Motors::stopWithBrake(Motors::FORWARDS, Motors::NONE, LW_)
+    Encoders::endAddActionCache();
+    // Encoders::executeReverseCache(2000);
     // TapeFollow::driveWithPid();
     // Serial.print(HIGH);
-    IR::driveWithPID();
+    // IR::driveWithPID();
 }
 
 void pwmServoTest() {
