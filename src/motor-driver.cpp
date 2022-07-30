@@ -6,7 +6,8 @@ const int Motors::ref_duty_cycle = 80; // %
 const int Motors::ref_pwm_duty_cycle_LW = LW_PWM_DUTY; // %
 const int Motors::ref_pwm_duty_cycle_RW = RW_PWM_DUTY; // %
 const int Motors::default_rotate_pwm = 8; // %
-const int Motors::ref_motors_offset = Motors::ref_pwm_duty_cycle_RW - Motors::ref_pwm_duty_cycle_LW; // > 0 for RW, < 0 for LW
+const int Motors::default_motors_offset = Motors::ref_pwm_duty_cycle_RW - Motors::ref_pwm_duty_cycle_LW; // > 0 for RW, < 0 for LW
+const int Motors::default_motors_stop_millis = 500;
 
 const double Motors::WHEELS_WIDTH = 24.5;   // cm
 const double Motors::WHEEL_DIAMETER = 6.4; // cm
@@ -90,8 +91,8 @@ void Motors::stopMotors(int delayMillis) {
 }
 
 void Motors::rotateLeft(int dutyCycle, bool bothWheels) {
-    if (dutyCycle < ref_motors_offset) {
-        dutyCycle = ref_motors_offset;
+    if (dutyCycle < default_motors_offset) {
+        dutyCycle = default_motors_offset;
     }
     if (!bothWheels) setDutyCycles(dutyCycle, 0);  // note: offset best to be an even num
     else setDutyCycles(dutyCycle, dutyCycle+ref_duty_cycle);  // note: offset best to be an even num
@@ -100,45 +101,77 @@ void Motors::rotateLeft(int dutyCycle, bool bothWheels) {
 }
 
 void Motors::rotateRight(int dutyCycle, bool bothWheels) {    
-    if (dutyCycle < ref_motors_offset) {
-        dutyCycle = ref_motors_offset;
+    if (dutyCycle < default_motors_offset) {
+        dutyCycle = default_motors_offset;
     }
-    if (!bothWheels) setDutyCycles(0, dutyCycle+ref_motors_offset);  // note: offset best to be an even num
-    else setDutyCycles(dutyCycle, dutyCycle+ref_motors_offset);
+    if (!bothWheels) setDutyCycles(0, dutyCycle+default_motors_offset);  // note: offset best to be an even num
+    else setDutyCycles(dutyCycle, dutyCycle+default_motors_offset);
     setDir(true, false);
     drive();
 }
 
-void Motors::rotate(int dutyCycle, bool rotateRight, bool bothWheels) {
-    if (dutyCycle < default_rotate_pwm) dutyCycle = default_rotate_pwm;
+void Motors::rotate(int dutyCycle, bool rotateRight, RotateMode rotateMode) {
+    if (dutyCycle < default_motors_offset) dutyCycle = default_motors_offset;
 
-    if(rotateRight) {
-        setDir(true, false);
-        if (!bothWheels) setDutyCycles(0, dutyCycle+ref_motors_offset);  // note: offset best to be an even num
-        else setDutyCycles(dutyCycle, dutyCycle+ref_motors_offset);
-    } else {
-        setDir(false, true);
-        if (!bothWheels) setDutyCycles(dutyCycle-ref_motors_offset, 0);  // note: offset best to be an even num
-        else setDutyCycles(dutyCycle, dutyCycle+ref_motors_offset);
+    bool _dirLW, _dirRW;
+    int dutyLW, dutyRW;
+
+    if (rotateRight) _dirRW = false, _dirLW = true;
+    else _dirRW = true, _dirLW = false;
+    setDir(_dirLW, _dirRW);
+
+    switch (rotateMode) {
+        case BACKWARDS:
+            if (rotateRight){
+                setDutyCycles(0, dutyCycle);
+            } else {
+                setDutyCycles(dutyCycle, 0);
+            }
+            break;
+        case FORWARDS:
+            if (rotateRight) {
+                setDutyCycles(dutyCycle, 0);
+            } else {
+                setDutyCycles(0, dutyCycle);
+            }
+            break;
+        case BOTH_WHEELS:
+            setDutyCycles(dutyCycle, dutyCycle + default_motors_offset);
+            break;
     }
-
     drive();
 }
 
-void Motors::stopMotorsWithBrake(MotorAction action, int dutyCycle, int durationMillis, bool rotateBothWheels, int stopMotorsDelayMillis) {
-    switch(action) {
+void Motors::stopWithBrake(MotorAction initialAction, RotateMode initialRotateMode, int initialDutyCycle, int durationMillis, int stopMotorsDelayMillis) {
+    // bad input
+    if ((initialAction == MotorAction::DRIVE_BACK || initialAction == MotorAction::DRIVE_FWD) && initialRotateMode != RotateMode::NONE) {
+        return;
+    }
+    if ((initialAction == MotorAction::ROTATE_LEFT || initialAction == MotorAction::ROTATE_RIGHT) && initialRotateMode == RotateMode::NONE) {
+        return;
+    }  
+    bool brakeRotateRight = false;
+    RotateMode brakeRotateMode = NONE;
+
+    switch(initialAction) {
         case DRIVE_FWD:
-            setDutyCycles(dutyCycle, dutyCycle+ref_motors_offset);
-            setDir(true, true);
-            drive();
-        case DRIVE_BACK:
-            setDutyCycles(dutyCycle, dutyCycle+ref_motors_offset);
+            setDutyCycles(initialDutyCycle, initialDutyCycle+default_motors_offset);
             setDir(false, false);
             drive();
-        case ROTATE_LEFT:
-            rotateLeft(dutyCycle, rotateBothWheels);
+        case DRIVE_BACK:
+            setDutyCycles(initialDutyCycle, initialDutyCycle+default_motors_offset);
+            setDir(true, true);
+            drive();
+        case ROTATE_LEFT: 
         case ROTATE_RIGHT:
-            rotateRight(dutyCycle, rotateBothWheels);
+            if (initialAction == ROTATE_LEFT) brakeRotateRight = true;
+            if (initialAction == ROTATE_LEFT) brakeRotateRight = false;
+
+            if (initialRotateMode == FORWARDS) brakeRotateMode = BACKWARDS;
+            else if (initialRotateMode == BACKWARDS) brakeRotateMode = FORWARDS;
+            else brakeRotateMode = BOTH_WHEELS;
+
+            rotate(initialDutyCycle, brakeRotateRight, brakeRotateMode);
     }
     delay(durationMillis);
     Motors::stopMotors(stopMotorsDelayMillis);

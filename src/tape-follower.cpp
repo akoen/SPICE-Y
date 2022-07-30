@@ -42,11 +42,13 @@ double TapeFollow::calcPidBlackTape() {
 
     // chicken wire routine
     if ((onTapeL && onTapeM && onTapeR)) {   
-        // chickenWireRoutine();
+        chickenWireRoutine();
         // chickenWireRoutine2(prevErr, err);   
+
         // this updates prevOnTape and onTape readings - can continue PID
-        Motors::setDir(true, true);
-        Motors::setDutyCycles(20, 20 + Motors::ref_motors_offset + CHICKEN_WIRE_OFFSET_DUTY);
+
+        // Motors::setDir(true, true);
+        // Motors::setDutyCycles(20, 20 + Motors::default_motors_offset + CHICKEN_WIRE_OFFSET_DUTY);
     }
 
     /* discrete errors truth table: (-) = left, (+) = right */
@@ -102,10 +104,9 @@ void TapeFollow::driveWithPid() {
 void TapeFollow::chickenWireRoutine() {
     // drive across bridge
     Encoders::driveMotorsDistance(true, CHICKEN_WIRE_DIST);
-    Motors::setDir(true, true);
-    Motors::setDutyCycles(true, true);
-    Motors::drive();
-    // Encoders::driveMotorsDistance(true, CHICKEN_WIRE_DIST);
+    delay(10);
+    Motors::stopWithBrake(Motors::DRIVE_FWD, Motors::NONE, LW_PWM_DUTY, 50);
+
     // find black tape
     findBlackTape(DEF_TAPE_SEARCH_ANGLE);
 }
@@ -123,6 +124,7 @@ bool TapeFollow::findBlackTape(double angle) {
     bool firstTapeReadingR;
     long startEncoderPulses;
 
+    Motors::RotateMode rotateMode = Motors::RotateMode::FORWARDS;
     // rotate left - left wheel rotates back, right wheel at rest
     // rotate right after
     while (rotateCount < 2) {
@@ -133,10 +135,12 @@ bool TapeFollow::findBlackTape(double angle) {
 
         if (rotateCount == 0) {
             startEncoderPulses = Encoders::pulseLW;
-            Motors::rotateLeft();
+            // Motors::rotateLeft();
+            Motors::rotate(Motors::default_rotate_pwm, false, rotateMode);
         } else {
             startEncoderPulses = Encoders::pulseRW;
-            Motors::rotateRight();
+            // Motors::rotateRight();
+            Motors::rotate(Motors::default_rotate_pwm, true, rotateMode);
         }
         while (Encoders::pulseLW >= startEncoderPulses - turnPulsesInterval) {
             // look for tape while turning
@@ -157,16 +161,25 @@ bool TapeFollow::findBlackTape(double angle) {
                     onTapeL = ReflectanceSensors::frontSensorLval;
                     onTapeM = ReflectanceSensors::frontSensorMval;
                     onTapeR = ReflectanceSensors::frontSensorRval;
-                    Motors::stopMotors();
+
+                    // stop
+                    if (rotateCount == 0) {
+                        Motors::stopWithBrake(Motors::ROTATE_LEFT, rotateMode, Motors::default_rotate_pwm, 50);
+                    } else {
+                        Motors::stopWithBrake(Motors::ROTATE_RIGHT, rotateMode, Motors::default_rotate_pwm, 50);
+                    }
                     return true;
                 }
             }
         }
-        Motors::stopMotors();
+        // stop
+        if (rotateCount == 0) {
+            Motors::stopWithBrake(Motors::ROTATE_LEFT, rotateMode, Motors::default_rotate_pwm, 50);
+        } else {
+            Motors::stopWithBrake(Motors::ROTATE_RIGHT, rotateMode, Motors::default_rotate_pwm, 50);
+        }
     }
-    
-    // didn't find tape
-    Motors::stopMotors();    
+    // didn't find tape - already stopped
     return false;
 }
 

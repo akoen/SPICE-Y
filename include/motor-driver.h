@@ -18,7 +18,9 @@ namespace Motors {
 
     extern const int default_rotate_pwm; // %
 
-    extern const int ref_motors_offset; // %, > 0 for RW, < 0 for LW
+    extern const int default_motors_offset; // %, > 0 for RW, < 0 for LW
+    extern const int default_motors_stop_millis; // %, > 0 for RW, < 0 for LW
+
 
     extern const double WHEELS_WIDTH;
     extern const double WHEEL_DIAMETER;
@@ -31,9 +33,20 @@ namespace Motors {
     extern bool isRWdirFwd;
 
     enum MotorAction {
-        DRIVE_FWD, DRIVE_BACK, ROTATE_LEFT, ROTATE_RIGHT  
+        DRIVE_FWD,
+        DRIVE_BACK, 
+        ROTATE_LEFT, 
+        ROTATE_RIGHT  
     };
 
+    enum RotateMode {
+        BACKWARDS,
+        FORWARDS,
+        BOTH_WHEELS,
+        NONE
+    };
+
+    
     void configMotorPins();
     /**
      * Drives the motors with its duty cycles in the defined direction 
@@ -57,7 +70,7 @@ namespace Motors {
      * Stops the motors. Halts the program for the specified duration (ms) to account
      * for motor inertia. 
      */
-    void stopMotors(int delayMillis=500);
+    void stopMotors(int delayMillis=default_motors_stop_millis);
                 
     /**
      * Rotates motor left with the given pwm duty cycle.
@@ -73,12 +86,13 @@ namespace Motors {
     void rotateRight(int dutyCycle=default_rotate_pwm, bool bothWheels=false);
 
     
-    void rotate(int dutyCycle, bool rotateRight, bool bothWheels=false);
+    void rotate(int dutyCycle, bool rotateRight, RotateMode mode);
 
     /**
-     * Stops the motors by applying the opposite action at a specifc pwm duty cycle for a specified duration of the driving action.
+     * Stops the motors by applying the opposite action at a specifc pwm * 
+     * duty cycle for a specified duration of the driving action.
      */
-    void stopMotorsWithBrake(MotorAction action, int dutyCycle, int durationMillis, bool rotateBothWheels=false, int stopMotorsDelayMillis=500);
+    void Motors::stopWithBrake(MotorAction initialAction, RotateMode initialRotateMode, int initialDutyCycle, int durationMillis, int stopMotorsDelayMillis=default_motors_stop_millis);
 }
 
 #endif

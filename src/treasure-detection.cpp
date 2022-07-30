@@ -36,7 +36,7 @@ namespace TreasureDetection {
             // if inf loop --> return false
         } while (rightSonarDist > firstSideSonarTreausureDist + firstSideSonarTreausureDistErr || rightSonarDist < firstSideSonarTreausureDist - firstSideSonarTreausureDistErr);
         delay(10);
-        Motors::stopMotorsWithBrake(Motors::DRIVE_BACK, LW_PWM_DUTY - 10, 50);
+        Motors::stopWithBrake(Motors::DRIVE_FWD, Motors::NONE, LW_PWM_DUTY, 50);
         // Motors::setDir(false, false);
         // Motors::setDutyCycles(LW_PWM_DUTY-10, RW_PWM_DUTY-10);
         // Motors::drive();
@@ -50,7 +50,8 @@ namespace TreasureDetection {
         // turn until front sonar detects treasure
         Encoders::startAddActionCache();
 
-        Motors::rotateRight();
+        // Motors::rotateRight();
+        Motors::rotate(Motors::default_rotate_pwm, true, Motors::BACKWARDS);
         double distFrontSonar = 0;
         do {
             distFrontSonar = Sonars::getDistanceSinglePulse(SONAR_TRIG_PIN_ALL, SONAR_ECHO_PIN_F);
@@ -59,13 +60,13 @@ namespace TreasureDetection {
             // TODO may need "if fail" handler
         } while(distFrontSonar > firstFrontSonarTreausureDist + firstFrontSonarTreausureDistErr || distFrontSonar < firstFrontSonarTreausureDist - firstFrontSonarTreausureDistErr);   
         delay(1);
-        // Motors::stopMotorsWithBrake(Motors::ROTATE_LEFT, Motors::default_rotate_pwm+10, 500);
-        Motors::setDir(false, true);
-        Motors::setDutyCycles(0, Motors::default_rotate_pwm);
-        Motors::drive();
+        Motors::stopWithBrake(Motors::ROTATE_RIGHT, Motors::BACKWARDS, Motors::default_rotate_pwm+10, 200);
+        // Motors::setDir(false, true);
+        // Motors::setDutyCycles(0, Motors::default_rotate_pwm);
+        // Motors::drive();
         // Motors::rotateLeft(Motors::default_rotate_pwm+25);
-        delay(200);
-        Motors::stopMotors();
+        // delay(200);
+        // Motors::stopMotors();
         
         Encoders::endAddActionCache();
 
@@ -74,8 +75,10 @@ namespace TreasureDetection {
         // drive fwd when front sonar detects treasure
         Encoders::startAddActionCache();
 
+
+        int driveFwdTreasureDuty = 15;
         Motors::setDir(true, true);
-        Motors::setDutyCycles(15, 15+Motors::ref_motors_offset);    // may need to be slower
+        Motors::setDutyCycles(driveFwdTreasureDuty, driveFwdTreasureDuty+Motors::default_motors_offset);    // may need to be slower
         Motors::drive();
         
         // collect treasure when in range
@@ -89,7 +92,7 @@ namespace TreasureDetection {
 
             ReflectanceSensors::printFrontReflectance();
         } while (distFrontSonarTreasureClaw > maxTreasureInClawDist);
-        Motors::stopMotorsWithBrake(Motors::DRIVE_BACK, 15, 30);
+        Motors::stopWithBrake(Motors::DRIVE_FWD, Motors::NONE, driveFwdTreasureDuty, 30);
 
         Encoders::endAddActionCache();
     
