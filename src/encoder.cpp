@@ -1,5 +1,5 @@
 #include "encoder.h"
-sdsdffsdsf
+
 namespace Encoders {
     // const double Encoders::pulse_per_rev = 1389.9185 / 10.0;  // divide by counter at end, increases pulse width
     const double pulse_per_rev = 131*11 / 10.0;  // divide by counter at end, increases pulse width
@@ -11,14 +11,10 @@ namespace Encoders {
     volatile long pulseRW = 0;
     double posRW = 0;
 
-    volatile long cacheStartPulseLW;
-    volatile long cacheStartPulseRW;
+    volatile long cacheStartPulse;
+    volatile long cacheEndPulse;
 
-    volatile long cacheEndPulseLW;
-    volatile long cacheEndPulseRW;
-
-    std::stack<int>* cachedActionsLeftPulses;  
-    std::stack<int>* cachedActionsRightPulses;
+    std::stack<std::tuple<Motors::MotorAction, Motors::RotateMode, int, int>*>* cachedActions;     
     // TODO: may add pwm speed for each motor as well
 
     bool cacheCreated = false;
@@ -82,18 +78,52 @@ namespace Encoders {
         posRW = 0;
     }
 
-    bool startAddActionCache() {
+    bool startAddActionCache(Motors::MotorAction motorAction, Motors::RotateMode rotateMode, int dutyCycle) {
+        // bad input
+        if ((motorAction == Motors::MotorAction::DRIVE_BACK || motorAction == Motors::MotorAction::DRIVE_FWD) && rotateMode != Motors::RotateMode::NONE) {
+            return false;
+        }
+        if ((motorAction == Motors::MotorAction::ROTATE_LEFT || motorAction == Motors::MotorAction::ROTATE_RIGHT) && rotateMode == Motors::RotateMode::NONE) {
+            return false;
+        }
         if (cacheAddInProgress) return false;
-        
-        if (!cacheCreated) {
-            cachedActionsLeftPulses = new std::stack<int>;
-            cachedActionsRightPulses = new std::stack<int>;
 
+        if (!cacheCreated) {
+            cachedActions = new std::stack<std::tuple<Motors::MotorAction, Motors::RotateMode, int, int>*>();
             cacheCreated = true;
         } 
-        cacheStartPulseLW = pulseLW;
-        cacheStartPulseRW = pulseRW;
-
+        std::tuple<Motors::MotorAction, Motors::RotateMode, int, int>* tuplePtr = 
+        new std::tuple<Motors::MotorAction, Motors::RotateMode, int, int>(motorAction, rotateMode, dutyCycle, 0);
+        cachedActions->push(tuplePtr);
+        
+        switch (motorAction) {
+            case Motors::MotorAction::DRIVE_FWD:
+            case Motors::MotorAction::DRIVE_BACK:
+                cacheStartPulse = pulseRW;  // pulses travelled for LW RW should be same (ideally - if wheels rotate at same speed at given duty cycle)
+            case Motors::MotorAction::ROTATE_LEFT:
+            case Motors::MotorAction::ROTATE_RIGHT:
+                switch(rotateMode) {
+                    case Motors::RotateMode::BACKWARDS:
+                        if (motorAction == Motors::MotorAction::ROTATE_LEFT) {
+                            // LW moves
+                            cacheStartPulse = pulseLW;
+                        } else {
+                            // RW moves 
+                            cacheStartPulse = pulseRW; 
+                        }
+                    case Motors::RotateMode::FORWARDS:
+                        if (motorAction == Motors::MotorAction::ROTATE_LEFT) {
+                            // RW moves
+                            cacheStartPulse = pulseRW;
+                        } else {
+                            // LW moves 
+                            cacheStartPulse = pulseLW; 
+                        }
+                    case Motors::RotateMode::BOTH_WHEELS:
+                        // LW, RW moves - ideally same for given duty cycle
+                        cacheStartPulse = pulseRW;
+                }
+        }
         cacheAddInProgress = true;
 
         return true;
@@ -101,12 +131,39 @@ namespace Encoders {
 
     bool endAddActionCache() {
         if (!cacheCreated || !cacheAddInProgress) return false;
-
-        cacheEndPulseLW = pulseLW;
-        cacheEndPulseRW = pulseRW;    
-        cachedActionsLeftPulses->push((int)(cacheEndPulseLW - cacheStartPulseLW));
-        cachedActionsRightPulses->push((int)(cacheEndPulseRW - cacheStartPulseRW));
+        Motors::MotorAction motorAction = std::get<0>(*cachedActions->top());
+        Motors::RotateMode rotateMode = std::get<1>(*cachedActions->top());;
         
+        switch (motorAction) {
+            case Motors::MotorAction::DRIVE_FWD:
+            case Motors::MotorAction::DRIVE_BACK:
+                cacheEndPulse = pulseRW;  // pulses travelled for LW RW should be same (ideally - if wheels rotate at same speed at given duty cycle)
+            case Motors::MotorAction::ROTATE_LEFT:
+            case Motors::MotorAction::ROTATE_RIGHT:
+                switch(rotateMode) {
+                    case Motors::RotateMode::BACKWARDS:
+                        if (motorAction == Motors::MotorAction::ROTATE_LEFT) {
+                            // LW moves
+                            cacheEndPulse = pulseLW;
+                        } else {
+                            // RW moves 
+                            cacheEndPulse = pulseRW; 
+                        }
+                    case Motors::RotateMode::FORWARDS:
+                        if (motorAction == Motors::MotorAction::ROTATE_LEFT) {
+                            // RW moves
+                            cacheEndPulse = pulseRW;
+                        } else {
+                            // LW moves 
+                            cacheEndPulse = pulseLW; 
+                        }
+                    case Motors::RotateMode::BOTH_WHEELS:
+                        // LW, RW moves - ideally same for given duty cycle
+                        cacheEndPulse = pulseRW;
+                }
+        }
+        std::get<3>(*cachedActions->top()) = cacheEndPulse - cacheStartPulse;
+
         cacheAddInProgress = false;
 
         return true;
@@ -115,27 +172,41 @@ namespace Encoders {
     bool executeReverseCache(int actionDelayMillis) {
         if (!cacheCreated || cacheAddInProgress) return false;
 
-        while (!cachedActionsLeftPulses->empty() && !cachedActionsRightPulses->empty()) {        
-            // execute cached actions in reverse
-            int actionLeftPulse = -1 * cachedActionsLeftPulses->top();
-            int actionRightPulse = -1 * cachedActionsRightPulses->top();
+        while (!cachedActions->empty()) {        
+            // // execute cached actions in reverse
 
-            // get modes
+            Motors::MotorAction motorAction;
+            Motors::RotateMode rotateMode;
+            int dutyCycle, pulseInterval;
+            
+            std::tuple<Motors::MotorAction, Motors::RotateMode, int, int>* topCachedAction = cachedActions->top();
+            std::tie(motorAction, rotateMode, dutyCycle, pulseInterval) = *topCachedAction;
+            
+            Motors::MotorAction inverseAction;
+            Motors::RotateMode inverseRotate;
 
-            cachedActionsLeftPulses->pop();
-            cachedActionsRightPulses->pop();
+            // get inverse action
+            std::tie(inverseAction, inverseRotate) = Motors::getInverseDrive(motorAction, rotateMode);
+            
+            int inversePulseInterval = -pulseInterval;
 
-            driveMotorsEncoderPulses(actionLeftPulse, actionRightPulse);
+            // pop from stack (and delete from heap)
+            cachedActions->pop();
+            
+            delete topCachedAction;
+            topCachedAction = nullptr;
 
-            delay(actionDelayMillis);
+            // execute             
+            driveMotorsEncoderPulses(dutyCycle, inverseAction, inverseRotate, inversePulseInterval);
+
+            // stop
+            delay(10);
+            Motors::stopWithBrake(inverseAction, inverseRotate, dutyCycle, 10, actionDelayMillis);
         }
-
-        // clear from heap
-        delete cachedActionsLeftPulses;
-        delete cachedActionsRightPulses;
-
-        cachedActionsLeftPulses = nullptr;
-        cachedActionsRightPulses = nullptr; 
+    
+        // clear entire cache from heap
+        delete cachedActions;
+        cachedActions = nullptr;
 
         cacheCreated = false;
         
@@ -195,6 +266,7 @@ namespace Encoders {
                         }
                     case Motors::NONE:
                         // bad input
+                        break;
                 }
         }
     }

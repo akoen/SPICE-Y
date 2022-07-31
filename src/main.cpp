@@ -31,11 +31,15 @@ void setup() {
 }
 void pwmServoTest();
 void loop() {
-    Encoders::startAddActionCache();
-    Encoders::driveMotorsDistance(true, 20);
-    Motors::stopWithBrake(Motors::FORWARDS, Motors::NONE, LW_)
+    Motors::MotorAction action = Motors::MotorAction::DRIVE_FWD;
+    Motors::RotateMode rotate = Motors::RotateMode::NONE;
+    int duty = LW_PWM_DUTY;
+    Encoders::startAddActionCache(action, rotate, duty);
+    Encoders::driveMotorsDistance(duty, true, 20);
+    delay(10);
+    Motors::stopWithBrake(action, rotate, LW_PWM_DUTY, 10);
     Encoders::endAddActionCache();
-    // Encoders::executeReverseCache(2000);
+    Encoders::executeReverseCache(2000);
     // TapeFollow::driveWithPid();
     // Serial.print(HIGH);
     // IR::driveWithPID();

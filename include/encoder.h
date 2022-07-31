@@ -17,15 +17,12 @@ namespace Encoders {
     extern volatile long pulseRW;
     extern double posRW;
 
-    extern volatile long cacheStartPulseLW;
-    extern volatile long cacheStartPulseRW;
-
-    extern volatile long cacheEndPulseLW;
-    extern volatile long cacheEndPulseRW;
+    extern volatile long cacheStartPulse;
+    extern volatile long cacheEndPulse;
 
     // + for fwd, - for back
-    extern std::stack<int> *cachedActionsLeftPulses;  
-    extern std::stack<int> *cachedActionsRightPulses;
+    // drive action, rotate mode, duty cycle, pulse interval
+    extern std::stack<std::tuple<Motors::MotorAction, Motors::RotateMode, int, int>*>* cachedActions;  
 
     extern bool cacheCreated;
     extern bool cacheAddInProgress;
@@ -54,7 +51,7 @@ namespace Encoders {
      * Action is added to the cache once it has ended and must be ended prior to starting a new action.
      * Returns true if above statement is satisfed. 
      */ 
-    bool startAddActionCache(Motors::MotorAction motorAction, Motors::RotateMode rotateMode);
+    bool startAddActionCache(Motors::MotorAction motorAction, Motors::RotateMode rotateMode, int dutyCycle);
     
     /**
      * Current action in progress is ended and added to the cache.

@@ -103,7 +103,7 @@ void TapeFollow::driveWithPid() {
 
 void TapeFollow::chickenWireRoutine() {
     // drive across bridge
-    Encoders::driveMotorsDistance(true, CHICKEN_WIRE_DIST);
+    Encoders::driveMotorsDistance(LW_PWM_DUTY - 10, true, CHICKEN_WIRE_DIST);
     delay(10);
     Motors::stopWithBrake(Motors::DRIVE_FWD, Motors::NONE, LW_PWM_DUTY, 50);
 
@@ -186,7 +186,7 @@ bool TapeFollow::findBlackTape(double angle) {
 void TapeFollow::chickenWireRoutine2(int prevErrEntering, int errEntering) {
     Motors::stopMotors();
     // first half - drive straight
-    Encoders::driveMotorsDistance(true, CHICKEN_WIRE_DIST / 2.0);
+    Encoders::driveMotorsDistance(LW_PWM_DUTY - 10, true, CHICKEN_WIRE_DIST / 2.0);
 
     // second half -- drive straight in the other way, so rotate using the pwm change due to the inverse errors
     Motors::stopMotors();
@@ -198,7 +198,7 @@ void TapeFollow::chickenWireRoutine2(int prevErrEntering, int errEntering) {
     Motors::stopMotors();
 
     // drive straight
-    Encoders::driveMotorsDistance(true, CHICKEN_WIRE_DIST / 2.0);
+    Encoders::driveMotorsDistance(LW_PWM_DUTY - 10, true, CHICKEN_WIRE_DIST / 2.0);
 
     // now exiting chicken wire with the same error as incident, so set these errors
     err = errEntering, prevErr = prevErrEntering;
