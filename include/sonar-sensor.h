@@ -6,10 +6,17 @@
 
 namespace Sonars {
     extern const double speed_sound; // cm/s
+    
+    enum SonarType {
+        RIGHT,
+        LEFT,
+        MIDDLE
+    };
 
     void configSonarPins();
     /**
-     * Gets the distance of a single pulse from the specified
+     * Gets the distance of a single pulse from the specified.  delays the program by 60ms to
+     * account for interference with previous pulses.
      * Note: pulse duration min. 10 microseconds, which is default.
      */
     double getDistanceSinglePulse(int trigPin, int echoPin, double pulseDuration=10);

@@ -72,7 +72,7 @@ namespace Motors {
      * Stops the motors. Halts the program for the specified duration (ms) to account
      * for motor inertia. 
      */
-    void stopMotors(int delayMillis=default_motors_stop_millis);
+    void stopMotorsPWM(int delayMillis=default_motors_stop_millis);
                 
     /**
      * Rotates motor left with the given pwm duty cycle.
@@ -91,10 +91,10 @@ namespace Motors {
     void rotate(int dutyCycle, bool rotateRight, RotateMode mode);
 
     /**
-     * Stops the motors by applying the opposite action at a specifc pwm * 
+     * Stops the motors by applying the opposite action at a specifc pwm
      * duty cycle for a specified duration of the driving action.
      */
-    void stopWithBrake(MotorAction initialAction, RotateMode initialRotateMode, int initialDutyCycle, int durationMillis, int stopMotorsDelayMillis=default_motors_stop_millis);
+    void stopWithBrake(MotorAction initialAction, RotateMode initialRotateMode, int initialDutyCycle, int durationMillis, int stopMotorsPWMDelayMillis=default_motors_stop_millis);
 }
 
 #endif

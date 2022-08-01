@@ -4,28 +4,33 @@
 #include "encoder.h"
 
 namespace TreasureDetection {
-    const double sideSonarTreasureDists[5] = {20, 20, 20, 20, 20}; // cm
-    const double sideSonarTreasureDistsErr[5] = {12}; // cm
-    const double frontSonarTreasureDists[5] = {20, 20, 20, 20, 20}; // cm
-    const double frontSonarTreasureDistsErr[5] = {10}; // cm 
-    const double maxTreasureInClawDist = 16; // cm
-    const double maxTreasureInClawDistErr = 0; // cm
+    // 6 potential treasures that needs to be located 
+    const double side_sonar_treasure_dists[6] = {20, 20, 20, 20, 20, 20}; // cm
+    const double side_sonar_treasure_dists_err[6] = {12}; // cm
+    const double front_sonar_treasure_dists[6] = {20, 20, 20, 20, 20, 20}; // cm
+    const double front_sonar_treasure_dists_err[6] = {10}; // cm 
+    const double treasure_in_claw_dist = 16; // cm
+    const double treasure_in_claw_dist_err = 0; // cm
 
-    bool obtainFirstTreasure() {
+    const double def_drive_to_treasure_duty = 15; // %
+
+    bool obtainTapeTreasure(int treasureNum) {
+        // bad input
+        if (treasureNum != 1 || treasureNum != 2) return false;
+
         Servos::configArmClawPins();
 
-        double firstSideSonarTreausureDist = sideSonarTreasureDists[0];
-        double firstSideSonarTreausureDistErr = sideSonarTreasureDistsErr[0];
+        double firstSideSonarTreausureDist = side_sonar_treasure_dists[treasureNum-1];
+        double firstSideSonarTreausureDistErr = side_sonar_treasure_dists_err[treasureNum-1];
         
-        double firstFrontSonarTreausureDist = frontSonarTreasureDists[0];
-        double firstFrontSonarTreausureDistErr = frontSonarTreasureDistsErr[0];
+        double firstFrontSonarTreausureDist = front_sonar_treasure_dists[treasureNum-1];
+        double firstFrontSonarTreausureDistErr = front_sonar_treasure_dists_err[treasureNum-1];
 
-        // tape follow using PID until first treasure located
+        // tape follow using PID until treasure located
         double loopCount = 0;
         double rightSonarDist = 0;
         do {        
             TapeFollow::driveWithPid();
-            delay(60);
             rightSonarDist = Sonars::getDistanceSinglePulse(SONAR_TRIG_PIN_ALL, SONAR_ECHO_PIN_R);
 
             Serial.println("Right sonar dist: ");
@@ -33,72 +38,56 @@ namespace TreasureDetection {
 
             ReflectanceSensors::printFrontReflectance();
 
-            // if inf loop --> return false
+            // if inf loop --> return false (some sort of timeout)
         } while (rightSonarDist > firstSideSonarTreausureDist + firstSideSonarTreausureDistErr || rightSonarDist < firstSideSonarTreausureDist - firstSideSonarTreausureDistErr);
         delay(10);
         Motors::stopWithBrake(Motors::DRIVE_FWD, Motors::NONE, LW_PWM_DUTY, 50);
-        // Motors::setDir(false, false);
-        // Motors::setDutyCycles(LW_PWM_DUTY-10, RW_PWM_DUTY-10);
-        // Motors::drive();
-        // delay(40);
-        // Motors::stopMotors();
-        
         Serial.println("found treasure right: ");    
         Serial.println(rightSonarDist);    
         delay(1000);
         
+        return treasureCollectionRoutine(Sonars::SonarType::RIGHT, firstFrontSonarTreausureDist, firstFrontSonarTreausureDistErr, true);
+    }
+
+    bool treasureCollectionRoutine(Sonars::SonarType treasureLoc, double distFront, double distFrontErr, bool retOriginalPos) {
         // turn until front sonar detects treasure
-        Motors::MotorAction treasureTurnAction = Motors::MotorAction::ROTATE_RIGHT;
-        Motors::RotateMode treasureTurnRotateMode = Motors::RotateMode::BACKWARDS;
-        Encoders::startAddActionCache(treasureTurnAction, treasureTurnRotateMode, Motors::default_rotate_pwm);
+        if (treasureLoc == Sonars::SonarType::RIGHT || treasureLoc == Sonars::SonarType::LEFT) {
+            if (retOriginalPos) Encoders::startAddActionCache(Motors::ROTATE_RIGHT, Motors::RotateMode::BACKWARDS, Motors::default_rotate_pwm);
+            
+            Motors::MotorAction treasureTurnAction = treasureLoc == Sonars::SonarType::RIGHT ? Motors::MotorAction::ROTATE_RIGHT : Motors::MotorAction::ROTATE_LEFT;
+            Motors::RotateMode treasureTurnRotateMode = Motors::RotateMode::BACKWARDS;
+            
+            Motors::rotate(Motors::default_rotate_pwm, treasureTurnAction == Motors::MotorAction::ROTATE_RIGHT, treasureTurnRotateMode);
+            double distFrontSonar = 0;
+            do {
+                distFrontSonar = Sonars::getDistanceSinglePulse(SONAR_TRIG_PIN_ALL, SONAR_ECHO_PIN_F);
+                // TODO may need "if fail" handler
+            } while(distFrontSonar > distFront + distFrontErr || distFrontSonar < distFront - distFrontErr);   
+            delay(1);
+            Motors::stopWithBrake(treasureTurnAction, treasureTurnRotateMode, Motors::default_rotate_pwm+10, 200);
+            if (retOriginalPos) Encoders::endAddActionCache();
+        }
 
-        // Motors::rotateRight();
-        Motors::rotate(Motors::default_rotate_pwm, treasureTurnAction == Motors::MotorAction::ROTATE_RIGHT, treasureTurnRotateMode);
-        double distFrontSonar = 0;
-        do {
-            distFrontSonar = Sonars::getDistanceSinglePulse(SONAR_TRIG_PIN_ALL, SONAR_ECHO_PIN_F);
-            // sonar delay for pulses interference
-            delay(60);
-            // TODO may need "if fail" handler
-        } while(distFrontSonar > firstFrontSonarTreausureDist + firstFrontSonarTreausureDistErr || distFrontSonar < firstFrontSonarTreausureDist - firstFrontSonarTreausureDistErr);   
-        delay(1);
-        Motors::stopWithBrake(treasureTurnAction, treasureTurnRotateMode, Motors::default_rotate_pwm+10, 200);
-        // Motors::setDir(false, true);
-        // Motors::setDutyCycles(0, Motors::default_rotate_pwm);
-        // Motors::drive();
-        // Motors::rotateLeft(Motors::default_rotate_pwm+25);
-        // delay(200);
-        // Motors::stopMotors();
-        
-        Encoders::endAddActionCache();
-
-        Serial.println("found treasure front: ");    
-        Serial.println(distFrontSonar);
-        // drive fwd when front sonar detects treasure
-        Motors::MotorAction treasureFrontAction = Motors::MotorAction::DRIVE_FWD;
-        Motors::RotateMode treasureFrontRotateMode = Motors::RotateMode::NONE;
-        int treasureFrontDuty = 15;
-
-        Encoders::startAddActionCache(treasureFrontAction, treasureFrontRotateMode, treasureFrontDuty);
+        // treasure in front
+        if (retOriginalPos) Encoders::startAddActionCache(Motors::DRIVE_FWD, Motors::RotateMode::NONE, def_drive_to_treasure_duty);
 
         Motors::setDir(true, true);
-        Motors::setDutyCycles(treasureFrontDuty, treasureFrontDuty+Motors::default_motors_offset);    // may need to be slower
+        Motors::setDutyCycles(def_drive_to_treasure_duty, def_drive_to_treasure_duty+Motors::default_motors_offset);    // may need to be slower
         Motors::drive();
         
-        // collect treasure when in range
+        // go to treasure until in claw range
         double distFrontSonarTreasureClaw = 0;
         do {
-            delay(60);
             distFrontSonarTreasureClaw = Sonars::getDistanceSinglePulse(SONAR_TRIG_PIN_ALL, SONAR_ECHO_PIN_F);
 
             Serial.print("Front sonar dist: ");
             Serial.println(distFrontSonarTreasureClaw);
 
             ReflectanceSensors::printFrontReflectance();
-        } while (distFrontSonarTreasureClaw > maxTreasureInClawDist);
-        Motors::stopWithBrake(treasureFrontAction, treasureFrontRotateMode, treasureFrontDuty, 30);
+        } while (distFrontSonarTreasureClaw > treasure_in_claw_dist);
+        Motors::stopWithBrake(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, def_drive_to_treasure_duty, 30);
 
-        Encoders::endAddActionCache();
+        if (retOriginalPos) Encoders::endAddActionCache();
     
         Serial.println("found treasure claw: ");    
         Serial.println(distFrontSonarTreasureClaw);   
@@ -106,11 +95,10 @@ namespace TreasureDetection {
         // collect
         Servos::collectTreasure();
 
-        // return to original location
-        Encoders::executeReverseCache();
+        // return to original position
+        if (retOriginalPos) Encoders::executeReverseCache();
 
-        // look for tape
-        return TapeFollow::findBlackTape(60);
+        return true;
     }
 }
 /*

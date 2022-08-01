@@ -184,23 +184,23 @@ bool TapeFollow::findBlackTape(double angle) {
 }
 
 void TapeFollow::chickenWireRoutine2(int prevErrEntering, int errEntering) {
-    Motors::stopMotors();
+    Motors::stopMotorsPWM();
     // first half - drive straight
     Encoders::driveMotorsDistance(LW_PWM_DUTY - 10, true, CHICKEN_WIRE_DIST / 2.0);
 
     // second half -- drive straight in the other way, so rotate using the pwm change due to the inverse errors
-    Motors::stopMotors();
+    Motors::stopMotorsPWM();
     // the pwm change due to PID when entering tape (using the input errs), + if right increase
     int pwmChange = kp*errEntering + kd*(errEntering-prevErrEntering);  
     // rotate to the opposite direction of incoming direction (the pwm change entering)
     if (pwmChange > 0) Motors::rotateRight(pwmChange);  // was rotating left coming in, so rotate left
     else Motors::rotateRight(-pwmChange);   // was rotating right coming in, so rotate left
-    Motors::stopMotors();
+    Motors::stopMotorsPWM();
 
     // drive straight
     Encoders::driveMotorsDistance(LW_PWM_DUTY - 10, true, CHICKEN_WIRE_DIST / 2.0);
 
-    // now exiting chicken wire with the same error as incident, so set these errors
+    // now exiting chicken wire with the same error as incident, so set these errors  -- not sure about this
     err = errEntering, prevErr = prevErrEntering;
 }
 
@@ -216,7 +216,7 @@ void TapeFollow::chickenWireRoutine2(int prevErrEntering, int errEntering) {
 //         onTapeM = ReflectanceSensors::frontSensorLval;
 //         onTapeR = ReflectanceSensors::frontSensorLval;
 //     } while (onTapeL && onTapeM && onTapeR);
-//     Motors::stopMotors(1000);
+//     Motors::stopMotorsPWM(1000);
 
 //     // do {
 //     //     ReflectanceSensors::readFrontReflectanceSensors();
@@ -275,15 +275,15 @@ void TapeFollow::chickenWireRoutine2(int prevErrEntering, int errEntering) {
 //                     onTapeL = ReflectanceSensors::frontSensorLval;
 //                     onTapeM = ReflectanceSensors::frontSensorMval;
 //                     onTapeR = ReflectanceSensors::frontSensorRval;
-//                     Motors::stopMotors();
+//                     Motors::stopMotorsPWM();
 //                     return true;
 //                 }
 //             }
 //         }
-//         Motors::stopMotors();
+//         Motors::stopMotorsPWM();
 //     }
     
 //     // didn't find tape
-//     Motors::stopMotors();    
+//     Motors::stopMotorsPWM();    
 //     return false;
 // }

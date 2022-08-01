@@ -99,6 +99,7 @@ namespace Encoders {
             case Motors::MotorAction::DRIVE_FWD:
             case Motors::MotorAction::DRIVE_BACK:
                 cacheStartPulse = pulseRW;  // pulses travelled for LW RW should be same (ideally - if wheels rotate at same speed at given duty cycle)
+                break;
             case Motors::MotorAction::ROTATE_LEFT:
             case Motors::MotorAction::ROTATE_RIGHT:
                 switch(rotateMode) {
@@ -110,6 +111,7 @@ namespace Encoders {
                             // RW moves 
                             cacheStartPulse = pulseRW; 
                         }
+                        break;
                     case Motors::RotateMode::FORWARDS:
                         if (motorAction == Motors::MotorAction::ROTATE_LEFT) {
                             // RW moves
@@ -118,10 +120,13 @@ namespace Encoders {
                             // LW moves 
                             cacheStartPulse = pulseLW; 
                         }
+                        break;
                     case Motors::RotateMode::BOTH_WHEELS:
                         // LW, RW moves - ideally same for given duty cycle
                         cacheStartPulse = pulseRW;
+                        break;
                 }
+                break;
         }
         cacheAddInProgress = true;
 
@@ -137,6 +142,7 @@ namespace Encoders {
             case Motors::MotorAction::DRIVE_FWD:
             case Motors::MotorAction::DRIVE_BACK:
                 cacheEndPulse = pulseRW;  // pulses travelled for LW RW should be same (ideally - if wheels rotate at same speed at given duty cycle)
+                break;
             case Motors::MotorAction::ROTATE_LEFT:
             case Motors::MotorAction::ROTATE_RIGHT:
                 switch(rotateMode) {
@@ -148,6 +154,7 @@ namespace Encoders {
                             // RW moves 
                             cacheEndPulse = pulseRW; 
                         }
+                        break;
                     case Motors::RotateMode::FORWARDS:
                         if (motorAction == Motors::MotorAction::ROTATE_LEFT) {
                             // RW moves
@@ -156,10 +163,13 @@ namespace Encoders {
                             // LW moves 
                             cacheEndPulse = pulseLW; 
                         }
+                        break;
                     case Motors::RotateMode::BOTH_WHEELS:
                         // LW, RW moves - ideally same for given duty cycle
                         cacheEndPulse = pulseRW;
+                        break;
                 }
+                break;
         }
         std::get<3>(*cachedActions->top()) = cacheEndPulse - cacheStartPulse;
 
@@ -231,11 +241,13 @@ namespace Encoders {
                 Motors::setDutyCycles(dutyCycle, dutyCycle);
                 Motors::drive();
                 while (pulseLW < startPulseLW + pulseInterval && pulseRW < startPulseRW + pulseInterval);
+                break;
             case Motors::MotorAction::DRIVE_BACK:
                 Motors::setDir(false, false);
                 Motors::setDutyCycles(dutyCycle, dutyCycle);
                 Motors::drive();
                 while (pulseLW > startPulseLW - pulseInterval && pulseRW > startPulseRW - pulseInterval);
+                break;
             case Motors::MotorAction::ROTATE_LEFT:
             case Motors::MotorAction::ROTATE_RIGHT:
                 switch(rotateMode) {
@@ -247,6 +259,7 @@ namespace Encoders {
                             Motors::rotate(dutyCycle, true, rotateMode);
                             while (pulseRW > startPulseRW - pulseInterval);
                         }
+                        break;
                     case Motors::RotateMode::FORWARDS:
                         if (motorAction == Motors::ROTATE_LEFT) {
                             Motors::rotate(dutyCycle, false, rotateMode);
@@ -255,6 +268,7 @@ namespace Encoders {
                             Motors::rotate(dutyCycle, true, rotateMode);
                             while (pulseRW > startPulseRW + pulseInterval);
                         }
+                        break;
                     case Motors::RotateMode::BOTH_WHEELS:
                         if (motorAction == Motors::ROTATE_LEFT) {
                             Motors::rotate(dutyCycle, false, rotateMode);
@@ -263,10 +277,12 @@ namespace Encoders {
                             Motors::rotate(dutyCycle, true, rotateMode);
                             while (pulseLW > startPulseLW + pulseInterval && pulseRW > startPulseRW - pulseInterval);
                         }
+                        break;
                     case Motors::RotateMode::NONE:
                         // bad input
                         break;
                 }
+                break;
         }
     }
 
