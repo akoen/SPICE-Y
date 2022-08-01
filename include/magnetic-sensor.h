@@ -13,7 +13,7 @@ namespace BombDetection {
     void configMagneticSensorPin();
     
     /**
-     * True if sensor detects a magnet (HIGH) 
+     * True if sensor detects a magnet (LOW) 
      */ 
     bool isBombDetected();
 }
