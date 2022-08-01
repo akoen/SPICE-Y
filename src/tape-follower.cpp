@@ -181,7 +181,7 @@ bool TapeFollow::findBlackTape(double angle) {
                 break;
             }
             // update 
-            checkEncoderPulses = rotateCount == 0 ? Encoders::pulseLW : Encoders::pulseRW;
+            checkEncoderPulses = rotateCount == 0 ? Encoders::pulseRW : Encoders::pulseLW;
         }
         // stop
         if (rotateCount == 0) {
@@ -191,6 +191,7 @@ bool TapeFollow::findBlackTape(double angle) {
             // Encoders::stopMotorsBrakeEncoders(Motors::ROTATE_RIGHT, rotateMode, Encoders::pulseLW, Encoders::pulseRW, Motors::default_rotate_pwm, 131);
             Motors::stopWithBrake(Motors::ROTATE_RIGHT, rotateMode, Motors::default_rotate_pwm, 50);
         }
+        rotateCount++;
     }
     return tapeReadingsCount == 2;
 }
