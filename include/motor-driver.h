@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include "config.h"
+#include <utility>
 
 // # define LW_PWM_DUTY 84 - 45
 // # define RW_PWM_DUTY 72 - 45
@@ -46,7 +47,8 @@ namespace Motors {
         NONE
     };
 
-    
+    std::pair<MotorAction, RotateMode> getInverseDrive(MotorAction motorAction, RotateMode rotateMode);
+
     void configMotorPins();
     /**
      * Drives the motors with its duty cycles in the defined direction 
@@ -92,7 +94,7 @@ namespace Motors {
      * Stops the motors by applying the opposite action at a specifc pwm * 
      * duty cycle for a specified duration of the driving action.
      */
-    void Motors::stopWithBrake(MotorAction initialAction, RotateMode initialRotateMode, int initialDutyCycle, int durationMillis, int stopMotorsDelayMillis=default_motors_stop_millis);
+    void stopWithBrake(MotorAction initialAction, RotateMode initialRotateMode, int initialDutyCycle, int durationMillis, int stopMotorsDelayMillis=default_motors_stop_millis);
 }
 
 #endif

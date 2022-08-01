@@ -20,6 +20,31 @@ int Motors::dutyCycleR = RW_PWM_DUTY;
 bool Motors::isLWdirFwd = true;
 bool Motors::isRWdirFwd = true;
 
+std::pair<Motors::MotorAction, Motors::RotateMode> Motors::getInverseDrive(MotorAction motorAction, RotateMode rotateMode) {
+    MotorAction inverseAction;
+    RotateMode inverseRotate;
+    switch(motorAction) {
+        case DRIVE_FWD:
+            inverseAction = MotorAction::DRIVE_BACK;
+            inverseRotate = RotateMode::NONE;
+        case DRIVE_BACK:
+            inverseAction = MotorAction::DRIVE_FWD;
+            inverseRotate = RotateMode::NONE;
+        case ROTATE_LEFT: 
+        case ROTATE_RIGHT:
+            if (motorAction == ROTATE_LEFT) inverseAction = MotorAction::ROTATE_RIGHT;
+            if (motorAction == ROTATE_RIGHT) inverseAction = MotorAction::ROTATE_LEFT;
+
+            switch(inverseRotate) {
+                case RotateMode::BACKWARDS: inverseRotate = RotateMode::FORWARDS;
+                case RotateMode::FORWARDS: inverseRotate = RotateMode::BACKWARDS;
+                case RotateMode::BOTH_WHEELS: inverseRotate = RotateMode::BOTH_WHEELS;
+                default: inverseRotate = RotateMode::NONE;
+            }
+    } 
+    return std::pair<MotorAction, RotateMode>(inverseAction, inverseRotate);
+}
+
 void Motors::configMotorPins() {
     pinMode(PWM_MOTOR_FWD_L, OUTPUT);
     pinMode(PWM_MOTOR_FWD_R, OUTPUT);
