@@ -303,7 +303,7 @@ namespace Encoders {
         driveMotorsEncoderPulses(dutyCycle, driveAction, rotateMode, pulses);
     }
 
-    void stopMotorsPWMBrakeEncoders(Motors::MotorAction initialAction, Motors::RotateMode initialRotateMode, long setPtPulsesLW, long setPtPulsesRW, int initialDutyCycle, int pulsesThreshold) {
+    void stopMotorsBrakeEncoders(Motors::MotorAction initialAction, Motors::RotateMode initialRotateMode, long setPtPulsesLW, long setPtPulsesRW, int initialDutyCycle, int pulsesThreshold) {
         // bad input
         if ((initialAction == Motors::MotorAction::DRIVE_BACK || initialAction == Motors::MotorAction::DRIVE_FWD) && initialRotateMode != Motors::RotateMode::NONE) {
             return;
@@ -330,7 +330,7 @@ namespace Encoders {
         // keep braking back and forth until within threshold
         if (brakePulseInterval > pulsesThreshold) {
             driveMotorsEncoderPulses(initialDutyCycle, brakeAction, brakeRotateMode, brakePulseInterval);
-            return stopMotorsPWMBrakeEncoders(brakeAction, brakeRotateMode, setPtPulsesLW, setPtPulsesRW, initialDutyCycle, pulsesThreshold);
+            return stopMotorsBrakeEncoders(brakeAction, brakeRotateMode, setPtPulsesLW, setPtPulsesRW, initialDutyCycle, pulsesThreshold);
         }
         // motors stopped within threshold
     }

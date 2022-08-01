@@ -40,6 +40,8 @@ namespace TreasureDetection {
 
             // if inf loop --> return false (some sort of timeout)
         } while (rightSonarDist > firstSideSonarTreausureDist + firstSideSonarTreausureDistErr || rightSonarDist < firstSideSonarTreausureDist - firstSideSonarTreausureDistErr);
+        
+        // Encoders::stopMotorsBrakeEncoders(Motors::DRIVE_FWD, Motors::NONE, Encoders::pulseLW, Encoders::pulseRW, LW_PWM_DUTY, 131);
         delay(10);
         Motors::stopWithBrake(Motors::DRIVE_FWD, Motors::NONE, LW_PWM_DUTY, 50);
         Serial.println("found treasure right: ");    
@@ -52,10 +54,12 @@ namespace TreasureDetection {
     bool treasureCollectionRoutine(Sonars::SonarType treasureLoc, double distFront, double distFrontErr, bool retOriginalPos) {
         // turn until front sonar detects treasure
         if (treasureLoc == Sonars::SonarType::RIGHT || treasureLoc == Sonars::SonarType::LEFT) {
-            if (retOriginalPos) Encoders::startAddActionCache(Motors::ROTATE_RIGHT, Motors::RotateMode::BACKWARDS, Motors::default_rotate_pwm);
+            Motors::MotorAction action = treasureLoc == Sonars::SonarType::RIGHT ? Motors::MotorAction::ROTATE_RIGHT : Motors::MotorAction::ROTATE_LEFT; 
             
             Motors::MotorAction treasureTurnAction = treasureLoc == Sonars::SonarType::RIGHT ? Motors::MotorAction::ROTATE_RIGHT : Motors::MotorAction::ROTATE_LEFT;
             Motors::RotateMode treasureTurnRotateMode = Motors::RotateMode::BACKWARDS;
+            
+            if (retOriginalPos) Encoders::startAddActionCache(treasureTurnAction, treasureTurnRotateMode, Motors::default_rotate_pwm);
             
             Motors::rotate(Motors::default_rotate_pwm, treasureTurnAction == Motors::MotorAction::ROTATE_RIGHT, treasureTurnRotateMode);
             double distFrontSonar = 0;
@@ -63,6 +67,7 @@ namespace TreasureDetection {
                 distFrontSonar = Sonars::getDistanceSinglePulse(SONAR_TRIG_PIN_ALL, SONAR_ECHO_PIN_F);
                 // TODO may need "if fail" handler
             } while(distFrontSonar > distFront + distFrontErr || distFrontSonar < distFront - distFrontErr);   
+            // Encoders::stopMotorsBrakeEncoders(treasureTurnAction, treasureTurnRotateMode, Encoders::pulseLW, Encoders::pulseRW, Motors::default_rotate_pwm, 131);
             delay(1);
             Motors::stopWithBrake(treasureTurnAction, treasureTurnRotateMode, Motors::default_rotate_pwm+10, 200);
             if (retOriginalPos) Encoders::endAddActionCache();
@@ -85,6 +90,7 @@ namespace TreasureDetection {
 
             ReflectanceSensors::printFrontReflectance();
         } while (distFrontSonarTreasureClaw > treasure_in_claw_dist);
+        // Encoders::stopMotorsBrakeEncoders(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, Encoders::pulseLW, Encoders::pulseRW, def_drive_to_treasure_duty, 131);
         Motors::stopWithBrake(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, def_drive_to_treasure_duty, 30);
 
         if (retOriginalPos) Encoders::endAddActionCache();

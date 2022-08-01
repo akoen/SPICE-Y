@@ -103,7 +103,9 @@ void TapeFollow::driveWithPid() {
 
 void TapeFollow::chickenWireRoutine() {
     // drive across bridge
-    Encoders::driveMotorsDistance(LW_PWM_DUTY - 10, true, CHICKEN_WIRE_DIST);
+    int dutyCycle = LW_PWM_DUTY - 10;
+    Encoders::driveMotorsDistance(dutyCycle, true, CHICKEN_WIRE_DIST);
+    // Encoders::stopMotorsBrakeEncoders(Motors::DRIVE_FWD, Motors::RotateMode::NONE, Encoders::pulseLW, Encoders::pulseRW, dutyCycle, 131);
     delay(10);
     Motors::stopWithBrake(Motors::DRIVE_FWD, Motors::NONE, LW_PWM_DUTY, 50);
 
@@ -123,10 +125,11 @@ bool TapeFollow::findBlackTape(double angle) {
     bool firstTapeReadingM;
     bool firstTapeReadingR;
     long startEncoderPulses;
+    long checkEncoderPulses;
 
     Motors::RotateMode rotateMode = Motors::RotateMode::FORWARDS;
-    // rotate left - left wheel rotates back, right wheel at rest
-    // rotate right after
+    // rotate right - left wheel rotates forwards, right wheel at rest
+    // rotate left after
     while (rotateCount < 2) {
         tapeReadingsCount = 0;
         firstTapeReadingL = false;
@@ -134,15 +137,18 @@ bool TapeFollow::findBlackTape(double angle) {
         firstTapeReadingR = false;
 
         if (rotateCount == 0) {
-            startEncoderPulses = Encoders::pulseLW;
+            startEncoderPulses = Encoders::pulseRW;
+            checkEncoderPulses = Encoders::pulseRW;
             // Motors::rotateLeft();
             Motors::rotate(Motors::default_rotate_pwm, false, rotateMode);
         } else {
-            startEncoderPulses = Encoders::pulseRW;
+            startEncoderPulses = Encoders::pulseLW;
+            checkEncoderPulses = Encoders::pulseLW;
             // Motors::rotateRight();
             Motors::rotate(Motors::default_rotate_pwm, true, rotateMode);
+            turnPulsesInterval *= 2;    // twice the angle since needs to go left -> middle -> right
         }
-        while (Encoders::pulseLW >= startEncoderPulses - turnPulsesInterval) {
+        while (checkEncoderPulses <= startEncoderPulses + turnPulsesInterval) {
             // look for tape while turning
             ReflectanceSensors::readFrontReflectanceSensors();
             if (!ReflectanceSensors::frontSensorLval && !ReflectanceSensors::frontSensorMval
@@ -162,25 +168,31 @@ bool TapeFollow::findBlackTape(double angle) {
                     onTapeM = ReflectanceSensors::frontSensorMval;
                     onTapeR = ReflectanceSensors::frontSensorRval;
 
-                    // stop
-                    if (rotateCount == 0) {
-                        Motors::stopWithBrake(Motors::ROTATE_LEFT, rotateMode, Motors::default_rotate_pwm, 50);
-                    } else {
-                        Motors::stopWithBrake(Motors::ROTATE_RIGHT, rotateMode, Motors::default_rotate_pwm, 50);
-                    }
-                    return true;
+                    // // stop
+                    // if (rotateCount == 0) {
+                    //     // Encoders::stopMotorsBrakeEncoders(Motors::ROTATE_LEFT, rotateMode, Encoders::pulseLW, Encoders::pulseRW, Motors::default_rotate_pwm, 131);
+                    //     Motors::stopWithBrake(Motors::ROTATE_LEFT, rotateMode, Motors::default_rotate_pwm, 50);
+                    // } else {
+                    //     // Encoders::stopMotorsBrakeEncoders(Motors::ROTATE_RIGHT, rotateMode, Encoders::pulseLW, Encoders::pulseRW, Motors::default_rotate_pwm, 131);
+                    //     Motors::stopWithBrake(Motors::ROTATE_RIGHT, rotateMode, Motors::default_rotate_pwm, 50);
+                    // }
+                    // return true;
                 }
+                break;
             }
+            // update 
+            checkEncoderPulses = rotateCount == 0 ? Encoders::pulseLW : Encoders::pulseRW;
         }
         // stop
         if (rotateCount == 0) {
+            // Encoders::stopMotorsBrakeEncoders(Motors::ROTATE_LEFT, rotateMode, Encoders::pulseLW, Encoders::pulseRW, Motors::default_rotate_pwm, 131);
             Motors::stopWithBrake(Motors::ROTATE_LEFT, rotateMode, Motors::default_rotate_pwm, 50);
         } else {
+            // Encoders::stopMotorsBrakeEncoders(Motors::ROTATE_RIGHT, rotateMode, Encoders::pulseLW, Encoders::pulseRW, Motors::default_rotate_pwm, 131);
             Motors::stopWithBrake(Motors::ROTATE_RIGHT, rotateMode, Motors::default_rotate_pwm, 50);
         }
     }
-    // didn't find tape - already stopped
-    return false;
+    return tapeReadingsCount == 2;
 }
 
 void TapeFollow::chickenWireRoutine2(int prevErrEntering, int errEntering) {

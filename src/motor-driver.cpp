@@ -193,8 +193,8 @@ void Motors::stopWithBrake(MotorAction initialAction, RotateMode initialRotateMo
     switch(initialAction) {
         case DRIVE_FWD:
         case DRIVE_BACK:
-            if (initialAction == Motors::MotorAction::DRIVE_FWD) setDir(true, true);
-            else setDir(false, false);
+            if (initialAction == Motors::MotorAction::DRIVE_FWD) setDir(false, false);
+            else setDir(true, true);
             
             setDutyCycles(initialDutyCycle, initialDutyCycle+default_motors_offset);
             drive();
