@@ -287,7 +287,7 @@ namespace Encoders {
                 }
                 break;
         }
-        stopMotorsBrakeEncoders(motorAction, rotateMode, pulseLW, pulseRW, dutyCycle, 131);
+        stopMotorsBrakeEncoders(motorAction, rotateMode, pulseLW, pulseRW, dutyCycle, 100);
     }
 
     void driveMotorsDistance(int dutyCycle, bool dirFwd, double distance) {
