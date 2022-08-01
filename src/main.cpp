@@ -12,20 +12,21 @@ void setup() {
 }
 
 void loop() {
-  //close claw
-  clawServo.write(50);
-  delay(1000);
+  Serial.println(2);
+  // //close claw
+  // clawServo.write(50);
+  // delay(1000);
 
-  //lift arm
-  armServo.write(115);
-  delay(1000);
+  // //lift arm
+  // armServo.write(115);
+  // delay(1000);
 
-  //open Claw
-  clawServo.write(100);
-  delay(1000);
-  clawServo.write(180);
+  // //open Claw
+  // clawServo.write(100);
+  // delay(1000);
+  // clawServo.write(180);
 
-  //lower Arm
-  armServo.write(0);
-  delay(1000);
+  // //lower Arm
+  // armServo.write(0);
+  // delay(1000);
 }
