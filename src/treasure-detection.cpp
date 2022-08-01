@@ -15,8 +15,6 @@ namespace TreasureDetection {
     const double def_drive_to_treasure_duty = 15; // %
 
     bool obtainTapeTreasure(int treasureNum) {
-        // bad input
-        if (treasureNum != 1 || treasureNum != 2) return false;
 
         Servos::configArmClawPins();
 
@@ -69,7 +67,7 @@ namespace TreasureDetection {
             } while(distFrontSonar > distFront + distFrontErr || distFrontSonar < distFront - distFrontErr);   
             // Encoders::stopMotorsBrakeEncoders(treasureTurnAction, treasureTurnRotateMode, Encoders::pulseLW, Encoders::pulseRW, Motors::default_rotate_pwm, 131);
             delay(1);
-            Motors::stopWithBrake(treasureTurnAction, treasureTurnRotateMode, Motors::default_rotate_pwm+10, 200);
+            Motors::stopWithBrake(treasureTurnAction, treasureTurnRotateMode, Motors::default_rotate_pwm+10, 100);
             if (retOriginalPos) Encoders::endAddActionCache();
         }
 
