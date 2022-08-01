@@ -151,8 +151,8 @@ bool TapeFollow::findBlackTape(double angle) {
         while (checkEncoderPulses <= startEncoderPulses + turnPulsesInterval) {
             // look for tape while turning
             ReflectanceSensors::readFrontReflectanceSensors();
-            if (!ReflectanceSensors::frontSensorLval && !ReflectanceSensors::frontSensorMval
-            && !ReflectanceSensors::frontSensorRval) {
+            if (ReflectanceSensors::frontSensorLval || ReflectanceSensors::frontSensorMval
+            || ReflectanceSensors::frontSensorRval) {
                 if (tapeReadingsCount < 1) {
                     firstTapeReadingL = ReflectanceSensors::frontSensorLval;
                     firstTapeReadingM = ReflectanceSensors::frontSensorMval;
