@@ -7,6 +7,7 @@
 #include <stack>
 #include <tuple>
 namespace Encoders {
+    /* with div by 10 counter, there are */
     extern const double pulse_per_rev;  // divide by counter at end, increases pulse width
 
     extern volatile int interruptCountLW;
@@ -99,5 +100,11 @@ namespace Encoders {
      * Rotates the motors right (true) or left (false) a certain angle
      */ 
     void rotateMotorsDegs(int dutyCycle, bool dirRight, Motors::RotateMode mode, double angle);
+
+    /**
+     * Stops the motors when desired using encoders. This method puts the motors at rest within a threshold of specified set point pulses.   
+     */
+    void stopMotorsPWMBrakeEncoders(Motors::MotorAction initialAction, Motors::RotateMode initialRotateMode, long setPtPulseLW, long setPtPulsesRW, int initialDutyCycle, int pulsesThreshold);
+
 }
 #endif

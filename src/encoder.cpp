@@ -1,7 +1,6 @@
 #include "encoder.h"
 
 namespace Encoders {
-    // const double Encoders::pulse_per_rev = 1389.9185 / 10.0;  // divide by counter at end, increases pulse width
     const double pulse_per_rev = 131*11 / 10.0;  // divide by counter at end, increases pulse width
 
     volatile int interruptCountLW = 0;
@@ -173,7 +172,7 @@ namespace Encoders {
         if (!cacheCreated || cacheAddInProgress) return false;
 
         while (!cachedActions->empty()) {        
-            // // execute cached actions in reverse
+            // execute cached actions in reverse
 
             Motors::MotorAction motorAction;
             Motors::RotateMode rotateMode;
@@ -227,20 +226,20 @@ namespace Encoders {
         long startPulseRW = pulseRW;
 
         switch (motorAction) {
-            case Motors::FORWARDS:
+            case Motors::MotorAction::DRIVE_FWD:
                 Motors::setDir(true, true);
                 Motors::setDutyCycles(dutyCycle, dutyCycle);
                 Motors::drive();
                 while (pulseLW < startPulseLW + pulseInterval && pulseRW < startPulseRW + pulseInterval);
-            case Motors::BACKWARDS:
+            case Motors::MotorAction::DRIVE_BACK:
                 Motors::setDir(false, false);
                 Motors::setDutyCycles(dutyCycle, dutyCycle);
                 Motors::drive();
                 while (pulseLW > startPulseLW - pulseInterval && pulseRW > startPulseRW - pulseInterval);
-            case Motors::ROTATE_LEFT:
-            case Motors::ROTATE_RIGHT:
+            case Motors::MotorAction::ROTATE_LEFT:
+            case Motors::MotorAction::ROTATE_RIGHT:
                 switch(rotateMode) {
-                    case Motors::BACKWARDS:
+                    case Motors::RotateMode::BACKWARDS:
                         if (motorAction == Motors::ROTATE_LEFT) {
                             Motors::rotate(dutyCycle, false, rotateMode);
                             while (pulseLW > startPulseLW - pulseInterval);
@@ -248,7 +247,7 @@ namespace Encoders {
                             Motors::rotate(dutyCycle, true, rotateMode);
                             while (pulseRW > startPulseRW - pulseInterval);
                         }
-                    case Motors::FORWARDS:
+                    case Motors::RotateMode::FORWARDS:
                         if (motorAction == Motors::ROTATE_LEFT) {
                             Motors::rotate(dutyCycle, false, rotateMode);
                             while (pulseLW > startPulseLW + pulseInterval);
@@ -256,7 +255,7 @@ namespace Encoders {
                             Motors::rotate(dutyCycle, true, rotateMode);
                             while (pulseRW > startPulseRW + pulseInterval);
                         }
-                    case Motors::BOTH_WHEELS:
+                    case Motors::RotateMode::BOTH_WHEELS:
                         if (motorAction == Motors::ROTATE_LEFT) {
                             Motors::rotate(dutyCycle, false, rotateMode);
                             while (pulseLW > startPulseLW - pulseInterval && pulseRW < startPulseRW + pulseInterval);
@@ -264,7 +263,7 @@ namespace Encoders {
                             Motors::rotate(dutyCycle, true, rotateMode);
                             while (pulseLW > startPulseLW + pulseInterval && pulseRW > startPulseRW - pulseInterval);
                         }
-                    case Motors::NONE:
+                    case Motors::RotateMode::NONE:
                         // bad input
                         break;
                 }
@@ -286,5 +285,37 @@ namespace Encoders {
         int pulses = round(angle / anglePerPulse);
         Motors::MotorAction driveAction = dirRight ? Motors::MotorAction::ROTATE_RIGHT : Motors::MotorAction::ROTATE_LEFT;
         driveMotorsEncoderPulses(dutyCycle, driveAction, rotateMode, pulses);
+    }
+
+    void stopMotorsPWMBrakeEncoders(Motors::MotorAction initialAction, Motors::RotateMode initialRotateMode, long setPtPulsesLW, long setPtPulsesRW, int initialDutyCycle, int pulsesThreshold) {
+        // bad input
+        if ((initialAction == Motors::MotorAction::DRIVE_BACK || initialAction == Motors::MotorAction::DRIVE_FWD) && initialRotateMode != Motors::RotateMode::NONE) {
+            return;
+        }
+        if ((initialAction == Motors::MotorAction::ROTATE_LEFT || initialAction == Motors::MotorAction::ROTATE_RIGHT) && initialRotateMode == Motors::RotateMode::NONE) {
+            return;
+        }  
+        // stop pwm
+        Motors::stopMotorsPWM();
+        
+        // account for motor inertia
+        Motors::MotorAction brakeAction;
+        Motors::RotateMode brakeRotateMode;
+
+        std::tie(brakeAction, brakeRotateMode) = Motors::getInverseDrive(initialAction, initialRotateMode);
+
+        // num pulses overshot due to motor inertia
+        int pulseIntervalRW = abs(pulseRW - setPtPulsesRW);
+        int pulseIntervalLW = abs(pulseLW - setPtPulsesLW);
+
+        // don't know which driving action, so assume the max
+        int brakePulseInterval = pulseIntervalRW > pulseIntervalLW ? pulseIntervalRW : pulseIntervalLW;
+        
+        // keep braking back and forth until within threshold
+        if (brakePulseInterval > pulsesThreshold) {
+            driveMotorsEncoderPulses(initialDutyCycle, brakeAction, brakeRotateMode, brakePulseInterval);
+            return stopMotorsPWMBrakeEncoders(brakeAction, brakeRotateMode, setPtPulsesLW, setPtPulsesRW, initialDutyCycle, pulsesThreshold);
+        }
+        // motors stopped within threshold
     }
 }
