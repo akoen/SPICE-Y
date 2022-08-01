@@ -73,6 +73,11 @@ void Servos::collectTreasure() {
         clawServo.write(claw_bomb_detect_angle);
         delay(1000);
         if (!BombDetection::isBombDetected()) {
+            // bomb not found
+            clawServo.write(claw_full_open_angle);
+            delay(2000);
+            armServo.write(arm_lowered_angle);    
+            delay(2000);
             clawServo.write(claw_close_angle);
         } else {
             // don't pick up - bomb found
