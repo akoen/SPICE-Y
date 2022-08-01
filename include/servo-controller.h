@@ -30,6 +30,9 @@ namespace Servos {
      */
     void configAllServoPins();
     
+    /**
+     * Configures claw and arm servo pins if they have yet been configured.
+     */ 
     void configArmClawPins();
 
     /**
@@ -40,6 +43,7 @@ namespace Servos {
     void collectTreasure();
 
     void setServoPos(Servo servoObj, int deg);
+
 }
 
 #endif
