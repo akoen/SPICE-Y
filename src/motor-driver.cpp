@@ -1,17 +1,20 @@
 #include "motor-driver.h"
 
 // TODO: need min pwm duty cycle for driving & rotation
+const int min_drive_dutyCycle = 20;
+const int min_rotate_dutyCycle = 15;
 
 const int Motors::pwm_clock_freq = 100; // hz
 const int Motors::ref_duty_cycle = 80; // %
 const int Motors::ref_pwm_duty_cycle_LW = LW_PWM_DUTY; // %
 const int Motors::ref_pwm_duty_cycle_RW = RW_PWM_DUTY; // %
-const int Motors::default_rotate_pwm = 8; // %
+const int Motors::default_rotate_pwm = min_rotate_dutyCycle; // %
 const int Motors::default_motors_offset = Motors::ref_pwm_duty_cycle_RW - Motors::ref_pwm_duty_cycle_LW; // > 0 for RW, < 0 for LW
-const int Motors::default_motors_stop_millis = 500;
+const int Motors::default_motors_stop_millis = 1000;
 
 const double Motors::WHEELS_WIDTH = 24.5;   // cm
-const double Motors::WHEEL_DIAMETER = 6.4; // cm
+// const double Motors::WHEEL_DIAMETER = 6.4; // cm
+const double Motors::WHEEL_DIAMETER = 8.7; // cm
 
 
 bool Motors::hasPwmChanged = true;    // call pwm start only when changed
@@ -195,7 +198,6 @@ void Motors::stopWithBrake(MotorAction initialAction, RotateMode initialRotateMo
         case DRIVE_BACK:
             if (initialAction == Motors::MotorAction::DRIVE_FWD) setDir(false, false);
             else setDir(true, true);
-            
             setDutyCycles(initialDutyCycle, initialDutyCycle+default_motors_offset);
             drive();
             break;

@@ -22,6 +22,8 @@ namespace Motors {
     extern const int default_motors_offset; // %, > 0 for RW, < 0 for LW
     extern const int default_motors_stop_millis; // %, > 0 for RW, < 0 for LW
 
+    extern const int min_drive_dutyCycle;
+    extern const int min_rotate_dutyCycle;
 
     extern const double WHEELS_WIDTH;
     extern const double WHEEL_DIAMETER;
