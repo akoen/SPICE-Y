@@ -238,18 +238,21 @@ namespace Encoders {
         switch (motorAction) {
             case Motors::MotorAction::DRIVE_FWD:
                 Motors::setDir(true, true);
+                if (dutyCycle < Motors::min_drive_dutyCycle) dutyCycle = Motors::min_drive_dutyCycle;
                 Motors::setDutyCycles(dutyCycle, dutyCycle);
                 Motors::drive();
                 while (pulseLW < startPulseLW + pulseInterval && pulseRW < startPulseRW + pulseInterval);
                 break;
             case Motors::MotorAction::DRIVE_BACK:
                 Motors::setDir(false, false);
+                if (dutyCycle < Motors::min_drive_dutyCycle) dutyCycle = Motors::min_drive_dutyCycle;
                 Motors::setDutyCycles(dutyCycle, dutyCycle);
                 Motors::drive();
                 while (pulseLW > startPulseLW - pulseInterval && pulseRW > startPulseRW - pulseInterval);
                 break;
             case Motors::MotorAction::ROTATE_LEFT:
             case Motors::MotorAction::ROTATE_RIGHT:
+                if (dutyCycle < Motors::min_rotate_dutyCycle) dutyCycle = Motors::min_rotate_dutyCycle;
                 switch(rotateMode) {
                     case Motors::RotateMode::BACKWARDS:
                         if (motorAction == Motors::ROTATE_LEFT) {
@@ -284,6 +287,7 @@ namespace Encoders {
                 }
                 break;
         }
+        stopMotorsBrakeEncoders(motorAction, rotateMode, pulseLW, pulseRW, dutyCycle, 131);
     }
 
     void driveMotorsDistance(int dutyCycle, bool dirFwd, double distance) {
@@ -312,8 +316,8 @@ namespace Encoders {
             return;
         }  
         // stop pwm
-        Motors::stopMotorsPWM();
-        
+        Motors::stopMotorsPWM(2000);
+        // Motors::stopWithBrake(initialAction, initialRotateMode, initialDutyCycle, 10, 2000);
         // account for motor inertia
         Motors::MotorAction brakeAction;
         Motors::RotateMode brakeRotateMode;
@@ -323,14 +327,18 @@ namespace Encoders {
         // num pulses overshot due to motor inertia
         int pulseIntervalRW = abs(pulseRW - setPtPulsesRW);
         int pulseIntervalLW = abs(pulseLW - setPtPulsesLW);
+        Serial.println(pulseIntervalLW);
+        Serial.println(pulseIntervalRW);
+        Serial.println();
 
         // don't know which driving action, so assume the max
         int brakePulseInterval = pulseIntervalRW > pulseIntervalLW ? pulseIntervalRW : pulseIntervalLW;
         
         // keep braking back and forth until within threshold
         if (brakePulseInterval > pulsesThreshold) {
+            initialDutyCycle = Motors::min_drive_dutyCycle;
             driveMotorsEncoderPulses(initialDutyCycle, brakeAction, brakeRotateMode, brakePulseInterval);
-            return stopMotorsBrakeEncoders(brakeAction, brakeRotateMode, setPtPulsesLW, setPtPulsesRW, initialDutyCycle, pulsesThreshold);
+            // return stopMotorsBrakeEncoders(brakeAction, brakeRotateMode, setPtPulsesLW, setPtPulsesRW, initialDutyCycle, pulsesThreshold);
         }
         // motors stopped within threshold
     }
