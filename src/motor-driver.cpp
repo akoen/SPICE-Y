@@ -1,8 +1,8 @@
 #include "motor-driver.h"
 
 // TODO: need min pwm duty cycle for driving & rotation
-const int min_drive_dutyCycle = 20;
-const int min_rotate_dutyCycle = 15;
+const int Motors::min_drive_dutyCycle = 25;
+const int Motors::min_rotate_dutyCycle = 15;
 
 const int Motors::pwm_clock_freq = 100; // hz
 const int Motors::ref_duty_cycle = 80; // %
