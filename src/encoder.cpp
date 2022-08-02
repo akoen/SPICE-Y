@@ -197,7 +197,7 @@ namespace Encoders {
             // get inverse action
             std::tie(inverseAction, inverseRotate) = Motors::getInverseDrive(motorAction, rotateMode);
             
-            int inversePulseInterval = -pulseInterval;
+            int inversePulseInterval = pulseInterval;
 
             // pop from stack (and delete from heap)
             cachedActions->pop();
@@ -234,7 +234,9 @@ namespace Encoders {
 
         long startPulseLW = pulseLW;
         long startPulseRW = pulseRW;
-
+        
+        int delayMiliis = 0;
+        int brakeDurationMillis = 0;
         switch (motorAction) {
             case Motors::MotorAction::DRIVE_FWD:
                 Motors::setDir(true, true);
@@ -242,6 +244,8 @@ namespace Encoders {
                 Motors::setDutyCycles(dutyCycle, dutyCycle);
                 Motors::drive();
                 while (pulseLW < startPulseLW + pulseInterval && pulseRW < startPulseRW + pulseInterval);
+                delayMiliis = 10;
+                brakeDurationMillis = 50;
                 break;
             case Motors::MotorAction::DRIVE_BACK:
                 Motors::setDir(false, false);
@@ -249,10 +253,14 @@ namespace Encoders {
                 Motors::setDutyCycles(dutyCycle, dutyCycle);
                 Motors::drive();
                 while (pulseLW > startPulseLW - pulseInterval && pulseRW > startPulseRW - pulseInterval);
+                delayMiliis = 10;
+                brakeDurationMillis = 50;
                 break;
             case Motors::MotorAction::ROTATE_LEFT:
             case Motors::MotorAction::ROTATE_RIGHT:
                 if (dutyCycle < Motors::min_rotate_dutyCycle) dutyCycle = Motors::min_rotate_dutyCycle;
+                delayMiliis = 1;
+                brakeDurationMillis = 100;
                 switch(rotateMode) {
                     case Motors::RotateMode::BACKWARDS:
                         if (motorAction == Motors::ROTATE_LEFT) {
@@ -287,7 +295,8 @@ namespace Encoders {
                 }
                 break;
         }
-        stopMotorsBrakeEncoders(motorAction, rotateMode, pulseLW, pulseRW, dutyCycle, 100);
+        delay(delayMiliis);
+        Motors::stopWithBrake(motorAction, rotateMode, dutyCycle, brakeDurationMillis);
     }
 
     void driveMotorsDistance(int dutyCycle, bool dirFwd, double distance) {
@@ -307,6 +316,7 @@ namespace Encoders {
         driveMotorsEncoderPulses(dutyCycle, driveAction, rotateMode, pulses);
     }
 
+    /* don't use */
     void stopMotorsBrakeEncoders(Motors::MotorAction initialAction, Motors::RotateMode initialRotateMode, long setPtPulsesLW, long setPtPulsesRW, int initialDutyCycle, int pulsesThreshold) {
         // bad input
         if ((initialAction == Motors::MotorAction::DRIVE_BACK || initialAction == Motors::MotorAction::DRIVE_FWD) && initialRotateMode != Motors::RotateMode::NONE) {
@@ -316,7 +326,7 @@ namespace Encoders {
             return;
         }  
         // stop pwm
-        Motors::stopMotorsPWM(2000);
+        Motors::stopMotorsPWM();
         // Motors::stopWithBrake(initialAction, initialRotateMode, initialDutyCycle, 10, 2000);
         // account for motor inertia
         Motors::MotorAction brakeAction;
