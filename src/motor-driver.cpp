@@ -107,8 +107,8 @@ void Motors::setDutyCycles(int dutyL, int dutyR) {
     if (dutyL < 0) dutyL = 0;
     if (dutyR < 0) dutyR = 0;
 
-    if (dutyL > 100) dutyL = 100;
-    if (dutyR > 100) dutyR = 100;
+    if (dutyL > 70) dutyL = 70;
+    if (dutyR > 70) dutyR = 70;
 
     Motors::dutyCycleL = dutyL;
     Motors::dutyCycleR = dutyR;
@@ -130,25 +130,6 @@ void Motors::stopMotorsPWM(int delayMillis) {
     delay(delayMillis);
 }
 
-void Motors::rotateLeft(int dutyCycle, bool bothWheels) {
-    if (dutyCycle < default_motors_offset) {
-        dutyCycle = default_motors_offset;
-    }
-    if (!bothWheels) setDutyCycles(dutyCycle, 0);  // note: offset best to be an even num
-    else setDutyCycles(dutyCycle, dutyCycle+ref_duty_cycle);  // note: offset best to be an even num
-    setDir(false, true);
-    drive();
-}
-
-void Motors::rotateRight(int dutyCycle, bool bothWheels) {    
-    if (dutyCycle < default_motors_offset) {
-        dutyCycle = default_motors_offset;
-    }
-    if (!bothWheels) setDutyCycles(0, dutyCycle+default_motors_offset);  // note: offset best to be an even num
-    else setDutyCycles(dutyCycle, dutyCycle+default_motors_offset);
-    setDir(true, false);
-    drive();
-}
 
 void Motors::rotate(int dutyCycle, bool rotateRight, RotateMode rotateMode) {
     if (dutyCycle < default_motors_offset) dutyCycle = default_motors_offset;

@@ -5,10 +5,11 @@
 #include "config.h"
 #include <utility>
 
-// # define LW_PWM_DUTY 84 - 45
-// # define RW_PWM_DUTY 72 - 45
+
 # define LW_PWM_DUTY 42
 # define RW_PWM_DUTY 50
+// # define LW_PWM_DUTY 42-18
+// # define RW_PWM_DUTY 50-18
 # define CHICKEN_WIRE_OFFSET_DUTY 14
 
 namespace Motors {
@@ -75,21 +76,12 @@ namespace Motors {
      * for motor inertia. 
      */
     void stopMotorsPWM(int delayMillis=default_motors_stop_millis);
-                
+    
     /**
-     * Rotates motor left with the given pwm duty cycle.
-     * Accounts for ref duty cycle offset and the given duty cycle saturates if magnitude is larger than motors offset 
-
-     */
-    void rotateLeft(int dutyCycle=default_rotate_pwm, bool bothWheels=false);
-    /**
-     * Rotates motor right with the given pwm duty cycle
+     * Rotates motor with the given pwm duty cycle
      * Accounts for ref duty cycle offset and the given duty cycle saturates
      * if magnitude is larger than motors offset 
      */
-    void rotateRight(int dutyCycle=default_rotate_pwm, bool bothWheels=false);
-
-    
     void rotate(int dutyCycle, bool rotateRight, RotateMode mode);
 
     /**
