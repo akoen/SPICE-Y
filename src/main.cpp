@@ -32,11 +32,16 @@ void setup() {
 }
 void pwmServoTest();
 void loop() {
-    // TapeFollow::findBlackTape(90, Motors::min_rotate_dutyCycle, Motors::RotateMode::BOTH_WHEELS);
-    // delay(5000);
-
+    // TapeFollow::findBlackTape(TapeFollow::DEF_TAPE_SEARCH_ANGLE, Motors::min_rotate_dutyCycle, Motors::RotateMode::BOTH_WHEELS);
+    // delay(1000);
+    // Serial.println("loop");
+    // TreasureDetection::obtainTapeTreasure(2);
+    
+    // Servos::collectTreasure();
+    // pwmServoTest();
     Executor::execute();
-    // Serial.println(Sonars::getDistanceSinglePulse(SONAR_TRIG_PIN_ALL, SONAR_ECHO_PIN_F));
+    // Serial.println(Sonars::getDistanceSinglePulse(SONAR_TRIG_PIN_ALL, SONAR_ECHO_PIN_L));
+    // Serial.print(" ");
     // Encoders::rotateMotorsDegs(Motors::min_rotate_dutyCycle, true, Motors::RotateMode::BOTH_WHEELS, 90);
     // delay(2000);
     // Encoders::rotateMotorsDegs(Motors::min_rotate_dutyCycle, false, Motors::RotateMode::BACKWARDS, 90);

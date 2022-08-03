@@ -2,17 +2,17 @@
 #include "magnetic-sensor.h"
 
 // pos when gripping treasure in claw 
-const int Servos::claw_close_angle = 50;
+const int Servos::claw_close_angle = 40;
 // pos when dropping treasure and initial position when claw is lifted up. Must clear the beacon mounts
 const int Servos::claw_part_open_angle = 100;  
 // pos when opening claw to collect treasure
-const int Servos::claw_full_open_angle = 190;
-const int Servos::claw_bomb_detect_angle = 110;
+const int Servos::claw_full_open_angle = 200;
+const int Servos::claw_bomb_detect_angle = 120;
 
-const int Servos::arm_bomb_detect_angle = 45;
-const int Servos::above_treasure_below_IR_angle = 70;
-const int Servos::arm_lowered_angle = 15;   // parallel
-const int Servos::arm_lifted_angle = 129;
+const int Servos::arm_bomb_detect_angle = 50;
+const int Servos::above_treasure_below_IR_angle = 90;
+const int Servos::arm_lowered_angle = 30;   // parallel
+const int Servos::arm_lifted_angle = 144;
 
 Servo Servos::clawServo;
 Servo Servos::armServo;
@@ -27,10 +27,12 @@ bool Servos::boxPinsConfiged = false;
 void Servos::configAllServoPins() {
     if (!clawPinsConfiged) {
         clawServo.attach(CLAW_SERVO_PIN);
+        clawServo.write(claw_close_angle);
         clawPinsConfiged = true;
     }
     if (!armPinsConfiged) {
         armServo.attach(ARM_SERVO_PIN);
+        armServo.write(arm_lifted_angle);
         armPinsConfiged = true;
     }
     if (!bridgePinsConfiged) {
@@ -46,10 +48,12 @@ void Servos::configAllServoPins() {
 void Servos::configArmClawPins() {
     if (!clawPinsConfiged) {
         clawServo.attach(CLAW_SERVO_PIN);
+        clawServo.write(claw_close_angle);
         clawPinsConfiged = true;
     }
     if (!armPinsConfiged) {
         armServo.attach(ARM_SERVO_PIN);
+        armServo.write(arm_lifted_angle);
         armPinsConfiged = true;
     }
 }

@@ -2,9 +2,9 @@
 #include "encoder.h"
 
 // PID tuning
-const double TapeFollow::kp = 21;
+const double TapeFollow::kp = 22;
 const double TapeFollow::ki = 0;
-const double TapeFollow::kd = 15;
+const double TapeFollow::kd = 14;
 const double TapeFollow::maxI = 100;
 // chicken wire
 const double TapeFollow::CHICKEN_WIRE_DIST = 17+8;
@@ -30,6 +30,7 @@ double TapeFollow::pwmChange = 0;
 double TapeFollow::calcPidBlackTape() {
     // read reflectance of all 3 sensors (0 or 1 for each)
     ReflectanceSensors::readFrontReflectanceSensors();
+    ReflectanceSensors::printFrontReflectance();
 
     onTapeL = ReflectanceSensors::frontSensorLval;
     onTapeM = ReflectanceSensors::frontSensorMval;
@@ -125,11 +126,11 @@ bool TapeFollow::findBlackTape(double angle, int dutyCycle, Motors::RotateMode r
     // rotate left - left wheel rotates forwards, right wheel at rest
     // rotate right after - right wheel rotates forwards
     for (int rotateCount = 0; rotateCount < 2; rotateCount++) {
+        
         tapeReadingsCount = 0;
         firstTapeReadingL = false;
         firstTapeReadingM = false;
         firstTapeReadingR = false;
-
         if (rotateCount == 0) {
             // search left
             if (rotateMode == Motors::BACKWARDS) {
@@ -165,7 +166,7 @@ bool TapeFollow::findBlackTape(double angle, int dutyCycle, Motors::RotateMode r
             if (!(ReflectanceSensors::frontSensorLval && ReflectanceSensors::frontSensorMval
             && ReflectanceSensors::frontSensorRval) && (ReflectanceSensors::frontSensorLval || ReflectanceSensors::frontSensorMval
             || ReflectanceSensors::frontSensorRval)) {
-                if (tapeReadingsCount < 1) {
+                if (tapeReadingsCount == 0) {
                     firstTapeReadingL = ReflectanceSensors::frontSensorLval;
                     firstTapeReadingM = ReflectanceSensors::frontSensorMval;
                     firstTapeReadingR = ReflectanceSensors::frontSensorRval;
@@ -179,6 +180,13 @@ bool TapeFollow::findBlackTape(double angle, int dutyCycle, Motors::RotateMode r
                     onTapeL = ReflectanceSensors::frontSensorLval;
                     onTapeM = ReflectanceSensors::frontSensorMval;
                     onTapeR = ReflectanceSensors::frontSensorRval;
+                    Serial.println("found two");
+                    // stop
+                    if (rotateCount == 0) {
+                        Motors::stopWithBrake(Motors::MotorAction::ROTATE_LEFT, rotateMode, dutyCycle, 50);
+                    } else {
+                        Motors::stopWithBrake(Motors::MotorAction::ROTATE_RIGHT, rotateMode, dutyCycle, 50);
+                    }
                     break;
                 }
             }
@@ -195,9 +203,10 @@ bool TapeFollow::findBlackTape(double angle, int dutyCycle, Motors::RotateMode r
         } else {
             Motors::stopWithBrake(Motors::MotorAction::ROTATE_RIGHT, rotateMode, dutyCycle, 50);
         }
+        // if found
+        if (tapeReadingsCount == 2) return true;
     }
-    // if two tape readings found 
-    return tapeReadingsCount == 2;
+    return false;
 }
 
 void TapeFollow::chickenWireRoutine2(int prevErrEntering, int errEntering) {
