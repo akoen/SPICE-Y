@@ -66,7 +66,7 @@ namespace Encoders {
      * 
      * Returns true if the action can be executed
      */ 
-    bool executeReverseCache(int actionDelayMillis=100);
+    bool executeReverseCache(int actionDelayMillis=1000);
 
     /**
      * Drives the motors for the given interval of pulses.
@@ -78,7 +78,7 @@ namespace Encoders {
     void driveMotorsEncoderPulses(int dutyCycle, Motors::MotorAction motorAction, Motors::RotateMode rotateMode, int pulseInterval);
 
     /* degs to pulses: assume arc length = distance of wheel driven (no slipping)
-     * dist = arc length = (deg / 180.0) * wheel width
+     * dist = arc length = (deg / (180.0 * pi)) * wheel width
      * deg = 180 * dist / wheel width
      * 
      * dist to pulses: 

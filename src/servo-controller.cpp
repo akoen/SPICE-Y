@@ -6,7 +6,7 @@ const int Servos::claw_close_angle = 50;
 // pos when dropping treasure and initial position when claw is lifted up. Must clear the beacon mounts
 const int Servos::claw_part_open_angle = 100;  
 // pos when opening claw to collect treasure
-const int Servos::claw_full_open_angle = 185;
+const int Servos::claw_full_open_angle = 190;
 const int Servos::claw_bomb_detect_angle = 110;
 
 const int Servos::arm_bomb_detect_angle = 50;
@@ -63,9 +63,9 @@ void Servos::collectTreasure() {
     clawServo.write(claw_part_open_angle);
     delay(500);
     armServo.write(above_treasure_below_IR_angle);
-    delay(2000);
+    delay(1200);
     clawServo.write(claw_full_open_angle);
-    delay(2000);
+    delay(1200);
     // hall effect
     if (!BombDetection::bombEncounteredFlag) {
         armServo.write(arm_bomb_detect_angle);
@@ -75,9 +75,9 @@ void Servos::collectTreasure() {
         if (!BombDetection::isBombDetected()) {
             // bomb not found
             clawServo.write(claw_full_open_angle);
-            delay(2000);
+            delay(1000);
             armServo.write(arm_lowered_angle);    
-            delay(2000);
+            delay(1500);
             clawServo.write(claw_close_angle);
         } else {
             // don't pick up - bomb found
@@ -85,10 +85,10 @@ void Servos::collectTreasure() {
         }
     } else {
         armServo.write(arm_lowered_angle);    
-        delay(2000);
+        delay(1500);
         clawServo.write(claw_close_angle);
     }
-    delay(2000);
+    delay(1000);
 
     armServo.write(arm_lifted_angle);
     delay(1000);

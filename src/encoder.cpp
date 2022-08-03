@@ -24,6 +24,7 @@ namespace Encoders {
         if (state1 == 0) {
             // pulseLW = -99999; 
             // shouldn't occur
+            Serial.println("Should not occur");
         } else {    // CCW
             if (Motors::isLWdirFwd) {
                 pulseLW++;
@@ -171,7 +172,7 @@ namespace Encoders {
                 }
                 break;
         }
-        std::get<3>(*cachedActions->top()) = cacheEndPulse - cacheStartPulse;
+        std::get<3>(*cachedActions->top()) = abs(cacheEndPulse - cacheStartPulse);
 
         cacheAddInProgress = false;
 
@@ -209,8 +210,8 @@ namespace Encoders {
             driveMotorsEncoderPulses(dutyCycle, inverseAction, inverseRotate, inversePulseInterval);
 
             // stop
-            delay(10);
-            Motors::stopWithBrake(inverseAction, inverseRotate, dutyCycle, 10, actionDelayMillis);
+            delay(1);
+            Motors::stopWithBrake(inverseAction, inverseRotate, dutyCycle, 100, actionDelayMillis);
         }
     
         // clear entire cache from heap
@@ -243,7 +244,16 @@ namespace Encoders {
                 if (dutyCycle < Motors::min_drive_dutyCycle) dutyCycle = Motors::min_drive_dutyCycle;
                 Motors::setDutyCycles(dutyCycle, dutyCycle);
                 Motors::drive();
-                while (pulseLW < startPulseLW + pulseInterval && pulseRW < startPulseRW + pulseInterval);
+                while (pulseLW < startPulseLW + pulseInterval && pulseRW < startPulseRW + pulseInterval) {
+                    // Serial.print("start: ");
+                    // Serial.print(startPulseLW);
+                    // Serial.print(" ");
+                    // Serial.print(startPulseRW);
+                    // Serial.print(" Interval: ");
+                    // Serial.print(pulseInterval);
+                    // Serial.print(" pulse: ");
+                    // Serial.println(pulseLW); 
+                }
                 delayMiliis = 10;
                 brakeDurationMillis = 50;
                 break;
@@ -263,7 +273,7 @@ namespace Encoders {
                 brakeDurationMillis = 100;
                 switch(rotateMode) {
                     case Motors::RotateMode::BACKWARDS:
-                        if (motorAction == Motors::ROTATE_LEFT) {
+                        if (motorAction == Motors::MotorAction::ROTATE_LEFT) {
                             Motors::rotate(dutyCycle, false, rotateMode);
                             while (pulseLW > startPulseLW - pulseInterval);
                         } else {
@@ -272,21 +282,28 @@ namespace Encoders {
                         }
                         break;
                     case Motors::RotateMode::FORWARDS:
-                        if (motorAction == Motors::ROTATE_LEFT) {
+                        if (motorAction == Motors::MotorAction::ROTATE_LEFT) {
                             Motors::rotate(dutyCycle, false, rotateMode);
-                            while (pulseLW > startPulseLW + pulseInterval);
+                            while (pulseRW < startPulseRW + pulseInterval);
                         } else {
                             Motors::rotate(dutyCycle, true, rotateMode);
-                            while (pulseRW > startPulseRW + pulseInterval);
+                            while (pulseLW < startPulseLW + pulseInterval) {
+                                // Serial.print("start: ");
+                                // Serial.print(startPulseLW);
+                                // Serial.print(" Interval: ");
+                                // Serial.print(pulseInterval);
+                                // Serial.print(" pulse: ");
+                                // Serial.println(pulseLW); 
+                            }
                         }
                         break;
                     case Motors::RotateMode::BOTH_WHEELS:
-                        if (motorAction == Motors::ROTATE_LEFT) {
+                        if (motorAction == Motors::MotorAction::ROTATE_LEFT) {
                             Motors::rotate(dutyCycle, false, rotateMode);
                             while (pulseLW > startPulseLW - pulseInterval && pulseRW < startPulseRW + pulseInterval);
                         } else {
                             Motors::rotate(dutyCycle, true, rotateMode);
-                            while (pulseLW > startPulseLW + pulseInterval && pulseRW > startPulseRW - pulseInterval);
+                            while (pulseLW < startPulseLW + pulseInterval && pulseRW > startPulseRW - pulseInterval);
                         }
                         break;
                     case Motors::RotateMode::NONE:
@@ -309,8 +326,8 @@ namespace Encoders {
     }
 
     void rotateMotorsDegs(int dutyCycle, bool dirRight, Motors::RotateMode rotateMode, double angle) {
-        double anglePerPulse = 180 * (PI*Motors::WHEEL_DIAMETER / pulse_per_rev) / Motors::WHEELS_WIDTH;
-        
+        double wheels_width = rotateMode == Motors::RotateMode::BOTH_WHEELS ? Motors::WHEELS_WIDTH / 2.0 : Motors::WHEELS_WIDTH;
+        double anglePerPulse = (PI * Motors::WHEEL_DIAMETER / Encoders::pulse_per_rev) / (PI / 180.0 * wheels_width);
         int pulses = round(angle / anglePerPulse);
         Motors::MotorAction driveAction = dirRight ? Motors::MotorAction::ROTATE_RIGHT : Motors::MotorAction::ROTATE_LEFT;
         driveMotorsEncoderPulses(dutyCycle, driveAction, rotateMode, pulses);

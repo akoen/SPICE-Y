@@ -1,23 +1,22 @@
 #include "motor-driver.h"
 
 // TODO: need min pwm duty cycle for driving & rotation
-const int Motors::min_drive_dutyCycle = 25;
-const int Motors::min_rotate_dutyCycle = 15;
+const int Motors::min_drive_dutyCycle = 20;
+const int Motors::min_rotate_dutyCycle = 6;
+
+const int Motors::max_drive_dutyCycle = 70;
 
 const int Motors::pwm_clock_freq = 100; // hz
 const int Motors::ref_duty_cycle = 80; // %
-const int Motors::ref_pwm_duty_cycle_LW = LW_PWM_DUTY; // %
-const int Motors::ref_pwm_duty_cycle_RW = RW_PWM_DUTY; // %
+
 const int Motors::default_rotate_pwm = min_rotate_dutyCycle; // %
-const int Motors::default_motors_offset = Motors::ref_pwm_duty_cycle_RW - Motors::ref_pwm_duty_cycle_LW; // > 0 for RW, < 0 for LW
+const int Motors::default_motors_offset = RW_PWM_DUTY - LW_PWM_DUTY; // > 0 for RW, < 0 for LW
 const int Motors::default_motors_stop_millis = 1000;
 
 const double Motors::WHEELS_WIDTH = 24.5;   // cm
-// const double Motors::WHEEL_DIAMETER = 6.4; // cm
 const double Motors::WHEEL_DIAMETER = 8.7; // cm
 
-
-bool Motors::hasPwmChanged = true;    // call pwm start only when changed
+bool Motors::hasPwmChanged = true;   // call pwm start only when changed
 int Motors::dutyCycleL = LW_PWM_DUTY;
 int Motors::dutyCycleR = RW_PWM_DUTY;
 
@@ -106,9 +105,12 @@ void Motors::drive() {
 void Motors::setDutyCycles(int dutyL, int dutyR) {
     if (dutyL < 0) dutyL = 0;
     if (dutyR < 0) dutyR = 0;
+    
+    if (dutyL > 0 && dutyL < min_drive_dutyCycle) dutyL = min_drive_dutyCycle;
+    if (dutyR > 0 && dutyR < min_drive_dutyCycle) dutyR = min_drive_dutyCycle;
 
-    if (dutyL > 70) dutyL = 70;
-    if (dutyR > 70) dutyR = 70;
+    if (dutyL > max_drive_dutyCycle) dutyL = max_drive_dutyCycle;
+    if (dutyR > max_drive_dutyCycle) dutyR = max_drive_dutyCycle;
 
     Motors::dutyCycleL = dutyL;
     Motors::dutyCycleR = dutyR;
@@ -185,7 +187,7 @@ void Motors::stopWithBrake(MotorAction initialAction, RotateMode initialRotateMo
         case ROTATE_LEFT: 
         case ROTATE_RIGHT:
             if (initialAction == ROTATE_LEFT) brakeRotateRight = true;
-            if (initialAction == ROTATE_LEFT) brakeRotateRight = false;
+            if (initialAction == ROTATE_RIGHT) brakeRotateRight = false;
 
             if (initialRotateMode == FORWARDS) brakeRotateMode = BACKWARDS;
             else if (initialRotateMode == BACKWARDS) brakeRotateMode = FORWARDS;

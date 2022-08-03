@@ -9,6 +9,7 @@
 #include "ir.h"
 #include "treasure-detection.h"
 #include "servo-controller.h"
+#include "executor.h"
 
 // the setup routine runs once when you press reset:
 void setup() {
@@ -18,9 +19,9 @@ void setup() {
 
     Motors::configMotorPins();
     Encoders::configEncoderPins();
-    // Sonars::configSonarPins();
-    // ReflectanceSensors::configFrontReflectanceSensors();
-    // Servos::configArmClawPins();
+    Sonars::configSonarPins();
+    ReflectanceSensors::configFrontReflectanceSensors();
+    Servos::configArmClawPins();
 
     // /* Run the ADC calibration */
     // HAL_ADCEx_Calibration_Start(&AdcHandle);
@@ -31,17 +32,31 @@ void setup() {
 }
 void pwmServoTest();
 void loop() {
-    Motors::MotorAction action = Motors::MotorAction::DRIVE_FWD;
-    Motors::RotateMode rotate = Motors::RotateMode::NONE;
-    int duty = LW_PWM_DUTY;
-    Encoders::startAddActionCache(action, rotate, duty);
-    Encoders::driveMotorsDistance(duty, true, 20);
-    delay(10);
-    Motors::stopWithBrake(action, rotate, LW_PWM_DUTY, 10);
-    Encoders::endAddActionCache();
-    Encoders::executeReverseCache(2000);
+    // TapeFollow::findBlackTape(90, Motors::min_rotate_dutyCycle, Motors::RotateMode::BOTH_WHEELS);
+    // delay(5000);
+
+    Executor::execute();
+    // Serial.println(Sonars::getDistanceSinglePulse(SONAR_TRIG_PIN_ALL, SONAR_ECHO_PIN_F));
+    // Encoders::rotateMotorsDegs(Motors::min_rotate_dutyCycle, true, Motors::RotateMode::BOTH_WHEELS, 90);
+    // delay(2000);
+    // Encoders::rotateMotorsDegs(Motors::min_rotate_dutyCycle, false, Motors::RotateMode::BACKWARDS, 90);
+    // delay(2000);
+
     // TapeFollow::driveWithPid();
-    // Serial.print(HIGH);
+    // TreasureDetection::obtainTapeTreasure(1);
+
+    // int duty = Motors::min_drive_dutyCycle;
+    // Motors::MotorAction action = Motors::MotorAction::DRIVE_FWD;
+    // Motors::RotateMode rotate = Motors::RotateMode::NONE;
+
+    // Serial.println("loop");
+    // Encoders::startAddActionCache(action, rotate, duty);
+    // Encoders::driveMotorsDistance(duty, true, 30);
+    // Encoders::endAddActionCache();
+    // delay(1000);
+    // Encoders::executeReverseCache(2000);
+    // delay(2000);
+    // TapeFollow::driveWithPid();
     // IR::driveWithPID();
 }
 

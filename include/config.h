@@ -34,9 +34,9 @@
 
 // encoders
 // #define R_ENCODER_PIN1 PA11
-#define R_ENCODER_PIN1 PA1
+#define R_ENCODER_PIN1 PA0
 // #define R_ENCODER_PIN2
-#define L_ENCODER_PIN1 PA0
+#define L_ENCODER_PIN1 PA1
 // #define L_ENCODER_PIN1 PA12
 // #define L_ENCODER_PIN2 
 

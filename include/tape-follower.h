@@ -18,6 +18,8 @@ namespace TapeFollow {
     // dist b/w wheels (cm)
     extern const double WHEELS_WIDTH;
     // vars
+    extern bool crossedChickenWire;
+
     extern bool onTapeL;
     extern bool onTapeM;
     extern bool onTapeR;
@@ -67,7 +69,7 @@ namespace TapeFollow {
      * 2) sensors collect at least two "on tape" (non 0 0 0) readings when turning. This may imply we need to turn slowly
      * Returns true if tape found
      */
-    bool findBlackTape(double angle);
+    bool findBlackTape(double angle, int dutyCycle, Motors::RotateMode rotateMode);
 
     /**
      * To be called when 1 1 1 is read by sensors.

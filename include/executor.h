@@ -2,6 +2,7 @@
 #define EXECUTOR
 #include "config.h"
 
-void execute();
-
+namespace Executor {
+    void execute();
+}
 #endif

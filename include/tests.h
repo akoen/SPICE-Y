@@ -7,3 +7,16 @@
  * compatible with the robot's existing functionality.
  */
 
+namespace Tests {
+    void straightLine(int dutyCycle);
+
+    void rotate90degs();
+    void driveFwd20cm();
+    void driveBack20cm();
+    
+    void servoLocationsTest();
+
+    void sonarSensorTest();
+
+    void encoderCacheTest();
+}
