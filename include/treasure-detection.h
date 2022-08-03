@@ -18,7 +18,14 @@ namespace TreasureDetection {
     extern const double treasure_in_claw_dist_err; // cm
 
     extern const double def_drive_to_treasure_duty; // %
+    
+    // consecutive good readings needed
+    extern const double side_sonar_req_good_readings[6];
+    extern const double front_sonar_req_good_readings[6];
+    extern const double claw_req_good_readings[6];
 
+    // when near treasure
+    extern const double near_treasure_dists[6];
     /**
      * Routine for collecting a treasure when tape following (first or second). 
      */ 

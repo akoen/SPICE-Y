@@ -8,8 +8,6 @@
 
 # define LW_PWM_DUTY 46
 # define RW_PWM_DUTY 42
-// # define LW_PWM_DUTY 42-18
-// # define RW_PWM_DUTY 50-18
 # define CHICKEN_WIRE_OFFSET_DUTY 14
 
 namespace Motors {
