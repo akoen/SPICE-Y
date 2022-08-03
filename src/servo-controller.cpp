@@ -9,7 +9,7 @@ const int Servos::claw_part_open_angle = 100;
 const int Servos::claw_full_open_angle = 190;
 const int Servos::claw_bomb_detect_angle = 110;
 
-const int Servos::arm_bomb_detect_angle = 50;
+const int Servos::arm_bomb_detect_angle = 45;
 const int Servos::above_treasure_below_IR_angle = 70;
 const int Servos::arm_lowered_angle = 15;   // parallel
 const int Servos::arm_lifted_angle = 129;
@@ -63,9 +63,9 @@ void Servos::collectTreasure() {
     clawServo.write(claw_part_open_angle);
     delay(500);
     armServo.write(above_treasure_below_IR_angle);
-    delay(1200);
+    delay(1000);
     clawServo.write(claw_full_open_angle);
-    delay(1200);
+    delay(500);
     // hall effect
     if (!BombDetection::bombEncounteredFlag) {
         armServo.write(arm_bomb_detect_angle);
@@ -77,7 +77,7 @@ void Servos::collectTreasure() {
             clawServo.write(claw_full_open_angle);
             delay(1000);
             armServo.write(arm_lowered_angle);    
-            delay(1500);
+            delay(1000);
             clawServo.write(claw_close_angle);
         } else {
             // don't pick up - bomb found
@@ -85,11 +85,10 @@ void Servos::collectTreasure() {
         }
     } else {
         armServo.write(arm_lowered_angle);    
-        delay(1500);
+        delay(1000);
         clawServo.write(claw_close_angle);
     }
     delay(1000);
-
     armServo.write(arm_lifted_angle);
     delay(1000);
 
