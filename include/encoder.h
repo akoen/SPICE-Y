@@ -108,5 +108,14 @@ namespace Encoders {
      * Stops the motors when desired using encoders. This method puts the motors at rest within a threshold of specified set point pulses.   
      */
     void stopMotorsBrakeEncoders(Motors::MotorAction initialAction, Motors::RotateMode initialRotateMode, long setPtPulseLW, long setPtPulsesRW, int initialDutyCycle, int pulsesThreshold);
+
+    /**
+     * Checks if the motor wheel has changed its pulses over a duration. 
+     */ 
+    bool hasLWpulsesChanged(int durationCheckMillis);
+    /**
+     * Checks if the motor wheel has changed its pulses over a duration.
+     */ 
+    bool hasRWpulsesChanged(int durationCheckMillis);
 }
 #endif

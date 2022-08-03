@@ -380,4 +380,14 @@ namespace Encoders {
         }
         // motors stopped within threshold
     }
+    bool hasRWpulsesChanged(int durationCheckMillis) {
+        long startPulses = Encoders::pulseRW;
+        delay(durationCheckMillis);
+        return pulseRW == startPulses;
+    }
+    bool hasLWpulsesChanged(int durationCheckMillis) {
+        long startPulses = Encoders::pulseLW;
+        delay(durationCheckMillis);
+        return pulseLW == startPulses;
+    }
 }
