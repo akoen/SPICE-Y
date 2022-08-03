@@ -32,11 +32,6 @@ long TapeFollow::prevErrTime = 0;
 long TapeFollow::currTime = 0;
 
 double TapeFollow::calcPidBlackTape() {
-    // if (!startFlag) {
-    //     prevErrTime = millis();
-    //     currTime = prevErrTime;
-    // } 
-
     // read reflectance of all 3 sensors (0 or 1 for each)
     ReflectanceSensors::readFrontReflectanceSensors();
 
@@ -54,9 +49,6 @@ double TapeFollow::calcPidBlackTape() {
         // chickenWireRoutine2(prevErr, err);   
 
         // this updates prevOnTape and onTape readings - can continue PID
-
-        // Motors::setDir(true, true);
-        // Motors::setDutyCycles(20, 20 + Motors::default_motors_offset + CHICKEN_WIRE_OFFSET_DUTY);
     }
 
     /* discrete errors truth table: (-) = left, (+) = right */
@@ -73,15 +65,6 @@ double TapeFollow::calcPidBlackTape() {
     }
 
     p = kp*err, d = kd*(err - prevErr), i += ki*err;
-
-    // currTime = millis();
-    // if (startFlag && err != 0) {
-    //     // d = kd*(err - prevErr) / (1.0*(currTime - prevErrTime));   
-    //     prevErrTime = currTime;     
-    // } else {
-    //     d = 0;
-    //     startFlag = true;
-    // }
 
     // anti windup
     if (i > maxI) {
@@ -117,13 +100,13 @@ void TapeFollow::chickenWireRoutine() {
     Motors::stopWithBrake(Motors::DRIVE_FWD, Motors::NONE, dutyCycle, 50);
 
     // find black tape
-    findBlackTape(70, Motors::min_rotate_dutyCycle, Motors::RotateMode::FORWARDS);
+    findBlackTape(DEF_TAPE_SEARCH_ANGLE, Motors::min_rotate_dutyCycle, Motors::RotateMode::FORWARDS);
 }
 
 bool TapeFollow::findBlackTape(double angle, int dutyCycle, Motors::RotateMode rotateMode) {
     // deg to pulses
-    double wheels_width = rotateMode == Motors::RotateMode::BOTH_WHEELS ? Motors::WHEELS_WIDTH / 2.0 : Motors::WHEELS_WIDTH;
-    double anglePerPulse = (PI * Motors::WHEEL_DIAMETER / Encoders::pulse_per_rev) / (PI / 180.0 * wheels_width);
+    double arcLen = rotateMode == Motors::RotateMode::BOTH_WHEELS ? Motors::WHEELS_WIDTH / 2.0 : Motors::WHEELS_WIDTH;
+    double anglePerPulse = (PI * Motors::WHEEL_DIAMETER / Encoders::pulse_per_rev) / (PI / 180.0 * arcLen);
     int turnPulsesInterval = round(angle / anglePerPulse);
     int rotateCount = 0;
 
@@ -136,34 +119,43 @@ bool TapeFollow::findBlackTape(double angle, int dutyCycle, Motors::RotateMode r
 
     // rotate left - left wheel rotates forwards, right wheel at rest
     // rotate right after - right wheel rotates forwards
-    while (rotateCount < 2) {
+    for (int rotateCount = 0; rotateCount < 2; rotateCount++) {
         tapeReadingsCount = 0;
         firstTapeReadingL = false;
         firstTapeReadingM = false;
         firstTapeReadingR = false;
 
         if (rotateCount == 0) {
-            startEncoderPulses = Encoders::pulseRW;
-            checkEncoderPulses = Encoders::pulseRW;
+            // search left
+            if (rotateMode == Motors::BACKWARDS) {
+                startEncoderPulses = Encoders::pulseLW;
+                checkEncoderPulses = Encoders::pulseLW;
+            } else {
+                startEncoderPulses = Encoders::pulseRW;
+                checkEncoderPulses = Encoders::pulseRW;
+            }
             Motors::rotate(Motors::default_rotate_pwm, false, rotateMode);
-        } else {
-            // startEncoderPulses = Encoders::pulseLW;
-            // checkEncoderPulses = Encoders::pulseLW;
-            startEncoderPulses = Encoders::pulseLW;
-            checkEncoderPulses = Encoders::pulseLW;
+        } else {    
+            // search right
+            if (rotateMode == Motors::BACKWARDS) {
+                startEncoderPulses = Encoders::pulseRW;
+                checkEncoderPulses = Encoders::pulseRW;
+            } else {
+                startEncoderPulses = Encoders::pulseLW;
+                checkEncoderPulses = Encoders::pulseLW;
+            }
             Motors::rotate(Motors::default_rotate_pwm, true, rotateMode);
             turnPulsesInterval = round(angle * 2 / anglePerPulse);    // twice the angle since needs to go left -> middle -> right
         }
-        // TODO: currently set for both wheels, differ for differ modes
-        while (checkEncoderPulses <= startEncoderPulses + turnPulsesInterval) {
-            Serial.print("Interval: ");
-            Serial.print(turnPulsesInterval);
-            Serial.print(" start encoder pulses: ");
-            Serial.print(startEncoderPulses);
-            Serial.print(" check encoder pulses ");
-            Serial.println(checkEncoderPulses);
+        while (true) {
+            // loop end conditions
+            if (rotateMode == Motors::BACKWARDS) {
+                if (checkEncoderPulses < startEncoderPulses - turnPulsesInterval) break;
+            } else {
+                if (checkEncoderPulses > startEncoderPulses + turnPulsesInterval) break;
+            }
 
-            // look for tape while turning
+            // look for tape while turning - tape found when not 1 1 1 and at least one 1 is seen 
             ReflectanceSensors::readFrontReflectanceSensors();
             if (!(ReflectanceSensors::frontSensorLval && ReflectanceSensors::frontSensorMval
             && ReflectanceSensors::frontSensorRval) && (ReflectanceSensors::frontSensorLval || ReflectanceSensors::frontSensorMval
@@ -186,7 +178,11 @@ bool TapeFollow::findBlackTape(double angle, int dutyCycle, Motors::RotateMode r
                 }
             }
             // update 
-            checkEncoderPulses = rotateCount == 0 ? Encoders::pulseRW : Encoders::pulseLW;
+            if (rotateMode == Motors::BACKWARDS) {
+                checkEncoderPulses = rotateCount == 0 ? Encoders::pulseLW : Encoders::pulseRW;
+            } else {
+                checkEncoderPulses = rotateCount == 0 ? Encoders::pulseRW : Encoders::pulseLW;
+            }
         }
         // stop
         if (rotateCount == 0) {
@@ -194,10 +190,8 @@ bool TapeFollow::findBlackTape(double angle, int dutyCycle, Motors::RotateMode r
         } else {
             Motors::stopWithBrake(Motors::MotorAction::ROTATE_RIGHT, rotateMode, dutyCycle, 50);
         }
-
-        // check by rotating to the right
-        rotateCount++;
     }
+    // if two tape readings found 
     return tapeReadingsCount == 2;
 }
 
