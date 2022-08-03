@@ -37,10 +37,6 @@ namespace TapeFollow {
 
     extern double pwmChange;
     
-    extern long currTime;
-    extern long prevErrTime;
-
-    extern bool startFlag;
     /**
      * Calculates PID for black tape
      * Returns: pwm change needed to adjust from current state, 
@@ -53,6 +49,10 @@ namespace TapeFollow {
      */
     void driveWithPid();
 
+    /**
+     * Drives the robot with PID for the specified distance
+     */
+    void driveWithPidDist(double dist);
     /**
      * To be ran when encountered a chicken wire (sensors see all 1 1 1)
      * 

@@ -27,10 +27,6 @@ double TapeFollow::i = 0;
 
 double TapeFollow::pwmChange = 0;
 
-bool TapeFollow::startFlag = false;
-long TapeFollow::prevErrTime = 0;
-long TapeFollow::currTime = 0;
-
 double TapeFollow::calcPidBlackTape() {
     // read reflectance of all 3 sensors (0 or 1 for each)
     ReflectanceSensors::readFrontReflectanceSensors();
@@ -92,6 +88,15 @@ void TapeFollow::driveWithPid() {
     Motors::drive();        
 }
 
+void TapeFollow::driveWithPidDist(double dist) {
+    int pulseInterval = Encoders::cmToPulses(dist);
+    long startPulsesLW = Encoders::pulseLW;
+    long startPulsesRW = Encoders::pulseRW;
+
+    while (Encoders::pulseLW < startPulsesLW + pulseInterval && Encoders::pulseRW < startPulsesRW + pulseInterval) {
+        driveWithPid();
+    }
+}
 void TapeFollow::chickenWireRoutine() {
     // drive across bridge
     int dutyCycle = LW_PWM_DUTY;
