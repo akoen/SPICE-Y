@@ -184,7 +184,6 @@ namespace Encoders {
 
         while (!cachedActions->empty()) {        
             // execute cached actions in reverse
-
             Motors::MotorAction motorAction;
             Motors::RotateMode rotateMode;
             int dutyCycle, pulseInterval;
@@ -316,19 +315,31 @@ namespace Encoders {
         Motors::stopWithBrake(motorAction, rotateMode, dutyCycle, brakeDurationMillis);
     }
 
+    int cmToPulses(double distsCm) {
+        double distPerPulse = PI * Motors::WHEEL_DIAMETER / pulse_per_rev;  // cm
+        return round(distsCm/distPerPulse);  
+    }
+
+    int degsToPulses(double deg, double radius) {
+        double anglePerPulse = (PI * Motors::WHEEL_DIAMETER / Encoders::pulse_per_rev) / (PI / 180.0 * radius);
+        return round(deg / anglePerPulse);
+    }
     void driveMotorsDistance(int dutyCycle, bool dirFwd, double distance) {
         // convert to pulses - distance per pulse = pi*diameter / pulse per rev
-        double distPerPulse = PI * Motors::WHEEL_DIAMETER / pulse_per_rev;  // cm
-        int pulsesInterval = round(distance/distPerPulse);
-
+        // double distPerPulse = PI * Motors::WHEEL_DIAMETER / pulse_per_rev;  // cm
+        // int pulsesInterval = round(distance/distPerPulse);
+        
+        int pulsesInterval = cmToPulses(distance);
         Motors::MotorAction driveAction = dirFwd ? Motors::MotorAction::DRIVE_FWD : Motors::MotorAction::DRIVE_BACK;
         driveMotorsEncoderPulses(dutyCycle, driveAction, Motors::RotateMode::NONE, pulsesInterval);
     }
 
     void rotateMotorsDegs(int dutyCycle, bool dirRight, Motors::RotateMode rotateMode, double angle) {
-        double wheels_width = rotateMode == Motors::RotateMode::BOTH_WHEELS ? Motors::WHEELS_WIDTH / 2.0 : Motors::WHEELS_WIDTH;
-        double anglePerPulse = (PI * Motors::WHEEL_DIAMETER / Encoders::pulse_per_rev) / (PI / 180.0 * wheels_width);
-        int pulses = round(angle / anglePerPulse);
+        double rotateRadius = rotateMode == Motors::RotateMode::BOTH_WHEELS ? Motors::WHEELS_WIDTH / 2.0 : Motors::WHEELS_WIDTH;
+        // double anglePerPulse = (PI * Motors::WHEEL_DIAMETER / Encoders::pulse_per_rev) / (PI / 180.0 * wheels_width);
+        // int pulses = round(angle / anglePerPulse);
+
+        int pulses = degsToPulses(angle, rotateRadius);
         Motors::MotorAction driveAction = dirRight ? Motors::MotorAction::ROTATE_RIGHT : Motors::MotorAction::ROTATE_LEFT;
         driveMotorsEncoderPulses(dutyCycle, driveAction, rotateMode, pulses);
     }

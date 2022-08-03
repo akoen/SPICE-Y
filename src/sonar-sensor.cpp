@@ -17,8 +17,8 @@ namespace Sonars {
         // sonar delay for pulse interference
         delay(60);
         // clear trig pin 
-        digitalWrite(trigPin, LOW);
-        delayMicroseconds(2);
+        // digitalWrite(trigPin, LOW);
+        // delayMicroseconds(2);
         // Sets the trigPin on HIGH state for 10 micro seconds
         digitalWrite(trigPin, HIGH);
         delayMicroseconds(pulseDuration);

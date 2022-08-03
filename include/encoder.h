@@ -76,18 +76,21 @@ namespace Encoders {
      * This method is blocking (i.e. all other processes must wait until this finished)
      */ 
     void driveMotorsEncoderPulses(int dutyCycle, Motors::MotorAction motorAction, Motors::RotateMode rotateMode, int pulseInterval);
-
-    /* degs to pulses: assume arc length = distance of wheel driven (no slipping)
-     * dist = arc length = (deg / (180.0 * pi)) * wheel width
-     * deg = 180 * dist / wheel width
-     * 
+    
+    /*
      * dist to pulses: 
      * distance per pulse = pi*diameter / pulse per rev
      * pulses = dist / distances per pulse
-     * 
-     * deg per pulse = 180 * (pi*diameter / pulse per rev) / wheel width
+     */
+    int cmToPulses(double distsCm);
+
+    /* degs to pulses: assume arc length = distance of wheel driven (no slipping)
+     * dist = arc length = (deg / (180.0 * pi)) * radius
+     * deg = 180 * dist / radius
+     * deg per pulse = 180 * (pi*diameter / pulse per rev) / radius
      * pulses = deg / deg per pulse 
      */
+    int degsToPulses(double degs, double radius);
 
     /**
      * Drives the motors fwd (true) or back (false) a certain distance (cm)
@@ -105,6 +108,5 @@ namespace Encoders {
      * Stops the motors when desired using encoders. This method puts the motors at rest within a threshold of specified set point pulses.   
      */
     void stopMotorsBrakeEncoders(Motors::MotorAction initialAction, Motors::RotateMode initialRotateMode, long setPtPulseLW, long setPtPulsesRW, int initialDutyCycle, int pulsesThreshold);
-
 }
 #endif
