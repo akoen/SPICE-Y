@@ -1,7 +1,8 @@
 #include <Arduino.h>
 
 #define LED_BUILTIN PC13
-#define REFLECTANCE_PIN PA0
+#define ECHO_PIN PB7
+#define TRIG_PIN PB6
 
 
 #define SERIAL_BAUD 9600
@@ -16,7 +17,8 @@ void ISR_Heartbeat();
 void setup()
 {
   pinMode(LED_BUILTIN, OUTPUT);
-  pinMode(REFLECTANCE_PIN, INPUT);
+  pinMode(ECHO_PIN, INPUT);
+  pinMode(TRIG_PIN, OUTPUT);
 
   Timer1->setOverflow(TIMER1_OVERFLOW, MICROSEC_FORMAT);
   Timer1->attachInterrupt(ISR_Heartbeat);
@@ -27,10 +29,23 @@ void setup()
 
 void loop()
 {
-  int laser_reflectance_analog = analogRead(REFLECTANCE_PIN); //higher analog value = less reflectance = larger "distance" from laser to object
-  Serial.print("ADC Reading: "); 
-  Serial.println(laser_reflectance_analog);
-  delay(500);
+  // digitalWrite(TRIG_PIN, LOW);
+  // delay(100);
+  // digitalWrite(TRIG_PIN, HIGH);
+  // delay(100);
+  Serial.println(3);
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+  //recieve sonar reading
+  uint32_t duration = pulseIn(ECHO_PIN, HIGH);
+  float distance = duration * 0.034 / 2 * 100; //*100 to conv m to cm
+
+  // Serial.print("Distance (cm): "); 
+  // Serial.println(distance);
+  
 }
 
 void ISR_Heartbeat()
