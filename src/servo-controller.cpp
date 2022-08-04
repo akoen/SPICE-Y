@@ -12,7 +12,7 @@ const int Servos::claw_bomb_detect_angle = 120;
 const int Servos::arm_bomb_detect_angle = 80;
 const int Servos::above_treasure_below_IR_angle = 120;
 const int Servos::arm_lowered_angle = 60;   // parallel
-const int Servos::arm_lifted_angle = 174;
+const int Servos::arm_lifted_angle = 165;
 
 Servo Servos::clawServo;
 Servo Servos::armServo;
