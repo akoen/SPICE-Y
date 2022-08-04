@@ -9,10 +9,10 @@ const int Servos::claw_part_open_angle = 100;
 const int Servos::claw_full_open_angle = 200;
 const int Servos::claw_bomb_detect_angle = 120;
 
-const int Servos::arm_bomb_detect_angle = 50;
-const int Servos::above_treasure_below_IR_angle = 90;
-const int Servos::arm_lowered_angle = 30;   // parallel
-const int Servos::arm_lifted_angle = 144;
+const int Servos::arm_bomb_detect_angle = 80;
+const int Servos::above_treasure_below_IR_angle = 120;
+const int Servos::arm_lowered_angle = 60;   // parallel
+const int Servos::arm_lifted_angle = 174;
 
 Servo Servos::clawServo;
 Servo Servos::armServo;

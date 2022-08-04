@@ -64,8 +64,8 @@ namespace TreasureDetection {
             // if inf loop --> return false (some sort of timeout)
         }
         Motors::stopWithBrake(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, LW_PWM_DUTY, 50);
-        Serial.println("found treasure right: ");    
-        Serial.println(rightSonarDist);    
+        // Serial.println("found treasure right: ");    
+        // Serial.println(rightSonarDist);    
 
         // rotate until treasure not seen for second treasure
         if (treasureNum == 2) {
@@ -99,29 +99,77 @@ namespace TreasureDetection {
             
             if (retOriginalPos) Encoders::startAddActionCache(treasureTurnAction, treasureTurnRotateMode, Motors::default_rotate_pwm);
 
-            Serial.println("Front sonar: ");
-            // delay(1000);
-
             double distFrontSonar;
             int goodReadingsCount = 0;
             Motors::rotate(Motors::default_rotate_pwm, treasureTurnAction == Motors::MotorAction::ROTATE_RIGHT, treasureTurnRotateMode);
 
             // turn until certain within threshold
             long pulsesStart, pulsesEnd;
-            while (goodReadingsCount < front_sonar_req_good_readings[treasureNum-1]) {
+            // while (goodReadingsCount < front_sonar_req_good_readings[treasureNum-1]) {
+            //     distFrontSonar = Sonars::getDistanceSinglePulse(SONAR_TRIG_PIN_ALL, SONAR_ECHO_PIN_F);
+            //     if (distFrontSonar < distFront + distFrontErr && distFrontSonar > distFront - distFrontErr) {
+            //         goodReadingsCount++;
+            //         avgFoundTreasureFrontDists += distFrontSonar;
+            //     }
+            //     else {
+            //         goodReadingsCount = 0;
+            //     }
+            //     Serial.println(distFrontSonar);
+            // }
+            // avgFoundTreasureFrontDists /= (1.0* front_sonar_req_good_readings[treasureNum-1]);
+
+            while (true) {
                 distFrontSonar = Sonars::getDistanceSinglePulse(SONAR_TRIG_PIN_ALL, SONAR_ECHO_PIN_F);
                 if (distFrontSonar < distFront + distFrontErr && distFrontSonar > distFront - distFrontErr) {
+                    Serial.println(Encoders::pulseRW);
+
+                    // first good reading
+                    if (goodReadingsCount == 0) {
+                        switch(action) {
+                            case Motors::MotorAction::ROTATE_RIGHT:
+                                // pulsesStart = treasureTurnRotateMode == Motors::RotateMode::BACKWARDS ? Encoders::pulseRW : Encoders::pulseLW;
+                                pulsesStart = Encoders::pulseRW;
+                            case Motors::MotorAction::ROTATE_LEFT:
+                                pulsesStart = treasureTurnRotateMode == Motors::RotateMode::BACKWARDS ? Encoders::pulseLW : Encoders::pulseRW;
+                        }
+                        // Motors::stopWithBrake(treasureTurnAction, treasureTurnRotateMode, Motors::min_rotate_dutyCycle, 50);
+                        // Motors::rotate(Motors::default_rotate_pwm, treasureTurnAction == Motors::MotorAction::ROTATE_RIGHT, treasureTurnRotateMode);
+                    }
                     goodReadingsCount++;
-                    avgFoundTreasureFrontDists += distFrontSonar;
                 }
                 else {
+                    // last good reading
+                    if (goodReadingsCount > front_sonar_req_good_readings[treasureNum-1]) {
+                        Serial.println(Encoders::pulseRW);
+
+                        // Motors::stopWithBrake(treasureTurnAction, treasureTurnRotateMode, Motors::min_rotate_dutyCycle, 50);
+                        switch(action) {
+                            case Motors::MotorAction::ROTATE_RIGHT:
+                                // pulsesEnd = treasureTurnRotateMode == Motors::RotateMode::BACKWARDS ? Encoders::pulseRW : Encoders::pulseLW;
+                                pulsesEnd = Encoders::pulseRW;
+                            case Motors::MotorAction::ROTATE_LEFT:
+                                pulsesEnd = treasureTurnRotateMode == Motors::RotateMode::BACKWARDS ? Encoders::pulseLW : Encoders::pulseRW;
+                        }
+                        break;
+                    }
                     goodReadingsCount = 0;
                 }
-                Serial.println(distFrontSonar);
+                // Serial.println(distFrontSonar);
             }
-            avgFoundTreasureFrontDists /= (1.0* front_sonar_req_good_readings[treasureNum-1]);
-
             Motors::stopWithBrake(treasureTurnAction, treasureTurnRotateMode, Motors::default_rotate_pwm, 200);
+            // go halfway of first & last good readings
+            // int pulseInterval = abs(pulsesEnd - pulsesStart);
+            int pulseInterval = abs(Encoders::pulseRW - pulsesStart);
+            // Serial.println(pulseInterval);
+            Serial.print("Pulse end ");
+            Serial.print(pulsesEnd);
+            Serial.print("Pulse start");
+            Serial.println(pulsesStart);
+            delay(2000);
+            Motors::MotorAction inverseAction;
+            Motors::RotateMode inverseRotate;
+            std::tie(inverseAction, inverseRotate) = Motors::getInverseDrive(treasureTurnAction, treasureTurnRotateMode);
+            Encoders::driveMotorsEncoderPulses(Motors::default_rotate_pwm, inverseAction, inverseRotate, pulseInterval / 2);
 
             // empirical - 2nd treasure requires some degs to be rotated to the left to be aligned to treasure
             if (treasureNum == 2) {
@@ -133,52 +181,52 @@ namespace TreasureDetection {
 
         // treasure in front
         if (retOriginalPos) Encoders::startAddActionCache(Motors::DRIVE_FWD, Motors::RotateMode::NONE, def_drive_to_treasure_duty);
-
+        
         Motors::setDir(true, true);
         Motors::setDutyCycles(def_drive_to_treasure_duty, def_drive_to_treasure_duty+Motors::default_motors_offset);    // may need to be slower
         Motors::drive();
         
         // go to treasure until in claw range
-        Serial.print("avg found treasure front: ");
-        Serial.println(avgFoundTreasureFrontDists);
+        // Serial.print("avg found treasure front: ");
+        // Serial.println(avgFoundTreasureFrontDists);
         delay(1000);
-        driveToTreasureFrontSonar(avgFoundTreasureFrontDists-10, 5);
+        // driveToTreasureFrontSonar(avgFoundTreasureFrontDists-10, 5);
         // driveToTreasureFrontSonar(front_sonar_treasure_dists[treasureNum-1], 5);
 
-        // double distFrontSonarTreasureClaw;
-        // int goodReadingsCount = 0;
+        double distFrontSonarTreasureClaw;
+        int goodReadingsCount = 0;
 
-        // /* Ensuring driving into claw range
-        //  *  1) drive until claw in range. If distance gets larger then rotate left and right until expected distance found
-        //  *  2) drive until very close to pedestal (< 2 cm) using encoders & obtained sonar values. If the sonar value read is expected (~2 cm) then claw is in range.
-        //  *  Otherwise, back up some more cms and rotate some degs left & right until expected distance found (2+backed up cm)
-        //  */
+        /* Ensuring driving into claw range
+         *  1) drive until claw in range. If distance gets larger then rotate left and right until expected distance found
+         *  2) drive until very close to pedestal (< 2 cm) using encoders & obtained sonar values. If the sonar value read is expected (~2 cm) then claw is in range.
+         *  Otherwise, back up some more cms and rotate some degs left & right until expected distance found (2+backed up cm)
+         */
 
-        // while (goodReadingsCount < claw_req_good_readings[treasureNum-1]) {
-        //     Serial.print("Front sonar dist: ");
-        //     Serial.println(distFrontSonarTreasureClaw);            
-        //     distFrontSonarTreasureClaw = Sonars::getDistanceSinglePulse(SONAR_TRIG_PIN_ALL, SONAR_ECHO_PIN_F);
-        //     if (distFrontSonarTreasureClaw < treasure_in_claw_dist + treasure_in_claw_dist_err) goodReadingsCount++;
-        //     else goodReadingsCount = 0;
-        // }
+        while (goodReadingsCount < claw_req_good_readings[treasureNum-1]) {
+            // Serial.print("Front sonar dist: ");
+            // Serial.println(distFrontSonarTreasureClaw);            
+            distFrontSonarTreasureClaw = Sonars::getDistanceSinglePulse(SONAR_TRIG_PIN_ALL, SONAR_ECHO_PIN_F);
+            if (distFrontSonarTreasureClaw < treasure_in_claw_dist + treasure_in_claw_dist_err) goodReadingsCount++;
+            else goodReadingsCount = 0;
+        }
 
-        // Motors::stopWithBrake(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, Motors::min_drive_dutyCycle, 100);
+        Motors::stopWithBrake(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, Motors::min_drive_dutyCycle, 100);
         
-        // // too close to the treasure
-        // Motors::setDir(false, false);
-        // Motors::setDutyCycles(def_drive_to_treasure_duty, def_drive_to_treasure_duty+Motors::default_motors_offset);    // may need to be slower
-        // Motors::drive();
+        // too close to the treasure
+        Motors::setDir(false, false);
+        Motors::setDutyCycles(def_drive_to_treasure_duty, def_drive_to_treasure_duty+Motors::default_motors_offset);    // may need to be slower
+        Motors::drive();
         
-        // goodReadingsCount = 0;
-        // while (goodReadingsCount < claw_req_good_readings[treasureNum-1]) {
-        //     Serial.print("Front sonar dist: ");
-        //     Serial.println(distFrontSonarTreasureClaw);            
-        //     distFrontSonarTreasureClaw = Sonars::getDistanceSinglePulse(SONAR_TRIG_PIN_ALL, SONAR_ECHO_PIN_F);
+        goodReadingsCount = 0;
+        while (goodReadingsCount < claw_req_good_readings[treasureNum-1]) {
+            // Serial.print("Front sonar dist: ");
+            // Serial.println(distFrontSonarTreasureClaw);            
+            distFrontSonarTreasureClaw = Sonars::getDistanceSinglePulse(SONAR_TRIG_PIN_ALL, SONAR_ECHO_PIN_F);
 
-        //     if (distFrontSonarTreasureClaw > treasure_in_claw_dist - treasure_in_claw_dist_err) goodReadingsCount++;
-        //     else goodReadingsCount = 0;
-        // }
-        // Motors::stopWithBrake(Motors::MotorAction::DRIVE_BACK, Motors::RotateMode::NONE, def_drive_to_treasure_duty, 100);
+            if (distFrontSonarTreasureClaw > treasure_in_claw_dist - treasure_in_claw_dist_err) goodReadingsCount++;
+            else goodReadingsCount = 0;
+        }
+        Motors::stopWithBrake(Motors::MotorAction::DRIVE_BACK, Motors::RotateMode::NONE, def_drive_to_treasure_duty, 100);
 
         if (retOriginalPos) Encoders::endAddActionCache();
     
