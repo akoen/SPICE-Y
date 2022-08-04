@@ -29,4 +29,13 @@ namespace Sonars {
         // Calculating the distance in cm
         return duration * speed_sound / 2.0;
     }
+
+    double getAvgDistancePulses(int numReadings, int trigPin, int echoPin, double pulseDuration=10) {
+        double avgSonarDist = 0;
+        for (int i = 0; i < numReadings; i++) {
+            avgSonarDist += Sonars::getDistanceSinglePulse(trigPin, echoPin);
+        }
+        return avgSonarDist / (1.0 * numReadings);
+    }
+
 }
