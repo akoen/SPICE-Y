@@ -75,7 +75,7 @@ namespace Encoders {
      * 
      * This method is blocking (i.e. all other processes must wait until this finished)
      */ 
-    void driveMotorsEncoderPulses(int dutyCycle, Motors::MotorAction motorAction, Motors::RotateMode rotateMode, int pulseInterval);
+    bool driveMotorsEncoderPulses(int dutyCycle, Motors::MotorAction motorAction, Motors::RotateMode rotateMode, int pulseInterval, int timeout = -1);
     
     /*
      * dist to pulses: 
@@ -97,17 +97,12 @@ namespace Encoders {
      * 
      * This method is blocking (i.e. all other processes must wait until this finished)
      */ 
-    void driveMotorsDistance(int dutyCycle, bool dirFwd, double distance);
+    bool driveMotorsDistance(int dutyCycle, bool dirFwd, double distance, int timeout=-1);
 
     /**
      * Rotates the motors right (true) or left (false) a certain angle
      */ 
-    void rotateMotorsDegs(int dutyCycle, bool dirRight, Motors::RotateMode mode, double angle);
-
-    /**
-     * Stops the motors when desired using encoders. This method puts the motors at rest within a threshold of specified set point pulses.   
-     */
-    void stopMotorsBrakeEncoders(Motors::MotorAction initialAction, Motors::RotateMode initialRotateMode, long setPtPulseLW, long setPtPulsesRW, int initialDutyCycle, int pulsesThreshold);
+    bool rotateMotorsDegs(int dutyCycle, bool dirRight, Motors::RotateMode mode, double angle, int timeout=-1);
 
     /**
      * Checks if the motor wheel has changed its pulses over a duration. 

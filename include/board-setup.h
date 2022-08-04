@@ -11,13 +11,10 @@ extern ADC_HandleTypeDef AdcHandle;
 extern uint16_t DMA1Data[IR_SENS_NUM_READINGS];
 extern bool DMA1DataAvailable;
 
-extern Adafruit_SSD1306 OLEDDisplayHandler;;
-
 
 namespace Setup {
     void ADC();
     void timerHeartbeatInit();
-    void OLED();
     
     void configAllPins();
 }

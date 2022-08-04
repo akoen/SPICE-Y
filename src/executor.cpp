@@ -7,15 +7,18 @@ namespace Executor {
         // follow tape & obtain first treasure and come back to tape
         TreasureDetection::obtainTapeTreasure(1);
         // back up - easier to find tape (and not worry for 1 1 1 instead of tape)
-        Encoders::driveMotorsDistance(Motors::min_drive_dutyCycle, false, 20);
+        Encoders::driveMotorsDistance(Motors::min_drive_dutyCycle, false, 16);
         // find tape 
         TapeFollow::findBlackTape(TapeFollow::DEF_TAPE_SEARCH_ANGLE, Motors::min_rotate_dutyCycle, Motors::RotateMode::BOTH_WHEELS);
         // follow tape & obtain second treasure and come back to tape
         TreasureDetection::obtainTapeTreasure(2);
-        
+        // back up a bit
+        Encoders::driveMotorsDistance(Motors::min_drive_dutyCycle, false, 10);
         // find tape
-        // TapeFollow::findBlackTape(60);
-
+        TapeFollow::findBlackTape(TapeFollow::DEF_TAPE_SEARCH_ANGLE, Motors::min_rotate_dutyCycle, Motors::BOTH_WHEELS);
+        while (true) {
+            TapeFollow::driveWithPid();
+        }
         // fit through archway
 
         // obtain third treasure using IR PID

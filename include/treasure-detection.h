@@ -41,6 +41,10 @@ namespace TreasureDetection {
      * Handles driving to the treasure when the front sonar has detected it, given the distance of the robot at the time of the method call.
      * 
      */ 
-    void driveToTreasureFrontSonar(double treasureDist, int numReadings);
+    void driveToTreasureFrontSonar(double treasureDist, int numReadings, int timeout);
+    
+    void driveToTreasureFrontSonar2(double initialDist, int reqGoodReadings, int timeout);
+
+    void regularDriveToTreasureFront(int treasureNum, int timeout);
 }
 #endif

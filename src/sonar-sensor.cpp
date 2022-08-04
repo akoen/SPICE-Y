@@ -25,12 +25,12 @@ namespace Sonars {
         digitalWrite(echoPin, LOW);
 
         // Reads the echoPin, returns the sound wave travel time in microseconds
-        double duration = pulseIn(echoPin, HIGH);
+        double duration = pulseIn(echoPin, HIGH, 500000UL);
         // Calculating the distance in cm
         return duration * speed_sound / 2.0;
     }
 
-    double getAvgDistancePulses(int numReadings, int trigPin, int echoPin, double pulseDuration=10) {
+    double getAvgDistancePulses(int numReadings, int trigPin, int echoPin, double pulseDuration) {
         double avgSonarDist = 0;
         for (int i = 0; i < numReadings; i++) {
             avgSonarDist += Sonars::getDistanceSinglePulse(trigPin, echoPin);

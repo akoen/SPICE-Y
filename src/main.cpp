@@ -37,12 +37,12 @@ void loop() {
     // Serial.println("loop");
     // TreasureDetection::obtainTapeTreasure(2);
     
-    Servos::collectTreasure();
+    // Servos::collectTreasure();
     // pwmServoTest();
-    // Executor::execute();
-    // Serial.println(Sonars::getDistanceSinglePulse(SONAR_TRIG_PIN_ALL, SONAR_ECHO_PIN_L));
+    Executor::execute();
+    // Serial.println(Sonars::getDistanceSinglePulse(SONAR_TRIG_PIN_ALL, SONAR_ECHO_PIN_R));
     // Serial.print(" ");
-    // Encoders::rotateMotorsDegs(Motors::min_rotate_dutyCycle, true, Motors::RotateMode::BOTH_WHEELS, 90);
+    // Encoders::rotateMotorsDegs(Motors::min_rotate_dutyCycle, true, Motors::RotateMode::BACKWARDS, 50);
     // delay(2000);
     // Encoders::rotateMotorsDegs(Motors::min_rotate_dutyCycle, false, Motors::RotateMode::BACKWARDS, 90);
     // delay(2000);

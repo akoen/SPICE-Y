@@ -20,5 +20,7 @@ namespace Sonars {
      * Note: pulse duration min. 10 microseconds, which is default.
      */
     double getDistanceSinglePulse(int trigPin, int echoPin, double pulseDuration=10);
+
+    double getAvgDistancePulses(int numReadings, int trigPin, int echoPin, double pulseDuration=10);
 }
 #endif

@@ -2,9 +2,9 @@
 #include "encoder.h"
 
 // PID tuning
-const double TapeFollow::kp = 22;
+const double TapeFollow::kp = 23;
 const double TapeFollow::ki = 0;
-const double TapeFollow::kd = 14;
+const double TapeFollow::kd = 15;
 const double TapeFollow::maxI = 100;
 // chicken wire
 const double TapeFollow::CHICKEN_WIRE_DIST = 17+8;
@@ -37,7 +37,7 @@ double TapeFollow::calcPidBlackTape() {
     onTapeR = ReflectanceSensors::frontSensorRval;
 
     // chicken wire routine
-    if ((onTapeL && onTapeM && onTapeR)) { 
+    if ((onTapeL && onTapeM && onTapeR) && !crossedChickenWire) { 
         // stop
         int stopDuty = Motors::dutyCycleL > Motors::dutyCycleR ? Motors::dutyCycleL : Motors::dutyCycleR;
         Motors::stopWithBrake(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, stopDuty, 50);  

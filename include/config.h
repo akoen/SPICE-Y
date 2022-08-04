@@ -33,19 +33,15 @@
 # define PWM_FORMAT_MOTOR_BACK_R PB_8
 
 // encoders
-// #define R_ENCODER_PIN1 PA11
 #define R_ENCODER_PIN1 PA0
-// #define R_ENCODER_PIN2
 #define L_ENCODER_PIN1 PA1
-// #define L_ENCODER_PIN1 PA12
-// #define L_ENCODER_PIN2 
 
 // reflectance
 # define REFLECTANCE_PIN_R PB1
 # define REFLECTANCE_PIN_L PB0
 # define REFLECTANCE_PIN_M PA3
 
-# define REFLECTANCE_PIN_SIDE_L PA6    // placeholders
+# define REFLECTANCE_PIN_SIDE_L PA6 
 # define REFLECTANCE_PIN_SIDE_R PA7
 
 // sonar
@@ -67,5 +63,9 @@
 
 // hall effect
 # define MAGNETIC_SENSOR_PIN PB15
+
+// switches
+# define SWITCH_L 0
+# define SIWTCH_R 1
 
 #endif
