@@ -50,13 +50,11 @@ void loop() {
     // TapeFollow::driveWithPid();
     // TreasureDetection::obtainTapeTreasure(1);
 
-    // int duty = Motors::min_drive_dutyCycle;
-    // Motors::MotorAction action = Motors::MotorAction::DRIVE_FWD;
-    // Motors::RotateMode rotate = Motors::RotateMode::NONE;
+    // int duty = 50;
 
     // Serial.println("loop");
     // Encoders::startAddActionCache(action, rotate, duty);
-    // Encoders::driveMotorsDistance(duty, true, 30);
+    // Encoders::driveMotorsDistance(duty, false, 50);
     // Encoders::endAddActionCache();
     // delay(1000);
     // Encoders::executeReverseCache(2000);

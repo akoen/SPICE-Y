@@ -36,5 +36,11 @@ namespace TreasureDetection {
      * only possible if the cache is empty at the time of the method call (since it will execute all in cache)
      */
     bool treasureCollectionRoutine(Sonars::SonarType treasureLoc, double distFront, double distFrontErr, bool retOriginalPos, int treasureNum);
+
+    /**
+     * Handles driving to the treasure when the front sonar has detected it, given the distance of the robot at the time of the method call.
+     * 
+     */ 
+    void driveToTreasureFrontSonar(double treasureDist, int numReadings);
 }
 #endif
