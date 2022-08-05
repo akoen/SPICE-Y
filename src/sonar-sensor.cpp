@@ -30,12 +30,20 @@ namespace Sonars {
         return duration * speed_sound / 2.0;
     }
 
+    double getDistanceSinglePulse(Sonars::SonarType sonarType) {
+        return getDistanceSinglePulse(SONAR_TRIG_PIN_ALL, sonarType);
+    }
+
     double getAvgDistancePulses(int numReadings, int trigPin, int echoPin, double pulseDuration) {
         double avgSonarDist = 0;
         for (int i = 0; i < numReadings; i++) {
             avgSonarDist += Sonars::getDistanceSinglePulse(trigPin, echoPin);
         }
         return avgSonarDist / (1.0 * numReadings);
+    }
+
+    double getAvgDistancePulses(int numReadings, Sonars::SonarType sonarType) {
+        return getAvgDistancePulses(numReadings, SONAR_TRIG_PIN_ALL, sonarType);
     }
 
 }

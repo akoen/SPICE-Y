@@ -78,6 +78,15 @@ namespace Motors {
     void stopMotorsPWM(int delayMillis=default_motors_stop_millis);
     
     /**
+     * Drives the motors forwards for the specified duty cycle. Handles any motor offset
+     */
+    void driveFwd(int duty);
+
+    /**
+     * Drives the motors backwards for the specified duty cycle. Handle any motor offset
+     */
+    void driveBack(int duty);
+    /**
      * Rotates motor with the given pwm duty cycle
      * Accounts for ref duty cycle offset and the given duty cycle saturates
      * if magnitude is larger than motors offset 

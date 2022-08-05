@@ -133,6 +133,18 @@ void Motors::stopMotorsPWM(int delayMillis) {
 }
 
 
+void Motors::driveFwd(int duty) {
+    setDir(true, true);
+    setDutyCycles(duty, duty + default_motors_offset);
+    drive();
+}
+
+void Motors::driveBack(int duty) {
+    setDir(false, false);
+    setDutyCycles(duty, duty + default_motors_offset);
+    drive();
+}
+
 void Motors::rotate(int dutyCycle, bool rotateRight, RotateMode rotateMode) {
     if (dutyCycle < default_motors_offset) dutyCycle = default_motors_offset;
 
