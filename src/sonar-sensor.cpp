@@ -15,7 +15,8 @@ namespace Sonars {
 
     double getDistanceSinglePulse(int trigPin, int echoPin, double pulseDuration) {    
         // sonar delay for pulse interference
-        delay(60);
+        // delay(100);
+        delay(35);
         // clear trig pin 
         digitalWrite(trigPin, LOW);
         delayMicroseconds(2);

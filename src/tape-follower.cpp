@@ -109,7 +109,7 @@ void TapeFollow::chickenWireRoutine() {
     findBlackTape(DEF_TAPE_SEARCH_ANGLE, Motors::min_rotate_dutyCycle, Motors::RotateMode::FORWARDS, false);
 }
 
-bool TapeFollow::findBlackTape(double angle, int dutyCycle, Motors::RotateMode rotateMode, bool rotateRightFirst) {
+bool TapeFollow::findBlackTape(double angle, int dutyCycle, Motors::RotateMode rotateMode, bool rotateRightFirst, int timeout) {
     // deg to pulses
     double arcLen = rotateMode == Motors::RotateMode::BOTH_WHEELS ? Motors::WHEELS_WIDTH / 2.0 : Motors::WHEELS_WIDTH;
     double anglePerPulse = (PI * Motors::WHEEL_DIAMETER / Encoders::pulse_per_rev) / (PI / 180.0 * arcLen);
@@ -122,6 +122,9 @@ bool TapeFollow::findBlackTape(double angle, int dutyCycle, Motors::RotateMode r
     bool firstTapeReadingR;
     long startEncoderPulses;
     long checkEncoderPulses;
+
+    long startMillis;
+    long currMillis;
 
     // rotate left - left wheel rotates forwards, right wheel at rest
     // rotate right after - right wheel rotates forwards
@@ -153,6 +156,8 @@ bool TapeFollow::findBlackTape(double angle, int dutyCycle, Motors::RotateMode r
                 }
                 Motors::rotate(Motors::default_rotate_pwm, false, rotateMode);
             }
+            startMillis = millis();
+            currMillis = startMillis;
         } else {   
             if (rotateRightFirst) {
                 // search left
@@ -176,14 +181,19 @@ bool TapeFollow::findBlackTape(double angle, int dutyCycle, Motors::RotateMode r
                 Motors::rotate(Motors::default_rotate_pwm, true, rotateMode);
                 turnPulsesInterval = round(angle * 2 / anglePerPulse);    // twice the angle since needs to go left -> middle -> right
             }
+            startMillis = millis();
+            currMillis = startMillis;
         }
         while (true) {
+            currMillis = millis();
             // loop end conditions
             if (rotateMode == Motors::BACKWARDS) {
                 if (checkEncoderPulses < startEncoderPulses - turnPulsesInterval) break;
             } else {
                 if (checkEncoderPulses > startEncoderPulses + turnPulsesInterval) break;
             }
+            
+            if (timeout != -1 && currMillis > startMillis + timeout*1000) break;
 
             // look for tape while turning - tape found when not 1 1 1 and at least one 1 is seen 
             ReflectanceSensors::readFrontReflectanceSensors();

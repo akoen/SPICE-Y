@@ -40,9 +40,10 @@ void loop() {
 
     // Servos::collectTreasure();
     // pwmServoTest();
-    Executor::execute();
-    // Serial.println(Sonars::getDistanceSinglePulse(SONAR_TRIG_PIN_ALL, SONAR_ECHO_PIN_R));
+    // Executor::execute();
+    // Serial.print(Sonars::getDistanceSinglePulse(Sonars::SonarType::RIGHT));
     // Serial.print(" ");
+    // Serial.println(Sonars::getDistanceSinglePulse(Sonars::SonarType::FRONT));
     // Encoders::rotateMotorsDegs(Motors::min_rotate_dutyCycle, true, Motors::RotateMode::BACKWARDS, 50);
     // delay(2000);
     // Encoders::rotateMotorsDegs(Motors::min_rotate_dutyCycle, false, Motors::RotateMode::BACKWARDS, 90);
