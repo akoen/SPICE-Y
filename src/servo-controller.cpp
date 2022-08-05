@@ -14,6 +14,12 @@ const int Servos::above_treasure_below_IR_angle = 120;
 const int Servos::arm_lowered_angle = 60;   // parallel
 const int Servos::arm_lifted_angle = 165;
 
+const int box_closed_angle = 60;
+const int box_open_angle = 10;
+
+const int bridge_closed_angle = 0;
+const int brdige_open_angle = 00;
+
 Servo Servos::clawServo;
 Servo Servos::armServo;
 Servo Servos::bridgeServo;
@@ -37,11 +43,13 @@ void Servos::configAllServoPins() {
     }
     if (!bridgePinsConfiged) {
         bridgeServo.attach(BRIDGE_SERVO_PIN);
+        bridgeServo.write(bridge_closed_angle);
         bridgePinsConfiged = true;
     }
     if (!boxPinsConfiged) {
         boxServo.attach(BOX_SERVO_PIN);
         boxPinsConfiged = true;
+        boxServo.write(box_closed_angle);
     }
 }
 
@@ -99,6 +107,13 @@ void Servos::collectTreasure() {
     delay(300);
 }
 
+void Servos::deployBox() {
+    boxServo.write(box_open_angle);
+}
+
+void Servos::deployBridge() {
+    bridgeServo.write(box_open_angle);
+}
 void Servos::setServoPos(Servo servoObj, int deg) {
     servoObj.write(deg);
 }

@@ -16,6 +16,12 @@ namespace Servos {
     extern const int arm_lowered_angle;
     extern const int arm_lifted_angle;
 
+    extern const int box_closed_angle;
+    extern const int box_open_angle;
+    
+    extern const int bridge_closed_angle;
+    extern const int bridge_open_angle;
+
     extern Servo clawServo;
     extern Servo armServo;
     extern Servo bridgeServo;
@@ -42,8 +48,15 @@ namespace Servos {
      */
     void collectTreasure();
 
-    void setServoPos(Servo servoObj, int deg);
+    /**
+     * Deploys the storage box to be released.
+     */
+    void deployBox();
+    
+    void deployBridge();
 
+    void setServoPos(Servo servoObj, int deg);
+    
 }
 
 #endif

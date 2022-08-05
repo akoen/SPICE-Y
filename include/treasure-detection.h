@@ -43,7 +43,7 @@ namespace TreasureDetection {
      */ 
     void driveToTreasureFrontSonar(double treasureDist, int numReadings, int timeout);
     
-    void driveToTreasureFrontSonar2(double initialDist, int reqGoodReadings, int timeout);
+    void driveToTreasureFrontSonar2(double initialDist, int reqGoodReadings, int timeout, bool retOriginalPos);
 
     void regularDriveToTreasureFront(int treasureNum, int timeout);
 }

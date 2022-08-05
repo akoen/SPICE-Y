@@ -21,7 +21,8 @@ void setup() {
     Encoders::configEncoderPins();
     Sonars::configSonarPins();
     ReflectanceSensors::configFrontReflectanceSensors();
-    Servos::configArmClawPins();
+    // Servos::configArmClawPins();
+    Servos::configAllServoPins();
 
     // /* Run the ADC calibration */
     // HAL_ADCEx_Calibration_Start(&AdcHandle);
@@ -36,7 +37,7 @@ void loop() {
     // delay(1000);
     // Serial.println("loop");
     // TreasureDetection::obtainTapeTreasure(2);
-    
+
     // Servos::collectTreasure();
     // pwmServoTest();
     Executor::execute();
@@ -63,7 +64,7 @@ void loop() {
     // Encoders::executeReverseCache(2000);
     // delay(2000);
     // TapeFollow::driveWithPid();
-    // IR::driveWithPID();
+    IR::driveWithPID();
 }
 
 void pwmServoTest() {

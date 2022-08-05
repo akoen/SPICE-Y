@@ -2,7 +2,7 @@
 
 // TODO: need min pwm duty cycle for driving & rotation
 const int Motors::min_drive_dutyCycle = 20;
-const int Motors::min_rotate_dutyCycle = 15;
+const int Motors::min_rotate_dutyCycle = 18;
 
 const int Motors::max_drive_dutyCycle = 80;
 
