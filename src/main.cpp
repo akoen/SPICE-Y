@@ -13,9 +13,9 @@
 
 // the setup routine runs once when you press reset:
 void setup() {
-    // Serial.begin(115200, SERIAL_8N1);
-    // Setup::timerHeartbeatInit();
-    // Setup::ADC();
+    Serial.begin(115200, SERIAL_8N1);
+    Setup::timerHeartbeatInit();
+    Setup::ADC();
 
     Motors::configMotorPins();
     Encoders::configEncoderPins();
@@ -25,11 +25,11 @@ void setup() {
     Servos::configAllServoPins();
 
     // /* Run the ADC calibration */
-    // HAL_ADCEx_Calibration_Start(&AdcHandle);
-    // pinMode(PA12, OUTPUT);
-    // // /* Start ADC conversion on regular group with transfer by DMA */
-    // HAL_ADC_Start_DMA(&AdcHandle, (uint32_t *)DMA1Data, IR_SENS_NUM_READINGS);
-    // Serial.println("Serial connected");
+    HAL_ADCEx_Calibration_Start(&AdcHandle);
+    pinMode(PA12, OUTPUT);
+    // /* Start ADC conversion on regular group with transfer by DMA */
+    HAL_ADC_Start_DMA(&AdcHandle, (uint32_t *)DMA1Data, IR_SENS_NUM_READINGS);
+    Serial.println("Serial connected");
 }
 void pwmServoTest();
 void loop() {
