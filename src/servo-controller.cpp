@@ -14,11 +14,11 @@ const int Servos::above_treasure_below_IR_angle = 120;
 const int Servos::arm_lowered_angle = 60;   // parallel
 const int Servos::arm_lifted_angle = 165;
 
-const int box_closed_angle = 60;
-const int box_open_angle = 10;
+const int Servos::box_closed_angle = 60;
+const int Servos::box_open_angle = 10;
 
-const int bridge_closed_angle = 0;
-const int brdige_open_angle = 00;
+const int Servos::bridge_closed_angle = 0;
+const int Servos::bridge_open_angle = 00;
 
 Servo Servos::clawServo;
 Servo Servos::armServo;
