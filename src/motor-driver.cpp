@@ -4,14 +4,14 @@
 const int Motors::min_drive_dutyCycle = 20;
 const int Motors::min_rotate_dutyCycle = 15;
 
-const int Motors::max_drive_dutyCycle = 60;
+const int Motors::max_drive_dutyCycle = 80;
 
 const int Motors::pwm_clock_freq = 100; // hz
 const int Motors::ref_duty_cycle = 80; // %
 
-const int Motors::default_rotate_pwm = min_rotate_dutyCycle; // %
+const int Motors::default_rotate_pwm = min_rotate_dutyCycle+5; // %
 const int Motors::default_motors_offset = RW_PWM_DUTY - LW_PWM_DUTY; // > 0 for RW, < 0 for LW
-const int Motors::default_motors_stop_millis = 500;
+const int Motors::default_motors_stop_millis = 250;
 
 const double Motors::WHEELS_WIDTH = 24.5;   // cm
 const double Motors::WHEEL_DIAMETER = 8.7; // cm

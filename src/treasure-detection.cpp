@@ -16,7 +16,7 @@ namespace TreasureDetection {
     const double treasure_in_claw_dist = 15; // cm
     const double treasure_in_claw_dist_err = 1; // cm
 
-    const double def_drive_to_treasure_duty = Motors::min_drive_dutyCycle; // %
+    const double def_drive_to_treasure_duty = 30; // %
 
     const int side_sonar_req_good_readings[6] = {2, 2, 3, 3, 3, 3};
     const int front_sonar_req_good_readings[6] = {2, 2, 1, 1, 1, 1};
@@ -65,7 +65,7 @@ namespace TreasureDetection {
             }
             // if inf loop --> return false (some sort of timeout)
         }
-        Motors::stopWithBrake(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, LW_PWM_DUTY, 50, 1000);
+        Motors::stopWithBrake(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, LW_PWM_DUTY, 50);
         // Serial.println("found treasure right: ");    
         // Serial.println(rightSonarDist);    
 
@@ -76,7 +76,7 @@ namespace TreasureDetection {
             Encoders::driveMotorsDistance(Motors::min_drive_dutyCycle, false, driveCalibration);
             Encoders::endAddActionCache();
             Encoders::startAddActionCache(Motors::ROTATE_RIGHT, Motors::BACKWARDS, Motors::default_rotate_pwm);
-            Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, true, Motors::RotateMode::BACKWARDS, 70);
+            Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, true, Motors::RotateMode::BACKWARDS, 65);
             Encoders::endAddActionCache();
         }
         Sonars::SonarType sonarType;
@@ -86,7 +86,12 @@ namespace TreasureDetection {
         } else {
             sonarType = Sonars::SonarType::RIGHT;
         }
-        return treasureCollectionRoutine(sonarType, firstFrontSonarTreausureDist, firstFrontSonarTreausureDistErr, true, treasureNum);
+        // cache
+        bool retOriginal = false;
+        if (treasureNum == 1 || treasureNum == 2) {
+            retOriginal = true;
+        }
+        return treasureCollectionRoutine(sonarType, firstFrontSonarTreausureDist, firstFrontSonarTreausureDistErr, retOriginal, treasureNum);
     }
 
     bool treasureCollectionRoutine(Sonars::SonarType treasureLoc, double distFront, double distFrontErr, bool retOriginalPos, int treasureNum) {
@@ -95,7 +100,7 @@ namespace TreasureDetection {
         if (treasureNum == 1) {
                 driveCalibration = 6;    // cm - so wheel not caught on ramp
                 // Encoders::driveMotorsDistance(Motors::min_drive_dutyCycle, true, fwdDriveCalibration);
-                Encoders::driveMotorsDistance(Motors::min_drive_dutyCycle, false, driveCalibration);
+                Encoders::driveMotorsDistance(def_drive_to_treasure_duty, false, driveCalibration);
         }
         double avgFoundTreasureFrontDists = 0;
 
@@ -127,7 +132,7 @@ namespace TreasureDetection {
             }
             avgFoundTreasureFrontDists /= (1.0* front_sonar_req_good_readings[treasureNum-1]);
 
-            Motors::stopWithBrake(treasureTurnAction, treasureTurnRotateMode, Motors::default_rotate_pwm, 200);
+            Motors::stopWithBrake(treasureTurnAction, treasureTurnRotateMode, Motors::default_rotate_pwm, 100);
 
             // empirical - 2nd treasure requires some degs to be rotated to the left to be aligned to treasure
             if (treasureNum == 2) {
@@ -225,7 +230,7 @@ namespace TreasureDetection {
             Serial.print("Front sonar dist: ");
             Serial.println(distFrontSonar);            
             // if (distFrontSonar < treasure_in_claw_dist + treasure_in_claw_dist_err) goodReadingsCount++;
-            double rightInVdist = 11;
+            double rightInVdist = 14;
             if (distFrontSonar < rightInVdist) goodReadingsCount++;
             else goodReadingsCount = 0;
 
@@ -248,13 +253,13 @@ namespace TreasureDetection {
         if (needsCalibrationFlag) {
             // back up a bit
             double backUpDist = 11;
-            Encoders::driveMotorsDistance(def_drive_to_treasure_duty, false, backUpDist);
+            Encoders::driveMotorsDistance(Motors::min_drive_dutyCycle, false, backUpDist);
 
             // look around
             Motors::RotateMode mode = Motors::RotateMode::BOTH_WHEELS;
 
             int turnDegs = 30;
-            Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, mode, turnDegs);
+            Encoders::rotateMotorsDegs(Motors::min_rotate_dutyCycle, false, mode, turnDegs);
 
             Motors::rotate(Motors::default_rotate_pwm, true, mode);
             double radius = mode == Motors::RotateMode::BOTH_WHEELS ? Motors::WHEELS_WIDTH / 2.0 : Motors::WHEELS_WIDTH;

@@ -8,7 +8,7 @@ const double TapeFollow::kd = 15;
 const double TapeFollow::maxI = 100;
 // chicken wire
 const double TapeFollow::CHICKEN_WIRE_DIST = 17+8;
-const double TapeFollow::DEF_TAPE_SEARCH_ANGLE = 80;
+const double TapeFollow::DEF_TAPE_SEARCH_ANGLE = 90;
 // vars
 bool TapeFollow::crossedChickenWire = false;
 bool TapeFollow::onTapeL = false;
@@ -218,6 +218,7 @@ bool TapeFollow::findBlackTape(double angle, int dutyCycle, Motors::RotateMode r
                             Motors::stopWithBrake(Motors::MotorAction::ROTATE_RIGHT, rotateMode, dutyCycle, 50);
                         }
                     }
+                    tapeReadingsCount++;
                     break;
                 }
             }
@@ -265,7 +266,7 @@ bool TapeFollow::findBlackTape(double angle, int dutyCycle, Motors::RotateMode r
             turnAction = rotateRightFirst ? Motors::MotorAction::ROTATE_LEFT : Motors::MotorAction::ROTATE_RIGHT;
         }
         Motors::stopWithBrake(turnAction, rotateMode, dutyCycle, 50);
-        
+
         // if found
         if (tapeReadingsCount == 2) return true;
     }

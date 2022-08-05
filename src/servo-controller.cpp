@@ -65,23 +65,23 @@ void Servos::collectTreasure() {
 
     // open claw as we lower arm
     clawServo.write(claw_part_open_angle);
-    delay(500);
+    delay(300);
     armServo.write(above_treasure_below_IR_angle);
-    delay(1000);
+    delay(300);
     clawServo.write(claw_full_open_angle);
     delay(500);
     // hall effect
     if (!BombDetection::bombEncounteredFlag) {
         armServo.write(arm_bomb_detect_angle);
-        delay(1000);
+        delay(300);
         clawServo.write(claw_bomb_detect_angle);
-        delay(1000);
+        delay(500);
         if (!BombDetection::isBombDetected()) {
             // bomb not found
             clawServo.write(claw_full_open_angle);
-            delay(1000);
+            delay(500);
             armServo.write(arm_lowered_angle);    
-            delay(1000);
+            delay(500);
             clawServo.write(claw_close_angle);
         } else {
             // don't pick up - bomb found
@@ -89,15 +89,14 @@ void Servos::collectTreasure() {
         }
     } else {
         armServo.write(arm_lowered_angle);    
-        delay(1000);
+        delay(500);
         clawServo.write(claw_close_angle);
     }
-    delay(1000);
+    delay(500);
     armServo.write(arm_lifted_angle);
-    delay(1000);
-
+    delay(500);
     clawServo.write(claw_part_open_angle);
-    delay(1000);
+    delay(300);
 }
 
 void Servos::setServoPos(Servo servoObj, int deg) {
