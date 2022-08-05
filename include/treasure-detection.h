@@ -5,6 +5,7 @@
 #include "sonar-sensor.h"
 
 namespace TreasureDetection {
+    /* For sonar */
     // initial side sonar detection
     extern const double side_sonar_treasure_dists[6]; // cm
     extern const double side_sonar_treasure_dists_err[6]; // cm
@@ -17,15 +18,21 @@ namespace TreasureDetection {
     extern const double treasure_in_claw_dist; // cm
     extern const double treasure_in_claw_dist_err; // cm
 
-    extern const double def_drive_to_treasure_duty; // %
-    
+    // in v detection
+    extern const double treasure_in_v_dist;
+
     // consecutive good readings needed
     extern const int side_sonar_req_good_readings[6];
     extern const int front_sonar_req_good_readings[6];
     extern const int claw_req_good_readings[6];
 
-    // when near treasure
+    // driving duty cycle
+    extern const double def_drive_to_treasure_duty; // %
+    
+    /* For encoder */
+    extern const double v_to_claw_dist;
     extern const double near_treasure_dists[6];
+
     /**
      * Routine for collecting a treasure when tape following (first or second). 
      */ 
@@ -38,12 +45,10 @@ namespace TreasureDetection {
     bool treasureCollectionRoutine(Sonars::SonarType treasureLoc, double distFront, double distFrontErr, bool retOriginalPos, int treasureNum);
 
     /**
-     * Handles driving to the treasure when the front sonar has detected it, given the distance of the robot at the time of the method call.
-     * 
-     */ 
-    void driveToTreasureFrontSonar(double treasureDist, int numReadings, int timeout);
-    
-    void driveToTreasureFrontSonar2(double initialDist, int reqGoodReadings, int timeout, bool retOriginalPos);
+     * Drives to the treasure when the front sonar has detected it, given the distance of the robot at the time of the method call.
+     * Reecalibrates the treasure within V range prior to collection routine if needed.
+     */
+    void driveToTreasureFrontSonar(double initialDist, int reqGoodReadings, int timeout, bool retOriginalPos);
 
     void regularDriveToTreasureFront(int treasureNum, int timeout);
 }
