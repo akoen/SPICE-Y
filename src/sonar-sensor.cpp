@@ -46,5 +46,4 @@ namespace Sonars {
     double getAvgDistancePulses(int numReadings, Sonars::SonarType sonarType) {
         return getAvgDistancePulses(numReadings, SONAR_TRIG_PIN_ALL, sonarType);
     }
-
 }

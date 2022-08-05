@@ -9,17 +9,17 @@ namespace Executor {
         // follow tape & obtain first treasure and come back to tape
         TreasureDetection::obtainTapeTreasure(1);
         // back up - easier to find tape (and not worry for 1 1 1 instead of tape)
-        Encoders::driveMotorsDistance(50, false, 16);
+        Encoders::driveMotorsDistance(50, false, 5);
         // find tape - look for right first
         TapeFollow::findBlackTape(TapeFollow::DEF_TAPE_SEARCH_ANGLE, Motors::min_rotate_dutyCycle, Motors::RotateMode::BOTH_WHEELS, true);
         // follow tape & obtain second treasure and come back to tape
         TreasureDetection::obtainTapeTreasure(2);
         // back up a bit
         // Encoders::driveMotorsDistance(50, false, 38);
-        Encoders::driveMotorsDistance(50, false, 5);
-        Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::BOTH_WHEELS, 20, 3.5);
+        Encoders::driveMotorsDistance(50, false, 30);
+        Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, true, Motors::RotateMode::BOTH_WHEELS, 30, 3);
         TapeFollow::findBlackTape(40, Motors::min_rotate_dutyCycle, Motors::BOTH_WHEELS, false);
-        Encoders::driveMotorsDistance(LW_PWM_DUTY, false, 5, 3.5);
+        // Encoders::driveMotorsDistance(LW_PWM_DUTY, false, 5, 3.5);
 
         // Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::FORWARDS, 40, 3.5);
         // Encoders::driveMotorsDistance(LW_PWM_DUTY, false, 10, 3.5);
@@ -44,26 +44,42 @@ namespace Executor {
         int whiteSurfaceCount = 0;
         int throughArchWhiteCount = 3000;
 
-        while (true) {
+        int tapeFollowtimeout = 2.7;
+        long startTapeFollowMillis = millis(); 
+        long currTapeFollowMillis = startTapeFollowMillis; 
+        while (currTapeFollowMillis < startTapeFollowMillis + tapeFollowtimeout*1000) {
             TapeFollow::driveWithPid();         
             // through archway
-            if ((TapeFollow::onTapeL && TapeFollow::onTapeM && TapeFollow::onTapeR) || whiteSurfaceCount > throughArchWhiteCount) {            
-                break;
-            }
-            if (!TapeFollow::onTapeL && !TapeFollow::onTapeM && !TapeFollow::onTapeR) {
-                whiteSurfaceCount++;
-            } else {
-                whiteSurfaceCount = 0;
-            }
+            // if ((TapeFollow::onTapeL && TapeFollow::onTapeM && TapeFollow::onTapeR) || whiteSurfaceCount > throughArchWhiteCount) {            
+            // if (whiteSurfaceCount > throughArchWhiteCount) {            
+            //     break;
+            // }
+            // if (!TapeFollow::onTapeL && !TapeFollow::onTapeM && !TapeFollow::onTapeR) {
+            //     whiteSurfaceCount++;
+            // } else {
+            //     whiteSurfaceCount = 0;
+            // }
+            currTapeFollowMillis = millis();
+        }
+        Motors::stopWithBrake(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, LW_PWM_DUTY, 50);
+
+        // timed out
+        if (currTapeFollowMillis > startTapeFollowMillis + tapeFollowtimeout*1000) {
+            // back up & rotate
+            Encoders::driveMotorsDistance(Motors::min_drive_dutyCycle, false, 15);
+            Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::BACKWARDS, 40, 2);
         }
         // fit through archway
-        int stopDuty = Motors::dutyCycleL > Motors::dutyCycleR ? Motors::dutyCycleL : Motors::dutyCycleR;
-        Motors::stopWithBrake(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, stopDuty, 50);
+        // int stopDuty = Motors::dutyCycleL > Motors::dutyCycleR ? Motors::dutyCycleL : Motors::dutyCycleR;
         // drive fwd some cm
-        Encoders::driveMotorsDistance(LW_PWM_DUTY, true, 30);
-        Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::FORWARDS, 30, 2);
+        // if (!Encoders::driveMotorsDistance(LW_PWM_DUTY, true, 20, 3)) {
+        //     Encoders::driveMotorsDistance(Motors::min_drive_dutyCycle, false, 5);
+        // }
+        // Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::FORWARDS, 30, 2);
         // obtain third treasure using IR PID
-        IR::driveWithPID();
+        while (true) {
+            IR::driveWithPID();
+        }
         // obtain fourth treasure using IR PID
 
         // IR PID until robot hits beacon

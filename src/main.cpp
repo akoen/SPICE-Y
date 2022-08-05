@@ -40,7 +40,7 @@ void loop() {
 
     // Servos::collectTreasure();
     // pwmServoTest();
-    // Executor::execute();
+    Executor::execute();
     // Serial.print(Sonars::getDistanceSinglePulse(Sonars::SonarType::RIGHT));
     // Serial.print(" ");
     // Serial.println(Sonars::getDistanceSinglePulse(Sonars::SonarType::FRONT));
@@ -65,7 +65,7 @@ void loop() {
     // Encoders::executeReverseCache(2000);
     // delay(2000);
     // TapeFollow::driveWithPid();
-    IR::driveWithPID();
+    // IR::driveWithPID();
 }
 
 void pwmServoTest() {
