@@ -2,15 +2,17 @@
 #include "servo-controller.h"
 #include "board-setup.h"
 #include "encoder.h"
+#include "ir.h"
+#include <cmath>
 
 namespace TreasureDetection {
     /* For sonar */
     // 6 potential treasures that needs to be located 
-    const double side_sonar_treasure_dists[6] = {25, 28, 20, 20, 20, 20}; // cm
-    const double side_sonar_treasure_dists_err[6] = {15, 7, 10, 2.5, 10, 10}; // cm
+    const double side_sonar_treasure_dists[6] = {25, 28, 40, 28, 20, 20}; // cm
+    const double side_sonar_treasure_dists_err[6] = {15, 7, 7, 10, 10, 10}; // cm
 
-    const double front_sonar_treasure_dists[6] = {22, 30, 12.5, 15, 20, 20}; // cm
-    const double front_sonar_treasure_dists_err[6] = {20, 8, 10, 5}; // cm 
+    const double front_sonar_treasure_dists[6] = {22, 30, 15, 10, 20, 20}; // cm
+    const double front_sonar_treasure_dists_err[6] = {20, 10, 10, 8}; // cm 
 
     const double treasure_in_claw_dist = 15; // cm
     const double treasure_in_claw_dist_err = 1; // cm
@@ -105,6 +107,38 @@ namespace TreasureDetection {
         }
 
         return treasureCollectionRoutine(sonarType, firstFrontSonarTreausureDist, firstFrontSonarTreausureDistErr, retOriginal, treasureNum);
+    }
+
+    bool obtainIRTreasure(int treasureNum) {
+        // look for treasure
+        int goodSideSonarReadings = 0;
+        double rightSonarDist;
+        while (goodSideSonarReadings < side_sonar_req_good_readings[treasureNum - 1]) {
+            IR::driveWithPID();
+            rightSonarDist = Sonars::getDistanceSinglePulse(SONAR_TRIG_PIN_ALL, SONAR_ECHO_PIN_R);
+
+            Serial.println("Right sonar dist: ");
+            Serial.println(rightSonarDist);
+
+            ReflectanceSensors::printFrontReflectance();
+
+            // consecutive good readings
+            if (rightSonarDist < side_sonar_treasure_dists[treasureNum-1] + side_sonar_treasure_dists_err[treasureNum-1] && rightSonarDist > side_sonar_treasure_dists[treasureNum-1] - side_sonar_treasure_dists_err[treasureNum-1]) {
+                goodSideSonarReadings++;
+            } else {
+                goodSideSonarReadings = 0;
+            }
+        }
+
+        // left treasure on IR special: need to drive fwd a bit more
+        if (treasureNum == 3) {
+            double leftTreasureAngle = 20;
+            double driveFwdDist= side_sonar_treasure_dists[treasureNum-1] * tan(leftTreasureAngle);
+            Encoders::driveMotorsDistance(40, true, driveFwdDist);
+        }
+        Sonars::SonarType sonarType = treasureNum == 3 ? Sonars::SonarType::LEFT : Sonars::SonarType::RIGHT;
+        return treasureCollectionRoutine(sonarType, front_sonar_treasure_dists[treasureNum-1], front_sonar_treasure_dists_err[treasureNum-1], true, treasureNum);
+
     }
 
     bool treasureCollectionRoutine(Sonars::SonarType treasureLoc, double distFront, double distFrontErr, bool retOriginalPos, int treasureNum) {

@@ -38,6 +38,7 @@ namespace TreasureDetection {
      */ 
     bool obtainTapeTreasure(int treasureNum);
 
+    bool obtainIRTreasure(int treasureNum);
     /**
      * Collects the treasure upon initial detection. Returns to the original position if specified, and this is 
      * only possible if the cache is empty at the time of the method call (since it will execute all in cache)
