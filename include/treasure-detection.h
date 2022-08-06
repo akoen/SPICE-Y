@@ -34,11 +34,15 @@ namespace TreasureDetection {
     extern const double near_treasure_dists[6];
 
     /**
-     * Routine for collecting a treasure when tape following (first or second). 
+     * Routine for collecting a treasure when tape following (1st or 2nd). 
      */ 
     bool obtainTapeTreasure(int treasureNum);
 
+    /**
+     * Routine for collecting a treasure when following IR (3rd or 4th)
+     */ 
     bool obtainIRTreasure(int treasureNum);
+    
     /**
      * Collects the treasure upon initial detection. Returns to the original position if specified, and this is 
      * only possible if the cache is empty at the time of the method call (since it will execute all in cache)
