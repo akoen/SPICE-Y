@@ -2,6 +2,7 @@
 #define SPICEBOT_IR_H
 
 namespace IR {
+    void getMagnitude(float magnitude[]);
     void driveWithPID();
 }
 
