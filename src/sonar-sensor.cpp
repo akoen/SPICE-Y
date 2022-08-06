@@ -13,10 +13,11 @@ namespace Sonars {
         digitalWrite(SONAR_TRIG_PIN_ALL, LOW);
     }
 
-    double getDistanceSinglePulse(int trigPin, int echoPin, double pulseDuration) {    
+    double getDistanceSinglePulse(int trigPin, int echoPin, double pulseDuration, int delayMillis) {    
         // sonar delay for pulse interference
-        // delay(35);
-        delay(10);
+        if (delayMillis != 0) {
+            delay(delayMillis);
+        }
         // clear trig pin 
         digitalWrite(trigPin, LOW);
         delayMicroseconds(2);
@@ -31,19 +32,19 @@ namespace Sonars {
         return duration * speed_sound / 2.0;
     }
 
-    double getDistanceSinglePulse(Sonars::SonarType sonarType) {
-        return getDistanceSinglePulse(SONAR_TRIG_PIN_ALL, sonarType);
+    double getDistanceSinglePulse(Sonars::SonarType sonarType, int delayMillis) {
+        return getDistanceSinglePulse(SONAR_TRIG_PIN_ALL, sonarType, delayMillis);
     }
 
-    double getAvgDistancePulses(int numReadings, int trigPin, int echoPin, double pulseDuration) {
+    double getAvgDistancePulses(int numReadings, int trigPin, int echoPin, double pulseDuration, int delayMillis) {
         double avgSonarDist = 0;
         for (int i = 0; i < numReadings; i++) {
-            avgSonarDist += Sonars::getDistanceSinglePulse(trigPin, echoPin);
+            avgSonarDist += Sonars::getDistanceSinglePulse(trigPin, echoPin, delayMillis);
         }
         return avgSonarDist / (1.0 * numReadings);
     }
 
-    double getAvgDistancePulses(int numReadings, Sonars::SonarType sonarType) {
-        return getAvgDistancePulses(numReadings, SONAR_TRIG_PIN_ALL, sonarType);
+    double getAvgDistancePulses(int numReadings, Sonars::SonarType sonarType, int delayMillis) {
+        return getAvgDistancePulses(numReadings, SONAR_TRIG_PIN_ALL, sonarType, delayMillis);
     }
 }

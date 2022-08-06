@@ -21,20 +21,21 @@ namespace Sonars {
 
     void configSonarPins();
     /**
+     * NOTE: No delay added here - delay control must be done external 
      * Gets the distance of a single pulse from the specified. Delays the program by 60ms to
      * account for interference with previous pulses.
      * Note: pulse duration min. 10 microseconds, which is default.
      */
-    double getDistanceSinglePulse(int trigPin, int echoPin, double pulseDuration=10);
+    double getDistanceSinglePulse(int trigPin, int echoPin, double pulseDuration=10, int delayMillis=35);
     
-    double getDistanceSinglePulse(Sonars::SonarType sonarType);
+    double getDistanceSinglePulse(Sonars::SonarType sonarType, int delayMillis=35);
     
     /**
      * Gets the avg distance over a certain number of readings
      */
-    double getAvgDistancePulses(int numReadings, int trigPin, int echoPin, double pulseDuration=10);
+    double getAvgDistancePulses(int numReadings, int trigPin, int echoPin, double pulseDuration=10, int delayMillis=35);
 
-    double getAvgDistancePulses(int numReadings, Sonars::SonarType sonarType);
+    double getAvgDistancePulses(int numReadings, Sonars::SonarType sonarType, int delayMillis=35);
 }
 
 #endif
