@@ -6,10 +6,10 @@
 
 namespace TapeFollow {
     // PID tuning
-    extern const double kp;
-    extern const double ki;
-    extern const double kd;
-    extern const double maxI;
+    extern double kp;
+    extern double ki;
+    extern double kd;
+    extern double maxI;
     // chicken wire (cm)
     extern const double CHICKEN_WIRE_DIST;
     // degs both rotations

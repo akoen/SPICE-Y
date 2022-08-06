@@ -2,13 +2,13 @@
 #include "encoder.h"
 
 // PID tuning
-const double TapeFollow::kp = 23;
-const double TapeFollow::ki = 0;
-const double TapeFollow::kd = 15;
-const double TapeFollow::maxI = 100;
+double TapeFollow::kp = 23;
+double TapeFollow::ki = 0;
+double TapeFollow::kd = 15;
+double TapeFollow::maxI = 100;
 // chicken wire
 const double TapeFollow::CHICKEN_WIRE_DIST = 17+8;
-const double TapeFollow::DEF_TAPE_SEARCH_ANGLE = 90;
+const double TapeFollow::DEF_TAPE_SEARCH_ANGLE = 80;
 // vars
 bool TapeFollow::crossedChickenWire = false;
 bool TapeFollow::onTapeL = false;
@@ -192,7 +192,7 @@ bool TapeFollow::findBlackTape(double angle, int dutyCycle, Motors::RotateMode r
             } else {
                 if (checkEncoderPulses > startEncoderPulses + turnPulsesInterval) break;
             }
-            
+
             if (timeout != -1 && currMillis > startMillis + timeout*1000) break;
 
             // look for tape while turning - tape found when not 1 1 1 and at least one 1 is seen 
