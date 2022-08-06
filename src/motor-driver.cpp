@@ -1,10 +1,9 @@
 #include "motor-driver.h"
 
 // TODO: need min pwm duty cycle for driving & rotation
-const int Motors::min_drive_dutyCycle = 20;
+int Motors::min_drive_dutyCycle = 20;
+int Motors::max_drive_dutyCycle = 80;
 const int Motors::min_rotate_dutyCycle = 18;
-
-const int Motors::max_drive_dutyCycle = 80;
 
 const int Motors::pwm_clock_freq = 100; // hz
 const int Motors::ref_duty_cycle = 80; // %
@@ -106,8 +105,8 @@ void Motors::setDutyCycles(int dutyL, int dutyR) {
     if (dutyL < 0) dutyL = 0;
     if (dutyR < 0) dutyR = 0;
     
-    if (dutyL > 0 && dutyL < min_drive_dutyCycle) dutyL = min_drive_dutyCycle;
-    if (dutyR > 0 && dutyR < min_drive_dutyCycle) dutyR = min_drive_dutyCycle;
+    // if (dutyL > 0 && dutyL < min_drive_dutyCycle) dutyL = min_drive_dutyCycle;
+    // if (dutyR > 0 && dutyR < min_drive_dutyCycle) dutyR = min_drive_dutyCycle;
 
     if (dutyL > max_drive_dutyCycle) dutyL = max_drive_dutyCycle;
     if (dutyR > max_drive_dutyCycle) dutyR = max_drive_dutyCycle;

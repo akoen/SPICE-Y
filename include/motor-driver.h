@@ -22,8 +22,8 @@ namespace Motors {
     extern const int default_motors_stop_millis; // %, > 0 for RW, < 0 for LW
 
 
-    extern const int max_drive_dutyCycle;
-    extern const int min_drive_dutyCycle;
+    extern int max_drive_dutyCycle;
+    extern int min_drive_dutyCycle;
     extern const int min_rotate_dutyCycle;
 
     extern const double WHEELS_WIDTH;
