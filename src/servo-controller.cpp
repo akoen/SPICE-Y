@@ -7,7 +7,7 @@ const int Servos::claw_close_angle = 40;
 const int Servos::claw_part_open_angle = 100;  
 // pos when opening claw to collect treasure
 const int Servos::claw_full_open_angle = 200;
-const int Servos::claw_bomb_detect_angle = 120;
+const int Servos::claw_bomb_detect_angle = 110;
 
 const int Servos::arm_bomb_detect_angle = 80;
 const int Servos::above_treasure_below_IR_angle = 120;
