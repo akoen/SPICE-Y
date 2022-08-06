@@ -5,83 +5,87 @@
 #include "ir.h"
 
 namespace Executor {
+    void archWayHandler(int dutyCycle, int timeout, int driveDist, Motors::RotateMode rotateMode, int dutyOffsetRW) {
+        // note: the lower of the pulses (left)
+
+        if (dutyCycle < Motors::min_drive_dutyCycle) dutyCycle = Motors::min_drive_dutyCycle;
+
+        int delayMiliis = 10;
+        int brakeDurationMillis = 50;
+
+        // bool crossedArch = true;
+        // while (true) {
+        //     // assume true at first - will be false in same loop if not
+        //     crossedArch = true;
+
+        //     long startMillis = millis();
+        //     long currMillis = startMillis;
+
+        //     Motors::setDir(true, true);
+
+        //     Motors::setDutyCycles(dutyCycle, dutyCycle + dutyOffsetRW);
+        //     Motors::drive();
+
+        //     long startPulseLW = Encoders::pulseLW;
+        //     long startPulseRW = Encoders::pulseRW;
+        //     int pulseInterval = Encoders::cmToPulses(driveDist);
+
+        //     while (Encoders::pulseLW < startPulseLW + pulseInterval && Encoders::pulseRW < startPulseRW + pulseInterval) {                    
+        //         currMillis = millis();
+        //         if (currMillis > startMillis + timeout*1000) {
+        //             crossedArch = false;
+        //             break;
+        //         }
+        //     }
+        //     delay(delayMiliis);
+        //     Motors::stopWithBrake(Motors::MotorAction::DRIVE_FWD, rotateMode, dutyCycle, brakeDurationMillis);
+        //     // check if crossed arch
+        //     if (!crossedArch) {
+        //         // have not - back up to get ready to try again
+        //         Encoders::driveMotorsDistance(TreasureDetection::def_drive_to_treasure_duty, false, 25);
+        //         Encoders::rotateMotorsDegs(35, false, Motors::RotateMode::FORWARDS, 5);
+        //     } else {
+        //         break;
+        //     }
+        //     delay(delayMiliis);
+        //     Motors::stopWithBrake(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, dutyCycle, brakeDurationMillis);
+        // }
+
+        while (!Encoders::driveMotorsDistance(dutyCycle, true, driveDist, timeout, dutyOffsetRW)) {
+            // back up
+            Encoders::driveMotorsDistance(dutyCycle, false, 25);
+            Encoders::rotateMotorsDegs(35, false, Motors::RotateMode::FORWARDS, 5);
+        }
+        // crossed arch - now readjust straight to IR
+        Encoders::rotateMotorsDegs(35, false, Motors::RotateMode::BACKWARDS, 30);
+    }
+
     void execute() {
         // follow tape & obtain first treasure and come back to tape
         TreasureDetection::obtainTapeTreasure(1);
         // back up - easier to find tape (and not worry for 1 1 1 instead of tape)
-        Encoders::driveMotorsDistance(50, false, 5);
+        Encoders::driveMotorsDistance(LW_PWM_DUTY, false, 5);
         // find tape - look for right first
         TapeFollow::findBlackTape(TapeFollow::DEF_TAPE_SEARCH_ANGLE, Motors::min_rotate_dutyCycle, Motors::RotateMode::BOTH_WHEELS, true);
         // follow tape & obtain second treasure and come back to tape
         TreasureDetection::obtainTapeTreasure(2);
-        // back up a bit
-        // Encoders::driveMotorsDistance(50, false, 38);
-        Encoders::driveMotorsDistance(50, false, 30);
-        Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, true, Motors::RotateMode::BOTH_WHEELS, 30, 3);
-        TapeFollow::findBlackTape(40, Motors::min_rotate_dutyCycle, Motors::BOTH_WHEELS, false);
-        // Encoders::driveMotorsDistance(LW_PWM_DUTY, false, 5, 3.5);
 
-        // Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::FORWARDS, 40, 3.5);
-        // Encoders::driveMotorsDistance(LW_PWM_DUTY, false, 10, 3.5);
-        // TapeFollow::findBlackTape(40, Motors::min_rotate_dutyCycle, Motors::BOTH_WHEELS, false, 5);
+        // get ready for archway
+        Encoders::driveMotorsDistance(TreasureDetection::def_drive_to_treasure_duty, false, 15);
+        Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::FORWARDS, 65, 3);
 
-        // // move fwd a bit
-        // if (!Encoders::driveMotorsDistance(40, true, 5, 2.5)) {
-        //     // timed out
-        //     Encoders::driveMotorsDistance(40, false, 2);
-        // }
+        // archway handler
+        archWayHandler(TreasureDetection::def_drive_to_treasure_duty, 3, 30, Motors::RotateMode::FORWARDS, TreasureDetection::def_drive_to_treasure_duty);
+
         
-        // // rotate some degs CCW about right wheel
-        // int degs = 30;
-        // Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::BACKWARDS, degs);
-        
-        // move back a bit
-        // Encoders::driveMotorsDistance(40, false, 38);
-
-        // find tape - look for left first
-        ///////
-        
-        int whiteSurfaceCount = 0;
-        int throughArchWhiteCount = 3000;
-
-        int tapeFollowtimeout = 2.7;
-        long startTapeFollowMillis = millis(); 
-        long currTapeFollowMillis = startTapeFollowMillis; 
-        while (currTapeFollowMillis < startTapeFollowMillis + tapeFollowtimeout*1000) {
-            TapeFollow::driveWithPid();         
-            // through archway
-            // if ((TapeFollow::onTapeL && TapeFollow::onTapeM && TapeFollow::onTapeR) || whiteSurfaceCount > throughArchWhiteCount) {            
-            // if (whiteSurfaceCount > throughArchWhiteCount) {            
-            //     break;
-            // }
-            // if (!TapeFollow::onTapeL && !TapeFollow::onTapeM && !TapeFollow::onTapeR) {
-            //     whiteSurfaceCount++;
-            // } else {
-            //     whiteSurfaceCount = 0;
-            // }
-            currTapeFollowMillis = millis();
-        }
-        Motors::stopWithBrake(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, LW_PWM_DUTY, 50);
-
-        // timed out
-        if (currTapeFollowMillis > startTapeFollowMillis + tapeFollowtimeout*1000) {
-            // back up & rotate
-            Encoders::driveMotorsDistance(Motors::min_drive_dutyCycle, false, 15);
-            Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::BACKWARDS, 40, 2);
-        }
-        // fit through archway
-        // int stopDuty = Motors::dutyCycleL > Motors::dutyCycleR ? Motors::dutyCycleL : Motors::dutyCycleR;
-        // drive fwd some cm
-        // if (!Encoders::driveMotorsDistance(LW_PWM_DUTY, true, 20, 3)) {
-        //     Encoders::driveMotorsDistance(Motors::min_drive_dutyCycle, false, 5);
-        // }
-        // Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::FORWARDS, 30, 2);
         // obtain third treasure using IR PID
+        // TreasureDetection::obtainIRTreasure(3);
         while (true) {
             IR::driveWithPID();
         }
-        // obtain fourth treasure using IR PID
 
+        // obtain fourth treasure using IR PID
+        TreasureDetection::obtainIRTreasure(4);
         // IR PID until robot hits beacon
 
         // turn right 90 degs and drive until edge detected
@@ -100,3 +104,4 @@ namespace Executor {
 
     }
 }
+

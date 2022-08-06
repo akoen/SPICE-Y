@@ -222,7 +222,7 @@ namespace Encoders {
         return true;  
     }
 
-    bool driveMotorsEncoderPulses(int dutyCycle, Motors::MotorAction motorAction, Motors::RotateMode rotateMode, int pulseInterval, int timeout) {
+    bool driveMotorsEncoderPulses(int dutyCycle, Motors::MotorAction motorAction, Motors::RotateMode rotateMode, int pulseInterval, int timeout, int dutyOffsetRW) {
         // bad input
         if ((motorAction == Motors::MotorAction::DRIVE_BACK || motorAction == Motors::MotorAction::DRIVE_FWD) && rotateMode != Motors::RotateMode::NONE) {
             return false;
@@ -244,7 +244,7 @@ namespace Encoders {
             case Motors::MotorAction::DRIVE_FWD:
                 Motors::setDir(true, true);
                 if (dutyCycle < Motors::min_drive_dutyCycle) dutyCycle = Motors::min_drive_dutyCycle;
-                Motors::setDutyCycles(dutyCycle, dutyCycle);
+                Motors::setDutyCycles(dutyCycle, dutyCycle+dutyOffsetRW);
                 Motors::drive();
                 while (pulseLW < startPulseLW + pulseInterval && pulseRW < startPulseRW + pulseInterval) {                    
                     currMillis = millis();
@@ -258,7 +258,7 @@ namespace Encoders {
             case Motors::MotorAction::DRIVE_BACK:
                 Motors::setDir(false, false);
                 if (dutyCycle < Motors::min_drive_dutyCycle) dutyCycle = Motors::min_drive_dutyCycle;
-                Motors::setDutyCycles(dutyCycle, dutyCycle);
+                Motors::setDutyCycles(dutyCycle, dutyCycle+dutyOffsetRW);
                 Motors::drive();
                 while (pulseLW > startPulseLW - pulseInterval && pulseRW > startPulseRW - pulseInterval) {
                     currMillis = millis();
@@ -352,20 +352,18 @@ namespace Encoders {
         double anglePerPulse = (PI * Motors::WHEEL_DIAMETER / Encoders::pulse_per_rev) / (PI / 180.0 * radius);
         return round(deg / anglePerPulse);
     }
-    bool driveMotorsDistance(int dutyCycle, bool dirFwd, double distance, int timeout) {
+    bool driveMotorsDistance(int dutyCycle, bool dirFwd, double distance, int timeout, int dutyOffsetRW) {
         // convert to pulses - distance per pulse = pi*diameter / pulse per rev
         // double distPerPulse = PI * Motors::WHEEL_DIAMETER / pulse_per_rev;  // cm
         // int pulsesInterval = round(distance/distPerPulse);
         
         int pulsesInterval = cmToPulses(distance);
         Motors::MotorAction driveAction = dirFwd ? Motors::MotorAction::DRIVE_FWD : Motors::MotorAction::DRIVE_BACK;
-        return driveMotorsEncoderPulses(dutyCycle, driveAction, Motors::RotateMode::NONE, pulsesInterval, timeout);
+        return driveMotorsEncoderPulses(dutyCycle, driveAction, Motors::RotateMode::NONE, pulsesInterval, timeout, dutyOffsetRW);
     }
 
     bool rotateMotorsDegs(int dutyCycle, bool dirRight, Motors::RotateMode rotateMode, double angle, int timeout) {
         double rotateRadius = rotateMode == Motors::RotateMode::BOTH_WHEELS ? Motors::WHEELS_WIDTH / 2.0 : Motors::WHEELS_WIDTH;
-        // double anglePerPulse = (PI * Motors::WHEEL_DIAMETER / Encoders::pulse_per_rev) / (PI / 180.0 * wheels_width);
-        // int pulses = round(angle / anglePerPulse);
 
         int pulses = degsToPulses(angle, rotateRadius);
         Motors::MotorAction driveAction = dirRight ? Motors::MotorAction::ROTATE_RIGHT : Motors::MotorAction::ROTATE_LEFT;

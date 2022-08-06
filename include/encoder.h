@@ -73,9 +73,11 @@ namespace Encoders {
      * If pulse interval for a wheel < 0, that wheel drives backwards and > 0 for forwrads.
      * Motors are stopped after execution, with no delay
      * 
+     * (Optional) a timeout can be specified - if the encoders do not rotate to the specified distance until that duration, returns false
+     * (Optional) a bias offset on the right wheel can be specified for forward and backwards drive. If so, will be driven until the minimyum number of encoder pulses.
      * This method is blocking (i.e. all other processes must wait until this finished)
      */ 
-    bool driveMotorsEncoderPulses(int dutyCycle, Motors::MotorAction motorAction, Motors::RotateMode rotateMode, int pulseInterval, int timeout = -1);
+    bool driveMotorsEncoderPulses(int dutyCycle, Motors::MotorAction motorAction, Motors::RotateMode rotateMode, int pulseInterval, int timeout = -1, int dutyOffsetRW = 0);
     
     /*
      * dist to pulses: 
@@ -94,13 +96,16 @@ namespace Encoders {
 
     /**
      * Drives the motors fwd (true) or back (false) a certain distance (cm)
-     * 
      * This method is blocking (i.e. all other processes must wait until this finished)
+     * 
+     * (Optional) a timeout can be specified - if the encoders do not rotate to the specified distance until that duration, returns false
+     * (Optional) a bias offset on the right wheel can be specified for forward and backwards drive. If so, will be driven until the minimum distance.
      */ 
-    bool driveMotorsDistance(int dutyCycle, bool dirFwd, double distance, int timeout=-1);
+    bool driveMotorsDistance(int dutyCycle, bool dirFwd, double distance, int timeout=-1, int dutyOffsetRW=0);
 
     /**
      * Rotates the motors right (true) or left (false) a certain angle
+     * (Optional) a timeout can be specified - if the encoders do not rotate to the specified distance until that duration, returns false
      */ 
     bool rotateMotorsDegs(int dutyCycle, bool dirRight, Motors::RotateMode mode, double angle, int timeout=-1);
 
