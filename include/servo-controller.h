@@ -55,8 +55,7 @@ namespace Servos {
     
     void deployBridge();
 
-    void setServoPos(Servo servoObj, int deg);
-    
+    void setServoPos(Servo servoObj, int deg);    
 }
 
 #endif
