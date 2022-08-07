@@ -43,7 +43,11 @@ namespace TreasureDetection {
      */ 
     bool obtainIRTreasure(int treasureNum);
 
-    bool obtainIRTreasure2(int treasureNum, bool retToOriginalPos);
+    /**
+     * Routine for collecting the third treasure during IR PID. Requires that the robot can reliably start IR 
+     * PID at the time of the method call.
+     */ 
+    bool obtainThirdIRtreasure(double driveFwd, double rotateLeftDegs, int driveDuty, bool cache);
     
     /**
      * Collects the treasure upon initial detection. Returns to the original position if specified, and this is 
@@ -57,7 +61,18 @@ namespace TreasureDetection {
      */
     void driveToTreasureFrontSonar(double initialDist, int reqGoodReadings, int timeout, bool retOriginalPos);
 
-    void driveToTreasureFrontSonarIR3(double initialDist, int reqGoodReadings, int timeout, bool retOriginalPos);
-    void regularDriveToTreasureFront(int treasureNum, int timeout);
+    void driveToTreasureFrontSonarIR3(double initialDist, int reqGoodReadings, int timeout);
+    
+    void regularDriveToTreasureFront(int treasureNum, int timeout); 
+
+    /**
+     * A failsafe function for when the treasure has not been detected. Looks for the treasure by searching
+     * within the specified angle.
+     *  
+     * Returns true if treasure found. The robot will be stopped in the location that the treasure was found post-calibration, 
+     * so it is externally required to position the robot into a position for treasure pickup
+     * If not found, returns to the original position but backed up for rotation.
+     */
+    bool treasureCalibration(double backUpDist, double turnDegs, double expectedMaxDist, int reqGoodReadings);
 }
 #endif
