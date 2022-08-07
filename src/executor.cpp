@@ -13,79 +13,49 @@ namespace Executor {
         int delayMiliis = 10;
         int brakeDurationMillis = 50;
 
-        // bool crossedArch = true;
-        // while (true) {
-        //     // assume true at first - will be false in same loop if not
-        //     crossedArch = true;
-
-        //     long startMillis = millis();
-        //     long currMillis = startMillis;
-
-        //     Motors::setDir(true, true);
-
-        //     Motors::setDutyCycles(dutyCycle, dutyCycle + dutyOffsetRW);
-        //     Motors::drive();
-
-        //     long startPulseLW = Encoders::pulseLW;
-        //     long startPulseRW = Encoders::pulseRW;
-        //     int pulseInterval = Encoders::cmToPulses(driveDist);
-
-        //     while (Encoders::pulseLW < startPulseLW + pulseInterval && Encoders::pulseRW < startPulseRW + pulseInterval) {                    
-        //         currMillis = millis();
-        //         if (currMillis > startMillis + timeout*1000) {
-        //             crossedArch = false;
-        //             break;
-        //         }
-        //     }
-        //     delay(delayMiliis);
-        //     Motors::stopWithBrake(Motors::MotorAction::DRIVE_FWD, rotateMode, dutyCycle, brakeDurationMillis);
-        //     // check if crossed arch
-        //     if (!crossedArch) {
-        //         // have not - back up to get ready to try again
-        //         Encoders::driveMotorsDistance(TreasureDetection::def_drive_to_treasure_duty, false, 25);
-        //         Encoders::rotateMotorsDegs(35, false, Motors::RotateMode::FORWARDS, 5);
-        //     } else {
-        //         break;
-        //     }
-        //     delay(delayMiliis);
-        //     Motors::stopWithBrake(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, dutyCycle, brakeDurationMillis);
-        // }
-
         while (!Encoders::driveMotorsDistance(dutyCycle, true, driveDist, timeout, dutyOffsetRW)) {
             // back up
             Encoders::driveMotorsDistance(dutyCycle, false, 25);
-            Encoders::rotateMotorsDegs(35, false, Motors::RotateMode::FORWARDS, 5);
+            Encoders::rotateMotorsDegs(35, false, Motors::RotateMode::FORWARDS, 3);
         }
+        // 
         // crossed arch - now readjust straight to IR
-        Encoders::rotateMotorsDegs(35, false, Motors::RotateMode::BACKWARDS, 30);
+        Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::BACKWARDS, 15);
     }
 
     void execute() {
-        // follow tape & obtain first treasure and come back to tape
-        TreasureDetection::obtainTapeTreasure(1);
-        // back up - easier to find tape (and not worry for 1 1 1 instead of tape)
-        Encoders::driveMotorsDistance(LW_PWM_DUTY, false, 5);
-        // find tape - look for right first
-        TapeFollow::findBlackTape(TapeFollow::DEF_TAPE_SEARCH_ANGLE, Motors::min_rotate_dutyCycle, Motors::RotateMode::BOTH_WHEELS, true);
-        // follow tape & obtain second treasure and come back to tape
-        TreasureDetection::obtainTapeTreasure(2);
+        // // follow tape & obtain first treasure and come back to tape
+        // TreasureDetection::obtainTapeTreasure(1, true);
+        // // back up - easier to find tape (and not worry for 1 1 1 instead of tape)
+        // Encoders::driveMotorsDistance(LW_PWM_DUTY, false, 5);
+        // // find tape - look for right first
+        // TapeFollow::findBlackTape(TapeFollow::DEF_TAPE_SEARCH_ANGLE, Motors::min_rotate_dutyCycle, Motors::RotateMode::BOTH_WHEELS, true);
+        
+        TapeFollow::crossedChickenWire = true;
+        // follow tape & obtain second treasure
+        TreasureDetection::obtainTapeTreasure(2, false);
 
         // get ready for archway
-        Encoders::driveMotorsDistance(TreasureDetection::def_drive_to_treasure_duty, false, 15);
-        Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::FORWARDS, 65, 3);
+        Encoders::driveMotorsDistance(TreasureDetection::def_drive_to_treasure_duty, false, 18);
+
+        Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::BOTH_WHEELS, 20, 2);
+        Encoders::driveMotorsDistance(40, true, 15, 2);
+        Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::BOTH_WHEELS, 40, 3);
+        // Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::FORWARDS, 60, 3);
 
         // archway handler
-        archWayHandler(TreasureDetection::def_drive_to_treasure_duty, 3, 30, Motors::RotateMode::FORWARDS, TreasureDetection::def_drive_to_treasure_duty);
-
+        archWayHandler(20, 2, 40, Motors::RotateMode::FORWARDS, 50);
         
         // obtain third treasure using IR PID
-        // TreasureDetection::obtainIRTreasure(3);
+        TreasureDetection::obtainIRTreasure2(3, true);
+
         while (true) {
             IR::driveWithPID();
+            Serial.println(Sonars::getDistanceSinglePulse(Sonars::SonarType::FRONT));
         }
 
         // obtain fourth treasure using IR PID
-        TreasureDetection::obtainIRTreasure(4);
+        // TreasureDetection::obtainIRTreasure(4);
         // IR PID until robot hits beacon
 
         // turn right 90 degs and drive until edge detected

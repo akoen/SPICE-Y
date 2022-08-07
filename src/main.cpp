@@ -37,10 +37,22 @@ void loop() {
     // delay(1000);
     // Serial.println("loop");
     // TreasureDetection::obtainTapeTreasure(2);
-
+    // float mags[2];
+    // IR::getMagnitude(mags);
     // Servos::collectTreasure();
     // pwmServoTest();
     Executor::execute();
+    /////////
+    //     float val = 0;
+    //     float alpha = 0.1;
+    // while (true) {
+    //     val = alpha * Sonars::getDistanceSinglePulse(Sonars::SonarType::LEFT) + (1-alpha) * val;
+    //     IR::driveWithPID();
+    //     // Serial.println(Sonars::getDistanceSinglePulse(Sonars::SonarType::RIGHT));
+        
+    //     Serial.println(val);
+    // }
+    /////////
     // Serial.print(Sonars::getDistanceSinglePulse(Sonars::SonarType::RIGHT));
     // Serial.print(" ");
     // Serial.println(Sonars::getDistanceSinglePulse(Sonars::SonarType::FRONT));

@@ -36,14 +36,14 @@ namespace TreasureDetection {
     /**
      * Routine for collecting a treasure when tape following (1st or 2nd). 
      */ 
-    bool obtainTapeTreasure(int treasureNum);
+    bool obtainTapeTreasure(int treasureNum, bool retToOriginalPos);
 
     /**
      * Routine for collecting a treasure when following IR (3rd or 4th)
      */ 
-    bool obtainIRTreasure(int treasureNum);
+    bool obtainIRTreasure(int treasureNum, bool retToOriginalPos);
 
-    bool obtainIRTreasure2(int treasureNum);
+    bool obtainIRTreasure2(int treasureNum, bool retToOriginalPos);
     
     /**
      * Collects the treasure upon initial detection. Returns to the original position if specified, and this is 
@@ -57,6 +57,7 @@ namespace TreasureDetection {
      */
     void driveToTreasureFrontSonar(double initialDist, int reqGoodReadings, int timeout, bool retOriginalPos);
 
+    void driveToTreasureFrontSonarIR3(double initialDist, int reqGoodReadings, int timeout, bool retOriginalPos);
     void regularDriveToTreasureFront(int treasureNum, int timeout);
 }
 #endif
