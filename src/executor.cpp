@@ -58,28 +58,50 @@ namespace Executor {
         Encoders::driveMotorsDistance(driveDuty, false, 18, 3);
         Encoders::rotateMotorsDegs(driveDuty, true, Motors::RotateMode::FORWARDS, 105, 3);
 
-        // obtain fourth treasure using IR PID
-        TreasureDetection::obtainIRTreasure(4);
+        // obtain fourth treasure using IR PIDv and return to original pos
+        TreasureDetection::obtainIRTreasure(4, true);
+        
+        // back up a bit
+        Encoders::driveMotorsDistance(driveDuty, false, 15, 1);
 
+        // find IR
+        IR::findIR(60, Motors::min_rotate_dutyCycle, Motors::RotateMode::BOTH_WHEELS, true, 60, 10, 3);
+
+        ////
         // back up & face beacon
-        Encoders::driveMotorsDistance(driveDuty, false, 20, 3);
-        // turn. If timeout, turned too far so turn back a bit
-        // TODO: turn using IR vals
-        if (!Encoders::rotateMotorsDegs(driveDuty, false, Motors::RotateMode::BOTH_WHEELS, 50, 3)) {
-            Encoders::rotateMotorsDegs(driveDuty, true, Motors::RotateMode::BOTH_WHEELS, 25);
-        }
-
+        // Encoders::driveMotorsDistance(driveDuty, false, 20, 3);
+        // // turn. If timeout, turned too far so turn back a bit
+        // // TODO: turn using IR vals
+        // if (!Encoders::rotateMotorsDegs(driveDuty, false, Motors::RotateMode::BOTH_WHEELS, 40, 3)) {
+        //     Encoders::rotateMotorsDegs(driveDuty, true, Motors::RotateMode::BOTH_WHEELS, 25);
+        // }
+        ////
+        
         // IR PID until robot hits beacon
         long startTime = millis();
         long currTime = startTime;
         int timeoutPIDtoBeacon = 5;
+        // TODO: or sonar sees top of V dist
         while (currTime > startTime + timeoutPIDtoBeacon * 1000) {
             IR::driveWithPID();
             Serial.println(Sonars::getDistanceSinglePulse(Sonars::SonarType::RIGHT));
         }
 
-        // turn right 90 degs and drive until edge detected
+        // back up a bit and turn right 90 degs and drive until edge detected
+        double firstTurnDeg = 60;
+        double secondTurnDeg = 30;
 
+        Encoders::driveMotorsDistance(driveDuty, false, 5);
+        Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::BOTH_WHEELS, firstTurnDeg, 1.5);
+        Encoders::driveMotorsDistance(driveDuty, true, 8);
+        Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::BACKWARDS, secondTurnDeg, 1.5);
+        
+        Encoders::driveMotorsDistance(driveDuty, false, 35, 2);
+        while (true) {
+            Serial.print(Sonars::getDistanceSinglePulse(Sonars::SonarType::RIGHT));
+            Serial.print(" ");
+            Serial.println(Sonars::getDistanceSinglePulse(Sonars::SonarType::FRONT));
+        }
         // back up some cm and deploy bridge
 
         // drive backwards to bridge using edge detection PID or black tape PID

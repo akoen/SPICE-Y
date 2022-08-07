@@ -41,7 +41,7 @@ namespace TreasureDetection {
     /**
      * Routine for collecting a treasure when following IR (3rd or 4th)
      */ 
-    bool obtainIRTreasure(int treasureNum);
+    bool obtainIRTreasure(int treasureNum, bool cache);
 
     /**
      * Routine for collecting the third treasure during IR PID. Requires that the robot can reliably start IR 
