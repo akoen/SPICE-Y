@@ -11,7 +11,7 @@ namespace TreasureDetection {
     const double side_sonar_treasure_dists[6] = {25, 28, 40, 27, 20, 20}; // cm
     const double side_sonar_treasure_dists_err[6] = {15, 7, 7, 7, 10, 10}; // cm
 
-    const double front_sonar_treasure_dists[6] = {24, 30, 24, 23, 20, 20}; // cm
+    const double front_sonar_treasure_dists[6] = {24, 30, 24, 20, 20, 20}; // cm
     const double front_sonar_treasure_dists_err[6] = {7, 8, 10, 5}; // cm 
 
     const double treasure_in_claw_dist = 14.5; // cm
@@ -21,7 +21,7 @@ namespace TreasureDetection {
     extern const double treasure_in_v_dist = 15;
 
     const int side_sonar_req_good_readings[6] = {2, 2, 2, 5, 2, 2};
-    const int front_sonar_req_good_readings[6] = {2, 2, 2, 2, 2, 2};
+    const int front_sonar_req_good_readings[6] = {4, 2, 2, 2, 2, 2};
     const int claw_req_good_readings[6] = {2, 2, 2, 2, 2, 2};
 
     /* For encoder */
@@ -122,7 +122,7 @@ namespace TreasureDetection {
             }
             currMillis = millis();
 
-            Serial.println("Right sonar dist: ");
+            Serial.print("Right sonar dist: ");
             Serial.println(rightSonarDist);
 
             // TODO maybe bad readigns
@@ -131,14 +131,14 @@ namespace TreasureDetection {
                 goodSideSonarReadings++;
             } else {
                 // last good reading
-                if (goodSideSonarReadings >= side_sonar_req_good_readings[treasureNum-1] && goodSideSonarReadings != 0) {
+                if (goodSideSonarReadings != 0) {
                     break;
                 } else {
                     goodSideSonarReadings = 0;
                 }
             }            
         }
-
+        Serial.println("----------- Treasure right -------: ");
         // left treasure on IR special: need to drive fwd a bit more
         if (treasureNum == 3) {
             double leftTreasureAngle = 20;
@@ -152,7 +152,7 @@ namespace TreasureDetection {
         } else {
             sonarType = Sonars::SonarType::RIGHT;
         }
-        return treasureCollectionRoutine(sonarType, front_sonar_treasure_dists[treasureNum-1], front_sonar_treasure_dists_err[treasureNum-1], true, treasureNum);
+        return treasureCollectionRoutine(sonarType, front_sonar_treasure_dists[treasureNum-1], front_sonar_treasure_dists_err[treasureNum-1], false, treasureNum);
     }
 
     bool obtainIRTreasure2(int treasureNum, bool retToOriginalPos) {
@@ -206,6 +206,7 @@ namespace TreasureDetection {
                 if (treasureFrontSonarDistsTreasureClaw > treasure_in_claw_dist - treasure_in_claw_dist_err) goodReadingsCount++;
                 else goodReadingsCount = 0;
             }
+            
             Motors::stopWithBrake(Motors::MotorAction::DRIVE_BACK, Motors::RotateMode::NONE, Motors::min_drive_dutyCycle, 100);
             // // too close to the treasure
             // Motors::driveBack(def_drive_to_treasure_duty);
@@ -238,9 +239,9 @@ namespace TreasureDetection {
         // drive back a bit if needed
         int driveCalibration = 0;
         if (treasureNum == 1) {
-                driveCalibration = 6;    // cm
-                Encoders::driveMotorsDistance(def_drive_to_treasure_duty, false, driveCalibration);
-        }
+            driveCalibration = 4.5;    // cm
+            Encoders::driveMotorsDistance(def_drive_to_treasure_duty, false, driveCalibration);
+    }
 
         double avgTreasureFrontSonarDists = 0;  
 

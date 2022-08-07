@@ -48,17 +48,29 @@ namespace Executor {
         TreasureDetection::obtainIRTreasure2(3, false);
 
         // drive back 
-        Encoders::driveMotorsDistance(40, false, 15, 3);
+        Encoders::driveMotorsDistance(40, false, 18, 3);
         Encoders::rotateMotorsDegs(40, true, Motors::RotateMode::FORWARDS, 105, 3);
 
         // obtain fourth treasure using IR PID
         TreasureDetection::obtainIRTreasure(4);
 
+        // back up & face beacon
+        Encoders::driveMotorsDistance(40, false, 20, 3);
+        // turn. If timeout, turned too far so turn back a bit
+        // TODO: turn using IR valsd
+        if (!Encoders::rotateMotorsDegs(40, false, Motors::RotateMode::BOTH_WHEELS, 50, 3)) {
+            Encoders::rotateMotorsDegs(40, true, Motors::RotateMode::BOTH_WHEELS, 25);
+        }
+
         // IR PID until robot hits beacon
-        while (true) {
+        long startTime = millis();
+        long currTime = startTime;
+        int timeout = 5;
+        while (currTime > startTime + timeout * 1000) {
             IR::driveWithPID();
             Serial.println(Sonars::getDistanceSinglePulse(Sonars::SonarType::RIGHT));
         }
+
 
         // turn right 90 degs and drive until edge detected
 
