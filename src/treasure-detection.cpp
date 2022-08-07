@@ -8,7 +8,7 @@
 namespace TreasureDetection {
     /* For sonar */
     // 6 potential treasures that needs to be located 
-    const double side_sonar_treasure_dists[6] = {25, 28, 40, 27, 20, 20}; // cm
+    const double side_sonar_treasure_dists[6] = {25, 28, 40, 20, 20, 20}; // cm
     const double side_sonar_treasure_dists_err[6] = {15, 7, 7, 7, 10, 10}; // cm
 
     const double front_sonar_treasure_dists[6] = {25, 30, 24, 20, 20, 20}; // cm
@@ -111,16 +111,17 @@ namespace TreasureDetection {
     bool obtainThirdIRtreasure(double driveFwd, double rotateLeftDegs, int driveDuty, bool cache) {
         int timeout = 3;
     
+        // drive fwd until fully out of arch
+        Encoders::driveMotorsDistance(driveDuty, true, 10);
         // back up until front reflectance sensors see 1 1 1 or 0 1 0 (in case missed)
         Motors::driveBack(driveDuty);
         while (!(ReflectanceSensors::frontSensorLval && ReflectanceSensors::frontSensorMval && ReflectanceSensors::frontSensorRval) || !ReflectanceSensors::frontSensorMval) {
             ReflectanceSensors::readFrontReflectanceSensors();
         }
-
+        Motors::stopWithBrake(Motors::MotorAction::DRIVE_BACK, Motors::RotateMode::NONE, driveDuty, 50);
         // drive fwd a bit to get ready for IR PID
-        Encoders::driveMotorsDistance(driveDuty, true, 10, 2);
-        
-        // IR PID for 2 secs
+        Encoders::driveMotorsDistance(driveDuty, true, 15, 2);
+        // IR PID for 1.5 secs
         long startMillis = millis();
         long currMillis = startMillis;
 
@@ -183,7 +184,7 @@ namespace TreasureDetection {
                 goodSideSonarReadings++;
             } else {
                 // last good reading
-                if (goodSideSonarReadings != 0) {
+                if (goodSideSonarReadings > side_sonar_req_good_readings[treasureNum-1]) {
                     break;
                 } else {
                     goodSideSonarReadings = 0;
@@ -359,15 +360,15 @@ namespace TreasureDetection {
         double treasureFrontSonarDists;
 
 
-        // needs 5 out of 10 consecutive readings within the V distance to be considered as good
-        for (int i = 0; i < 10; i++) {
+        // needs 3 out of 6 consecutive readings within the V distance to be considered as good
+        for (int i = 0; i < 6; i++) {
             treasureFrontSonarDists = Sonars::getDistanceSinglePulse(Sonars::SonarType::FRONT);
             if (treasureFrontSonarDists > treasure_in_v_dist) {
                 needsCalibrationCount++;
             } else {
                 needsCalibrationCount = 0;
             }
-            if (needsCalibrationCount >= 5) {
+            if (needsCalibrationCount >= 3) {
                 needsCalibrationFlag = true;
             }            
         }
@@ -397,7 +398,7 @@ namespace TreasureDetection {
         // drive fwd until treasure inside V
         Encoders::driveMotorsDistance(def_drive_to_treasure_duty, true, driveFwdDist, 1);
         // delay to check sonar readings reliably
-        delay(200);
+        delay(300);
 
         // check readings
         // Motors::driveFwd(def_drive_to_treasure_duty);
@@ -410,7 +411,7 @@ namespace TreasureDetection {
 
         for (int i = 0; i < 10; i++) {
             treasureFrontSonarDists = Sonars::getDistanceSinglePulse(Sonars::SonarType::FRONT);
-            if (treasureFrontSonarDists > 25) {
+            if (treasureFrontSonarDists > treasure_in_claw_dist) {
                 needsCalibrationCount++;
             } else {
                 needsCalibrationCount = 0;
@@ -425,9 +426,9 @@ namespace TreasureDetection {
     
         // needs calibration
         if (needsCalibrationFlag) {
-            double backUpDist = 4;
+            double backUpDist = 5;
             double turnDegs = 40;
-            double expectedMaxDist = 24;
+            double expectedMaxDist = 25;
             if (treasureCalibration(backUpDist, turnDegs, expectedMaxDist, reqGoodReadings)) {
                 // found treasure after calibration - in line w/ treasure
                 // drive into V since now in line w/ treasure

@@ -38,6 +38,7 @@ namespace IR {
         // Serial.print(magnitude[0]);
         // Serial.print(" ");
         // Serial.println(magnitude[1]);
+        Serial.write((uint8_t *) magnitude, 8);
     }
 
     float calcPID() {

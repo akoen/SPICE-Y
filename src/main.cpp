@@ -42,9 +42,9 @@ void loop() {
     
     // float mags[2];
     // IR::getMagnitude(mags);
-    // while (true) {
-    //     IR::driveWithPID();
-    // }
+    while (true) {
+        IR::driveWithPID();
+    }
     // obtain third treasure using IR PID
     // double driveFwdCm = 45;
     // double rotateLeftDegs = 100;

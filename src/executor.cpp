@@ -20,27 +20,26 @@ namespace Executor {
         // crossed arch - now readjust straight to IR
         Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::BACKWARDS, 15);
 
-        // drive fwd until fully out of arch
-        Encoders::driveMotorsDistance(dutyCycle, true, 10);
     }
 
     void execute() {
         // follow tape & obtain first treasure and come back to tape
         TreasureDetection::obtainTapeTreasure(1, true);
         // back up - easier to find tape (and not worry for 1 1 1 instead of tape)
-        Encoders::driveMotorsDistance(LW_PWM_DUTY, false, 7);
+        Encoders::driveMotorsDistance(50, false, 7);
         // find tape - look for right first
         TapeFollow::findBlackTape(TapeFollow::DEF_TAPE_SEARCH_ANGLE, Motors::min_rotate_dutyCycle, Motors::RotateMode::BOTH_WHEELS, true);
         
         // follow tape & obtain second treasure - but don't return to original position
+        // TapeFollow::crossedChickenWire = true;
         TreasureDetection::obtainTapeTreasure(2, false);
 
         // get ready for archway
         Encoders::driveMotorsDistance(TreasureDetection::def_drive_to_treasure_duty, false, 18);
 
         Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::BOTH_WHEELS, 20, 2);
-        Encoders::driveMotorsDistance(40, true, 15, 2);
-        Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::BOTH_WHEELS, 45, 3);
+        Encoders::driveMotorsDistance(40, ~true, 16, 2);
+        Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::BOTH_WHEELS, 40, 3);
         // Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::FORWARDS, 60, 3);
 
         // go through archway
@@ -49,15 +48,14 @@ namespace Executor {
         archWayHandler(turnDuty, timeout, driveDist, Motors::RotateMode::FORWARDS, offsetDutyRW);
         
         // obtain third treasure using IR PID
-        // double driveFwdCm = 45;
-        double driveFwdCm = 40;
+        double driveFwdCm = 45;
         double rotateLeftDegs = 100;
         int driveDuty = 40;
         bool cacheThirdTreasure = false;
         TreasureDetection::obtainThirdIRtreasure(driveFwdCm, rotateLeftDegs, driveDuty, cacheThirdTreasure);
 
         // line up with IR beacon to start IR pid for fourth treasure
-        Encoders::driveMotorsDistance(driveDuty, false, 18, 3);
+        Encoders::driveMotorsDistance(driveDuty, false, 20, 3);
         Encoders::rotateMotorsDegs(driveDuty, true, Motors::RotateMode::FORWARDS, 105, 3);
 
         // obtain fourth treasure using IR PID and return to original pos
@@ -67,7 +65,7 @@ namespace Executor {
         Encoders::driveMotorsDistance(driveDuty, false, 15, 1);
 
         // find IR
-        IR::findIR(60, Motors::min_rotate_dutyCycle, Motors::RotateMode::BOTH_WHEELS, true, 60, 10, 3);
+        IR::findIR(40, Motors::min_rotate_dutyCycle, Motors::RotateMode::BOTH_WHEELS, true, 30, 10, 3);
 
         ////
         // back up & face beacon
