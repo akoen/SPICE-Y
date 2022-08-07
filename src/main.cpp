@@ -33,15 +33,27 @@ void setup() {
 }
 void pwmServoTest();
 void loop() {
-    // TapeFollow::findBlackTape(TapeFollow::DEF_TAPE_SEARCH_ANGLE, Motors::min_rotate_dutyCycle, Motors::RotateMode::BOTH_WHEELS);
-    // delay(1000);
+    
+    // Servos::bridgeServo.write(Servos::bridge_open_angle);
+    // delay (3000);
+    // Servos::bridgeServo.write(Servos::bridge_closed_angle);
+    // delay (1000);
     // Serial.println("loop");
-    // TreasureDetection::obtainTapeTreasure(2);
+    
     // float mags[2];
     // IR::getMagnitude(mags);
-    // Servos::collectTreasure();
-    // pwmServoTest();
+    // while (true) {
+    //     IR::driveWithPID();
+    // }
+    // obtain third treasure using IR PID
+    // double driveFwdCm = 45;
+    // double rotateLeftDegs = 100;
+    // int driveDuty = 40;
+    // bool cacheThirdTreasure = false;
+    // TreasureDetection::obtainThirdIRtreasure(driveFwdCm, rotateLeftDegs, driveDuty, cacheThirdTreasure);
+
     Executor::execute();
+
     /////////
     //     float val = 0;
     //     float alpha = 0.1;
@@ -53,31 +65,10 @@ void loop() {
     //     Serial.println(val);
     // }
     /////////
+
     // Serial.print(Sonars::getDistanceSinglePulse(Sonars::SonarType::RIGHT));
     // Serial.print(" ");
     // Serial.println(Sonars::getDistanceSinglePulse(Sonars::SonarType::FRONT));
-    // Encoders::rotateMotorsDegs(Motors::min_rotate_dutyCycle, true, Motors::RotateMode::BACKWARDS, 50);
-    // delay(2000);
-    // Encoders::rotateMotorsDegs(Motors::min_rotate_dutyCycle, false, Motors::RotateMode::BACKWARDS, 90);
-    // delay(2000);
-
-    // TapeFollow::driveWithPid();
-    // TreasureDetection::obtainTapeTreasure(1);
-
-    // int duty = 50;
-    // Motors::setDir(false, false);
-    // Motors::setDutyCycles(duty, duty);
-    // Motors::drive();
-    // Serial.println("loop");
-    // Encoders::startAddActionCache(action, rotate, duty);
-    // Encoders::driveMotorsDistance(duty, true, 20);
-    // Encoders::driveMotorsDistance(duty, false, 20);
-    // Encoders::endAddActionCache();
-    // delay(1000);
-    // Encoders::executeReverseCache(2000);
-    // delay(2000);
-    // TapeFollow::driveWithPid();
-    // IR::driveWithPID();
 }
 
 void pwmServoTest() {

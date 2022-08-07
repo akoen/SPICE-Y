@@ -11,8 +11,8 @@ namespace TreasureDetection {
     const double side_sonar_treasure_dists[6] = {25, 28, 40, 27, 20, 20}; // cm
     const double side_sonar_treasure_dists_err[6] = {15, 7, 7, 7, 10, 10}; // cm
 
-    const double front_sonar_treasure_dists[6] = {24, 30, 24, 20, 20, 20}; // cm
-    const double front_sonar_treasure_dists_err[6] = {6, 8, 10, 5}; // cm 
+    const double front_sonar_treasure_dists[6] = {25, 30, 24, 20, 20, 20}; // cm
+    const double front_sonar_treasure_dists_err[6] = {8, 8, 10, 5}; // cm 
 
     const double treasure_in_claw_dist = 14.5; // cm
     const double treasure_in_claw_dist_err = 1; // cm
@@ -118,11 +118,12 @@ namespace TreasureDetection {
         }
 
         // drive fwd a bit to get ready for IR PID
-        Encoders::driveMotorsDistance(driveDuty, true, 5, 2);
+        Encoders::driveMotorsDistance(driveDuty, true, 10, 2);
         
-        // IR PID for 1.5 secs
+        // IR PID for 2 secs
         long startMillis = millis();
-        long currMillis = millis();
+        long currMillis = startMillis;
+
         while (currMillis < startMillis + 1.5*1000) {
             IR::driveWithPID();
             currMillis = millis();

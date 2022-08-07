@@ -1,7 +1,6 @@
 #include "ir.h"
 #include "board-setup.h"
 #include "helpers.h"
-#include "motor-driver.h"
 #include "encoder.h"
 
 namespace IR {
@@ -211,5 +210,6 @@ namespace IR {
             // if found
             if (IRreadingsCount == 2) return true;
         }
+        return false;
     }
 }

@@ -3,6 +3,7 @@
 #include "tape-follower.h"
 #include "encoder.h"
 #include "ir.h"
+#include "servo-controller.h"
 
 namespace Executor {
     void archWayHandler(int dutyCycle, int timeout, double driveDist, Motors::RotateMode rotateMode, int dutyOffsetRW) {
@@ -39,16 +40,17 @@ namespace Executor {
 
         Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::BOTH_WHEELS, 20, 2);
         Encoders::driveMotorsDistance(40, true, 15, 2);
-        Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::BOTH_WHEELS, 40, 3);
+        Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::BOTH_WHEELS, 45, 3);
         // Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::FORWARDS, 60, 3);
 
         // go through archway
         int turnDuty = 20, offsetDutyRW = 50, timeout = 2;
-        double driveDist = 40;
+        double driveDist = 45;
         archWayHandler(turnDuty, timeout, driveDist, Motors::RotateMode::FORWARDS, offsetDutyRW);
         
         // obtain third treasure using IR PID
-        double driveFwdCm = 45;
+        // double driveFwdCm = 45;
+        double driveFwdCm = 40;
         double rotateLeftDegs = 100;
         int driveDuty = 40;
         bool cacheThirdTreasure = false;
@@ -58,7 +60,7 @@ namespace Executor {
         Encoders::driveMotorsDistance(driveDuty, false, 18, 3);
         Encoders::rotateMotorsDegs(driveDuty, true, Motors::RotateMode::FORWARDS, 105, 3);
 
-        // obtain fourth treasure using IR PIDv and return to original pos
+        // obtain fourth treasure using IR PID and return to original pos
         TreasureDetection::obtainIRTreasure(4, true);
         
         // back up a bit
@@ -97,6 +99,7 @@ namespace Executor {
         Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::BACKWARDS, secondTurnDeg, 1.5);
         
         Encoders::driveMotorsDistance(driveDuty, false, 35, 2);
+        Servos::deployBridge();
         while (true) {
             Serial.print(Sonars::getDistanceSinglePulse(Sonars::SonarType::RIGHT));
             Serial.print(" ");

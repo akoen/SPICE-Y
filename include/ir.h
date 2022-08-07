@@ -1,6 +1,7 @@
 #ifndef SPICEBOT_IR_H
 #define SPICEBOT_IR_H
 
+#include "motor-driver.h"
 namespace IR {
     void getMagnitude(float magnitude[]);
     

@@ -17,8 +17,8 @@ const int Servos::arm_lifted_angle = 165;
 const int Servos::box_closed_angle = 60;
 const int Servos::box_open_angle = 10;
 
-const int Servos::bridge_closed_angle = 0;
-const int Servos::bridge_open_angle = 00;
+const int Servos::bridge_closed_angle = 65;
+const int Servos::bridge_open_angle = 45;
 
 Servo Servos::clawServo;
 Servo Servos::armServo;
