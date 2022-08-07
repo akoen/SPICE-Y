@@ -24,14 +24,13 @@ namespace Executor {
     }
 
     void execute() {
-        // // follow tape & obtain first treasure and come back to tape
-        // TreasureDetection::obtainTapeTreasure(1, true);
-        // // back up - easier to find tape (and not worry for 1 1 1 instead of tape)
-        // Encoders::driveMotorsDistance(LW_PWM_DUTY, false, 5);
-        // // find tape - look for right first
-        // TapeFollow::findBlackTape(TapeFollow::DEF_TAPE_SEARCH_ANGLE, Motors::min_rotate_dutyCycle, Motors::RotateMode::BOTH_WHEELS, true);
+        // follow tape & obtain first treasure and come back to tape
+        TreasureDetection::obtainTapeTreasure(1, true);
+        // back up - easier to find tape (and not worry for 1 1 1 instead of tape)
+        Encoders::driveMotorsDistance(LW_PWM_DUTY, false, 5);
+        // find tape - look for right first
+        TapeFollow::findBlackTape(TapeFollow::DEF_TAPE_SEARCH_ANGLE, Motors::min_rotate_dutyCycle, Motors::RotateMode::BOTH_WHEELS, true);
         
-        TapeFollow::crossedChickenWire = true;
         // follow tape & obtain second treasure
         TreasureDetection::obtainTapeTreasure(2, false);
 
@@ -45,18 +44,21 @@ namespace Executor {
 
         // archway handler
         archWayHandler(20, 2, 40, Motors::RotateMode::FORWARDS, 50);
-        
         // obtain third treasure using IR PID
-        TreasureDetection::obtainIRTreasure2(3, true);
+        TreasureDetection::obtainIRTreasure2(3, false);
 
-        while (true) {
-            IR::driveWithPID();
-            Serial.println(Sonars::getDistanceSinglePulse(Sonars::SonarType::FRONT));
-        }
+        // drive back 
+        Encoders::driveMotorsDistance(40, false, 15, 3);
+        Encoders::rotateMotorsDegs(40, true, Motors::RotateMode::FORWARDS, 105, 3);
 
         // obtain fourth treasure using IR PID
-        // TreasureDetection::obtainIRTreasure(4);
+        TreasureDetection::obtainIRTreasure(4);
+
         // IR PID until robot hits beacon
+        while (true) {
+            IR::driveWithPID();
+            Serial.println(Sonars::getDistanceSinglePulse(Sonars::SonarType::RIGHT));
+        }
 
         // turn right 90 degs and drive until edge detected
 

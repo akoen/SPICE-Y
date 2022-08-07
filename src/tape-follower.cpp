@@ -8,7 +8,7 @@ double TapeFollow::kd = 15;
 double TapeFollow::maxI = 100;
 // chicken wire
 const double TapeFollow::CHICKEN_WIRE_DIST = 17+8;
-const double TapeFollow::DEF_TAPE_SEARCH_ANGLE = 80;
+const double TapeFollow::DEF_TAPE_SEARCH_ANGLE = 60;
 // vars
 bool TapeFollow::crossedChickenWire = false;
 bool TapeFollow::onTapeL = false;
@@ -144,7 +144,6 @@ bool TapeFollow::findBlackTape(double angle, int dutyCycle, Motors::RotateMode r
                     checkEncoderPulses = Encoders::pulseLW;
                 }
                 Motors::rotate(Motors::default_rotate_pwm, true, rotateMode);
-                turnPulsesInterval = round(angle * 2 / anglePerPulse);    // twice the angle since needs to go left -> middle -> right
             } else {
                 // search left
                 if (rotateMode == Motors::BACKWARDS) {

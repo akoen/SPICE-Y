@@ -41,7 +41,7 @@ namespace TreasureDetection {
     /**
      * Routine for collecting a treasure when following IR (3rd or 4th)
      */ 
-    bool obtainIRTreasure(int treasureNum, bool retToOriginalPos);
+    bool obtainIRTreasure(int treasureNum);
 
     bool obtainIRTreasure2(int treasureNum, bool retToOriginalPos);
     
