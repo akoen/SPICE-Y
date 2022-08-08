@@ -8,11 +8,11 @@
 namespace TreasureDetection {
     /* For sonar */
     // 6 potential treasures that needs to be located 
-    const double side_sonar_treasure_dists[6] = {25, 29, 40, 20, 20, 20}; // cm
-    const double side_sonar_treasure_dists_err[6] = {15, 7, 7, 8.5, 10, 10}; // cm
+    const double side_sonar_treasure_dists[6] = {25, 29, 40, 15, 20, 20}; // cm
+    const double side_sonar_treasure_dists_err[6] = {15, 7, 7, 12, 10, 10}; // cm
 
-    const double front_sonar_treasure_dists[6] = {25, 32, 24, 18, 25, 25}; // cm
-    const double front_sonar_treasure_dists_err[6] = {8, 8, 10, 9, 5, 5}; // cm 
+    const double front_sonar_treasure_dists[6] = {25, 32, 24, 17, 25, 25}; // cm
+    const double front_sonar_treasure_dists_err[6] = {8, 8, 10, 12, 5, 5}; // cm 
 
     const double treasure_in_claw_dist = 14.5; // cm
     const double treasure_in_claw_dist_err = 1.5; // cm
@@ -144,8 +144,9 @@ namespace TreasureDetection {
         if (cache) Encoders::startAddActionCache(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, def_drive_to_treasure_duty);
 
         // drive to treasure
-        driveToTreasureFrontSonarIR3(35, claw_req_good_readings[2], timeout);
-        Encoders::driveMotorsDistance(TreasureDetection::def_drive_to_treasure_duty, false, 3);
+        driveToTreasureFrontSonarIR3(31, claw_req_good_readings[2], timeout);
+
+        Encoders::driveMotorsDistance(TreasureDetection::def_drive_to_treasure_duty, false, 4.5);
         // too close to the treasure
         // driveBackToTreasureFrontSonar(claw_req_good_readings[2]);
 
@@ -210,7 +211,7 @@ namespace TreasureDetection {
         // found treasure, move up a bit
         int driveDuty = 40;
         Encoders::driveMotorsDistance(driveDuty, true, 16);
-        Encoders::rotateMotorsDegs(driveDuty, true, Motors::RotateMode::BOTH_WHEELS, 40, 3);
+        Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, true, Motors::RotateMode::BOTH_WHEELS, 35, 3);
         Encoders::driveMotorsDistance(driveDuty, false, 16, 3);
         // Encoders::driveMotorsDistance(driveDuty, true, 10, 3);
         return treasureCollectionRoutine(sonarType, front_sonar_treasure_dists[treasureNum-1], front_sonar_treasure_dists_err[treasureNum-1], cache, treasureNum);
@@ -433,9 +434,9 @@ namespace TreasureDetection {
     
         // needs calibration
         if (needsCalibrationFlag) {
-            double backUpDist = 8;
+            double backUpDist = 6.5;
             double turnDegs = 40;
-            double expectedMaxDist = 27;
+            double expectedMaxDist = 28;
             if (treasureCalibration(backUpDist, turnDegs, expectedMaxDist, reqGoodReadings)) {
                 // found treasure after calibration - in line w/ treasure
                 // drive into V since now in line w/ treasure
@@ -504,21 +505,20 @@ namespace TreasureDetection {
         return false;   // didn't find treasure
     }
 
-    bool obtainFourthTreasure(int driveDuty, double rotateLeftDegs, double driveBackDist, bool cache) {
+    bool obtainFourthTreasure(int driveDuty, double rotateRightDegs, double driveBackDist, bool cache) {
         // driveBackDist = 25;
         // driveBackDistErr = 5;
 
         // manuveur so we can start treasure scanning front treasure
-        Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::BOTH_WHEELS, rotateLeftDegs, 2);
+        Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, true, Motors::RotateMode::BOTH_WHEELS, rotateRightDegs, 2);
         Encoders::driveMotorsDistance(driveDuty, false, driveBackDist);
 
         treasureCollectionRoutine(Sonars::SonarType::RIGHT, front_sonar_treasure_dists[3], front_sonar_treasure_dists_err[3], false, 4);
 
         // back up 20 cm
-        Encoders::driveMotorsDistance(driveDuty, false, 20);
+        Encoders::driveMotorsDistance(driveDuty, false, 12);
 
-        /// should be drop treasures func ///
-
+        /// below should be drop treasures func ///
         // turn to line up to drop treasures
         Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::BOTH_WHEELS, 60);
 

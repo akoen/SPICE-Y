@@ -6,8 +6,8 @@
 namespace IR {
     const int targetFrequency = 10000;
     const float sampleFrequency = (12000000 / (12.5 + 71.5)) / 2;
-    const float kp = 2;
-    const float kd = 20;
+    const float kp = 8;
+    const float kd = 25;
 
     float magSmoothed[] = {0, 0};
     float prevP = 0;

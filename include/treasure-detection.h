@@ -52,7 +52,7 @@ namespace TreasureDetection {
     /**
      * Routine for collecting the fourth treasure after the robot has fully crossed the bridge.
      */ 
-    bool obtainFourthTreasure(int driveDuty, double rotateLeftDegs, double driveBackDist, bool cache);
+    bool obtainFourthTreasure(int driveDuty, double rotateRightDegs, double driveBackDist, bool cache);
     /**
      * Collects the treasure upon initial detection. Returns to the original position if specified, and this is 
      * only possible if the cache is empty at the time of the method call (since it will execute all in cache)

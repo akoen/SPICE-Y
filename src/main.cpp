@@ -61,10 +61,10 @@ void loop() {
     // double firstTurnDeg = 60;
     // double secondTurnDeg = 30;
 
-    Encoders::driveMotorsDistance(30, true, 5);
-    delay(500);
-    Encoders::driveMotorsDistance(30, false, 5);
-    delay(500);
+    // Encoders::driveMotorsDistance(30, true, 5);
+    // delay(500);
+    // Encoders::driveMotorsDistance(30, false, 5);
+    // delay(500);
     // Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::BOTH_WHEELS, firstTurnDeg, 1.5);
     // Encoders::driveMotorsDistance(driveDuty, true, 8);
     // Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::BACKWARDS, secondTurnDeg, 1.5);
@@ -78,7 +78,7 @@ void loop() {
     // bool cacheThirdTreasure = false;
     // TreasureDetection::obtainThirdIRtreasure(driveFwdCm, rotateLeftDegs, driveDuty, cacheThirdTreasure);
 
-    // Executor::execute();
+    Executor::execute();
 
     /////////
     //     float val = 0;
