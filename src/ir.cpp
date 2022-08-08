@@ -6,7 +6,7 @@
 namespace IR {
     const int targetFrequency = 10000;
     const float sampleFrequency = (12000000 / (12.5 + 71.5)) / 2;
-    const float kp = 8;
+    const float kp = 2;
     const float kd = 20;
 
     float magSmoothed[] = {0, 0};
@@ -38,8 +38,8 @@ namespace IR {
         // Serial.print(magnitude[0]);
         // Serial.print(" ");
         // Serial.println(magnitude[1]);
-        while(!Serial);
-        Serial.write((uint8_t *) magnitude, 8);
+        // while(!Serial);
+        // Serial.write((uint8_t *) magnitude, 8);
     }
 
     float calcPID() {

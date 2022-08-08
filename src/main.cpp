@@ -42,9 +42,35 @@ void loop() {
     
     // float mags[2];
     // IR::getMagnitude(mags);
-    while (true) {
-        IR::driveWithPID();
-    }
+    // int goodReadings = 0;
+    // int reqGoodReadings = 10;
+    // while (goodReadings < reqGoodReadings) {
+    //     if (Sonars::getDistanceSinglePulse(Sonars::SonarType::FRONT) < TreasureDetection::treasure_in_v_dist + TreasureDetection::treasure_in_claw_dist_err) {
+    //         goodReadings++;
+    //     } else {
+    //         goodReadings = 0;
+    //     }
+    //     IR::driveWithPID();
+    // }
+    // int driveDuty = 40;
+    // Encoders::driveMotorsDistance(driveDuty, true, 20, 2);
+    // // while (true) {
+    // //     Motors::driveBack(40);
+    // // }
+    // // back up a bit and turn right 90 degs and drive until edge detected
+    // double firstTurnDeg = 60;
+    // double secondTurnDeg = 30;
+
+    Encoders::driveMotorsDistance(30, true, 5);
+    delay(500);
+    Encoders::driveMotorsDistance(30, false, 5);
+    delay(500);
+    // Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::BOTH_WHEELS, firstTurnDeg, 1.5);
+    // Encoders::driveMotorsDistance(driveDuty, true, 8);
+    // Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::BACKWARDS, secondTurnDeg, 1.5);
+    
+    // Encoders::driveMotorsDistance(driveDuty, false, 35, 2);
+    // Servos::deployBridge();
     // obtain third treasure using IR PID
     // double driveFwdCm = 45;
     // double rotateLeftDegs = 100;
@@ -52,7 +78,7 @@ void loop() {
     // bool cacheThirdTreasure = false;
     // TreasureDetection::obtainThirdIRtreasure(driveFwdCm, rotateLeftDegs, driveDuty, cacheThirdTreasure);
 
-    Executor::execute();
+    // Executor::execute();
 
     /////////
     //     float val = 0;

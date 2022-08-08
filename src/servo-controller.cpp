@@ -2,7 +2,7 @@
 #include "magnetic-sensor.h"
 
 // pos when gripping treasure in claw 
-const int Servos::claw_close_angle = 40;
+const int Servos::claw_close_angle = 37;
 // pos when dropping treasure and initial position when claw is lifted up. Must clear the beacon mounts
 const int Servos::claw_part_open_angle = 100;  
 // pos when opening claw to collect treasure
