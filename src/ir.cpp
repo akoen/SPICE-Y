@@ -141,7 +141,7 @@ namespace IR {
                 // look for IR while turning - IR found when both at sufficiently high magnitude & equal
                 getMagnitude(mag);
 
-                if (mag[0] > minMag && mag[1] > minMag && abs(mag[0]-mag[1]) < maxDiff) {
+                if (mag[0] > minMag || mag[1] > minMag && abs(mag[0]-mag[1]) < maxDiff) {
                     if (IRreadingsCount == 0) {
                         IRreadingsCount++;
                     } else {

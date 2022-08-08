@@ -176,7 +176,7 @@ void Motors::rotate(int dutyCycle, bool rotateRight, RotateMode rotateMode) {
     drive();
 }
 
-void Motors::stopWithBrake(MotorAction initialAction, RotateMode initialRotateMode, int initialDutyCycle, int durationMillis, int stopMotorsPWMDelayMillis) {
+void Motors::stopWithBrake(MotorAction initialAction, RotateMode initialRotateMode, int initialDutyCycle, int durationMillis, int stopMotorsPWMDelayMillis, int offsetDutyRW) {
     // bad input
     if ((initialAction == MotorAction::DRIVE_BACK || initialAction == MotorAction::DRIVE_FWD) && initialRotateMode != RotateMode::NONE) {
         return;

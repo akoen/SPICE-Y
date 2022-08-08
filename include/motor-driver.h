@@ -97,7 +97,7 @@ namespace Motors {
      * Stops the motors by applying the opposite action at a specifc pwm
      * duty cycle for a specified duration of the driving action.
      */
-    void stopWithBrake(MotorAction initialAction, RotateMode initialRotateMode, int initialDutyCycle, int durationMillis, int stopMotorsPWMDelayMillis=default_motors_stop_millis);
+    void stopWithBrake(MotorAction initialAction, RotateMode initialRotateMode, int initialDutyCycle, int durationMillis, int stopMotorsPWMDelayMillis=default_motors_stop_millis, int offsetDutyRW=0);
 }
 
 #endif

@@ -34,24 +34,31 @@ namespace Executor {
         TreasureDetection::obtainTapeTreasure(2, false);
 
         // get ready for archway
-        Encoders::driveMotorsDistance(TreasureDetection::def_drive_to_treasure_duty, false, 18);
+        Encoders::driveMotorsDistance(40, false, 18);
 
-        Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::BOTH_WHEELS, 20, 2);
+        Encoders::rotateMotorsDegs(35, false, Motors::RotateMode::BOTH_WHEELS, 20, 2);
         Encoders::driveMotorsDistance(40, true, 16.5, 2);
-        Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::BOTH_WHEELS, 35, 3);
-        // Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::FORWARDS, 60, 3);
+        Encoders::rotateMotorsDegs(35, false, Motors::RotateMode::BOTH_WHEELS, 35, 2);
 
         // go through archway
         int turnDuty = 20, offsetDutyRW = 40, timeout = 2;
         double driveDist = 42;
         archWayHandler(turnDuty, timeout, driveDist, Motors::RotateMode::FORWARDS, offsetDutyRW);
         
+        // drive fwd until fully out of arch
+        int driveDuty = 40;
 
+        Encoders::driveMotorsDistance(driveDuty, true, 14);
+        // back up until front reflectance sensors see 1 1 1 or 0 1 0 (in case missed)
+        Motors::driveBack(driveDuty);
+        while (!(ReflectanceSensors::frontSensorLval && ReflectanceSensors::frontSensorMval && ReflectanceSensors::frontSensorRval) || !ReflectanceSensors::frontSensorMval) {
+            ReflectanceSensors::readFrontReflectanceSensors();
+        }
+        Motors::stopWithBrake(Motors::MotorAction::DRIVE_BACK, Motors::RotateMode::NONE, driveDuty, 50);
 
         // obtain third treasure using IR PID
         double driveFwdCm = 6;
         double rotateLeftDegs = 100;
-        int driveDuty = 40;
         bool cacheThirdTreasure = false;
         TreasureDetection::obtainThirdIRtreasure(driveFwdCm, rotateLeftDegs, driveDuty, cacheThirdTreasure);
 
@@ -59,6 +66,7 @@ namespace Executor {
         Encoders::driveMotorsDistance(driveDuty, false, 16.5, 3);
         Encoders::rotateMotorsDegs(driveDuty, true, Motors::RotateMode::BOTH_WHEELS, 90, 2);
 
+        // decrease max duty cycle so more/more reliable sonar readings can be taken (serial this to be sure)
         Motors::max_drive_dutyCycle = 37;
 
         // obtain fourth treasure using IR PID and return to original pos
@@ -68,9 +76,9 @@ namespace Executor {
 
         // back up a bit
         Encoders::driveMotorsDistance(driveDuty, false, 9, 1);
-        Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::BOTH_WHEELS, 58);
+        Encoders::rotateMotorsDegs(35, false, Motors::RotateMode::BOTH_WHEELS, 58);
         // find IR
-        // IR::findIR(40, Motors::min_rotate_dutyCycle, Motors::RotateMode::BOTH_WHEELS, true, 60, 30, 3);
+        // IR::findIR(30, Motors::min_rotate_dutyCycle, Motors::RotateMode::BOTH_WHEELS, true, 70, 30, 3);
 
         ////
         // back up & face beacon
@@ -85,7 +93,7 @@ namespace Executor {
         // IR PID until robot hits beacon
         long startTime = millis();
         long currTime = startTime;
-        int timeoutPIDtoBeacon = 5;
+        int timeoutPIDtoBeacon = 3;
         int timeoutDrive = 1.5;
         // TODO: or sonar sees top of V dist
         while (currTime < startTime + timeoutPIDtoBeacon * 1000) {
@@ -93,10 +101,10 @@ namespace Executor {
             Serial.println(Sonars::getDistanceSinglePulse(Sonars::SonarType::RIGHT));
             currTime = millis();
         }
-        Encoders::driveMotorsDistance(30, false, 5, 1);
-        Encoders::driveMotorsDistance(30, true, 7, 1, 40);
+        // Encoders::driveMotorsDistance(30, false, 5, 1);
+        // Encoders::driveMotorsDistance(30, true, 7, 1, 40);
 
-        // back up a bit and turn right 90 degs and drive until edge detected
+        // back up a bit and turn right about 90 degs and drive until edge detected
         double firstTurnDeg = 60;
         double secondTurnDeg = 40;
 
@@ -112,7 +120,8 @@ namespace Executor {
         while (!ReflectanceSensors::sideSensorLval || !ReflectanceSensors::sideSensorRval) {
             ReflectanceSensors::readSideReflectanceSensors();
         }
-        Motors::stopWithBrake(Motors::MotorAction::DRIVE_BACK, Motors::RotateMode::NONE, Motors::min_drive_dutyCycle, 100);
+        // stop w/ greater PWM in case wheels are falling off
+        Motors::stopWithBrake(Motors::MotorAction::DRIVE_BACK, Motors::RotateMode::NONE, 30, 100);
  
         // left on white, right is not
         if (!ReflectanceSensors::sideSensorLval) {
@@ -128,14 +137,15 @@ namespace Executor {
             }
             Motors::stopWithBrake(Motors::MotorAction::ROTATE_RIGHT, Motors::RotateMode::BOTH_WHEELS, Motors::min_rotate_dutyCycle, 50);
         }
+
         // drive fwd
-        Encoders::driveMotorsDistance(70, true, 4, 1);
-        delay(800);
+        Encoders::driveMotorsDistance(70, true, 3.5, 1);
+        delay(600);
         // deploy bridge
         Servos::deployBridge();
-        delay(1000);
+        delay(600);
         Encoders::driveMotorsDistance(30, true, 5, 1);
-        delay(2000);
+        delay(500);
         // drive back
         Encoders::driveMotorsDistance(80, false, 65);
 

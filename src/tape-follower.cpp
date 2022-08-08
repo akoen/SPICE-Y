@@ -39,8 +39,8 @@ double TapeFollow::calcPidBlackTape() {
     // chicken wire routine
     if ((onTapeL && onTapeM && onTapeR) && !crossedChickenWire) { 
         // stop
-        int stopDuty = Motors::dutyCycleL > Motors::dutyCycleR ? Motors::dutyCycleL : Motors::dutyCycleR;
-        Motors::stopWithBrake(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, stopDuty, 50);  
+        // int stopDuty = Motors::dutyCycleL > Motors::dutyCycleR ? Motors::dutyCycleL : Motors::dutyCycleR;
+        Motors::stopWithBrake(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, Motors::dutyCycleL, 50, Motors::default_motors_stop_millis, Motors::dutyCycleR - Motors::dutyCycleL);  
         chickenWireRoutine();
         crossedChickenWire = true;
         // chickenWireRoutine2(prevErr, err);   
@@ -104,7 +104,8 @@ void TapeFollow::chickenWireRoutine() {
     Encoders::driveMotorsDistance(dutyCycle, true, CHICKEN_WIRE_DIST);
     delay(10);
     Motors::stopWithBrake(Motors::DRIVE_FWD, Motors::NONE, dutyCycle, 50);
-
+    // Motors::stopWithBrake(Motors::DRIVE_FWD, Motors::NONE, Motors::dutyCycleL, 50, Motors::default_motors_stop_millis, Motors::dutyCycleR-Motors::dutyCycleL);
+// 
     // find black tape - look left first
     findBlackTape(DEF_TAPE_SEARCH_ANGLE, Motors::min_rotate_dutyCycle, Motors::RotateMode::FORWARDS, false);
 }

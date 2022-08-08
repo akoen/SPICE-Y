@@ -79,8 +79,8 @@ namespace TreasureDetection {
             //     return false;
             // }
         }
-
-        Motors::stopWithBrake(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, LW_PWM_DUTY, 50);
+        // Motors::stopWithBrake(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, LW_PWM_DUTY, 50);
+        Motors::stopWithBrake(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, Motors::dutyCycleL, 50, Motors::default_motors_stop_millis, Motors::dutyCycleR-Motors::dutyCycleL);
 
         Serial.print("Found treasure right: ");    
         Serial.println(rightSonarDist);    
@@ -103,19 +103,12 @@ namespace TreasureDetection {
 
         return treasureCollectionRoutine(sonarType, firstFrontSonarTreausureDist, firstFrontSonarTreausureDistErr, retToOriginalPos, treasureNum);
     }
+
     void driveBackToTreasureFrontSonar(int);
 
     bool obtainThirdIRtreasure(double driveFwd, double rotateLeftDegs, int driveDuty, bool cache) {
         int timeout = 3;
     
-        // drive fwd until fully out of arch
-        Encoders::driveMotorsDistance(driveDuty, true, 14);
-        // back up until front reflectance sensors see 1 1 1 or 0 1 0 (in case missed)
-        Motors::driveBack(driveDuty);
-        while (!(ReflectanceSensors::frontSensorLval && ReflectanceSensors::frontSensorMval && ReflectanceSensors::frontSensorRval) || !ReflectanceSensors::frontSensorMval) {
-            ReflectanceSensors::readFrontReflectanceSensors();
-        }
-        Motors::stopWithBrake(Motors::MotorAction::DRIVE_BACK, Motors::RotateMode::NONE, driveDuty, 50);
         // drive fwd a bit to get ready for IR PID
         Encoders::driveMotorsDistance(driveDuty, true, 40, 2);
         // IR PID for 1.5 secs
@@ -283,11 +276,11 @@ namespace TreasureDetection {
         if (retOriginalPos) Encoders::startAddActionCache(Motors::DRIVE_FWD, Motors::RotateMode::NONE, def_drive_to_treasure_duty);
 
         if (treasureNum == 4) {
+            // drive in slowly for 4th treasure
             driveToTreasureFrontSonar(avgTreasureFrontSonarDists, claw_req_good_readings[treasureNum-1], 6, false, Motors::min_drive_dutyCycle); 
         } else {
             driveToTreasureFrontSonar(avgTreasureFrontSonarDists, claw_req_good_readings[treasureNum-1], 6, false);   // this backs up initially - don't cache, done externally
         }
-        // regularDriveToTreasureFront(treasureNum, 2.5);
         // too close to the treasure
         driveBackToTreasureFrontSonar(claw_req_good_readings[treasureNum-1]);
         

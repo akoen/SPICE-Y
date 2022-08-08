@@ -339,7 +339,7 @@ namespace Encoders {
                 break;
         }
         delay(delayMiliis);
-        Motors::stopWithBrake(motorAction, rotateMode, dutyCycle, brakeDurationMillis);
+        Motors::stopWithBrake(motorAction, rotateMode, dutyCycle, brakeDurationMillis, Motors::default_motors_stop_millis, dutyOffsetRW);
         return true;
     }
 
