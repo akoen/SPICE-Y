@@ -15,7 +15,7 @@ namespace Executor {
         while (!Encoders::driveMotorsDistance(dutyCycle, true, driveDist, timeout, dutyOffsetRW)) {
             // back up
             Encoders::driveMotorsDistance(dutyCycle, false, 25);
-            Encoders::rotateMotorsDegs(40, false, Motors::RotateMode::FORWARDS, 3);
+            Encoders::rotateMotorsDegs(40, false, Motors::RotateMode::FORWARDS, 2);
         }
         // crossed arch - now readjust straight to IR
         Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::BACKWARDS, 10);
@@ -25,7 +25,7 @@ namespace Executor {
         // follow tape & obtain first treasure and come back to tape
         TreasureDetection::obtainTapeTreasure(1, true);
         // back up - easier to find tape (and not worry for 1 1 1 instead of tape)
-        Encoders::driveMotorsDistance(50, false, 7);
+        Encoders::driveMotorsDistance(50, false, 7.5);
         // find tape - look for right first
         TapeFollow::findBlackTape(TapeFollow::DEF_TAPE_SEARCH_ANGLE, Motors::min_rotate_dutyCycle, Motors::RotateMode::BOTH_WHEELS, true);
         
@@ -58,13 +58,13 @@ namespace Executor {
 
         // obtain third treasure using IR PID
         double driveFwdCm = 6;
-        double rotateLeftDegs = 100;
+        double rotateLeftDegs = 96;
         bool cacheThirdTreasure = false;
         TreasureDetection::obtainThirdIRtreasure(driveFwdCm, rotateLeftDegs, driveDuty, cacheThirdTreasure);
 
         // line up with IR beacon to start IR pid for fourth treasure
         Encoders::driveMotorsDistance(driveDuty, false, 16.5, 3);
-        Encoders::rotateMotorsDegs(driveDuty, true, Motors::RotateMode::BOTH_WHEELS, 90, 2);
+        Encoders::rotateMotorsDegs(driveDuty, true, Motors::RotateMode::BOTH_WHEELS, 85, 2);
 
         // decrease max duty cycle so more/more reliable sonar readings can be taken (serial this to be sure)
         Motors::max_drive_dutyCycle = 37;
@@ -75,8 +75,8 @@ namespace Executor {
         Motors::max_drive_dutyCycle = 80;
 
         // back up a bit
-        Encoders::driveMotorsDistance(driveDuty, false, 9, 1);
-        Encoders::rotateMotorsDegs(35, false, Motors::RotateMode::BOTH_WHEELS, 58);
+        Encoders::driveMotorsDistance(driveDuty, false, 7.5, 1);
+        Encoders::rotateMotorsDegs(35, false, Motors::RotateMode::BOTH_WHEELS, 70);
         // find IR
         // IR::findIR(30, Motors::min_rotate_dutyCycle, Motors::RotateMode::BOTH_WHEELS, true, 70, 30, 3);
 
@@ -110,7 +110,7 @@ namespace Executor {
 
         Encoders::driveMotorsDistance(driveDuty, false, 5);
         Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::BOTH_WHEELS, firstTurnDeg, 1.5);
-        Encoders::driveMotorsDistance(driveDuty, true, 10);
+        Encoders::driveMotorsDistance(driveDuty, true, 14);
         Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::BOTH_WHEELS, secondTurnDeg, 1.5);
         
         // Encoders::driveMotorsDistance(driveDuty, false, 30, 2);
@@ -144,6 +144,7 @@ namespace Executor {
         // deploy bridge
         Servos::deployBridge();
         delay(600);
+        Servos::bridgeServo.write(Servos::bridge_closed_angle);
         Encoders::driveMotorsDistance(30, true, 5, 1);
         delay(500);
         // drive back

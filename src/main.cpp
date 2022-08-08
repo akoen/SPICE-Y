@@ -28,7 +28,7 @@ void setup() {
     HAL_ADCEx_Calibration_Start(&AdcHandle);
     pinMode(PA12, OUTPUT);
     // /* Start ADC conversion on regular group with transfer by DMA */
-    HAL_ADC_Start_DMA(&AdcHandle, (uint32_t *)DMA1Data, IR_SENS_NUM_READINGS);
+    // HAL_ADC_Start_DMA(&AdcHandle, (uint32_t *)DMA1Data, IR_SENS_NUM_READINGS);
     Serial.println("Serial connected");
 }
 void pwmServoTest();

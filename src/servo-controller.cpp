@@ -15,10 +15,10 @@ const int Servos::arm_lowered_angle = 60;   // parallel
 const int Servos::arm_lifted_angle = 165;
 
 const int Servos::box_closed_angle = 60;
-const int Servos::box_open_angle = 10;
+const int Servos::box_open_angle = 0;
 
-const int Servos::bridge_closed_angle = 65;
-const int Servos::bridge_open_angle = 45;
+const int Servos::bridge_closed_angle = 100;
+const int Servos::bridge_open_angle = 60;
 
 Servo Servos::clawServo;
 Servo Servos::armServo;
@@ -82,7 +82,7 @@ void Servos::collectTreasure() {
         armServo.write(arm_bomb_detect_angle);
         delay(300);
         clawServo.write(claw_bomb_detect_angle);
-        delay(500);
+        delay(300);
         if (!BombDetection::isBombDetected()) {
             // bomb not found
             clawServo.write(claw_full_open_angle);
@@ -95,6 +95,7 @@ void Servos::collectTreasure() {
             if (BombDetection::isBombDetected()) {
                 BombDetection::bombEncounteredFlag = true;
                 clawServo.write(claw_part_open_angle);
+                delay(300);
             } 
         } else {
             // don't pick up - bomb found
@@ -102,18 +103,18 @@ void Servos::collectTreasure() {
         }
     } else {
         armServo.write(arm_lowered_angle);    
-        delay(500);
+        delay(400);
         clawServo.write(claw_close_angle);
+        delay(300);
     }
-    delay(500);
     armServo.write(arm_lifted_angle);
     delay(500);
     clawServo.write(claw_part_open_angle);
-    delay(300);
+    delay(100);
 }
 
 void Servos::collectTreasureUsingInterrupt() {
-    BombDetection::configMagneticSensorPin;
+    BombDetection::configMagneticSensorPin();
     // should be in lifted arm, partly opened claw position
 
     // open claw as we lower arm
@@ -136,6 +137,11 @@ void Servos::collectTreasureUsingInterrupt() {
             delay(300);
             armServo.write(arm_lowered_angle);
             delay(500);
+        }
+        // check again for bomb - part so it doesn't knock off
+        if (!BombDetection::bombEncounteredFlag) {
+            clawServo.write(claw_part_open_angle);
+            delay(300);
         }
         if (!BombDetection::bombEncounteredFlag) {
             clawServo.write(claw_close_angle);

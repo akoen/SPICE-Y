@@ -28,13 +28,12 @@ namespace IR {
     }
 
     void getMagnitude(float magnitude[]) {
+        DMA1DataAvailable = false;
+        HAL_ADC_Start_DMA(&AdcHandle, (uint32_t *)DMA1Data, IR_SENS_NUM_READINGS);
         bool success;
         do {
             success = getMagnitudeInner(magnitude);
         }  while(!success);
-
-        DMA1DataAvailable = false;
-        HAL_ADC_Start_DMA(&AdcHandle, (uint32_t *)DMA1Data, IR_SENS_NUM_READINGS);
         // Serial.print(magnitude[0]);
         // Serial.print(" ");
         // Serial.println(magnitude[1]);

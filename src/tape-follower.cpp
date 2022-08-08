@@ -8,7 +8,7 @@ double TapeFollow::kd = 15;
 double TapeFollow::maxI = 100;
 // chicken wire
 const double TapeFollow::CHICKEN_WIRE_DIST = 17+8;
-const double TapeFollow::DEF_TAPE_SEARCH_ANGLE = 60;
+const double TapeFollow::DEF_TAPE_SEARCH_ANGLE = 45;
 // vars
 bool TapeFollow::crossedChickenWire = false;
 bool TapeFollow::onTapeL = false;
