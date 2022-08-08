@@ -48,6 +48,8 @@ namespace Servos {
      */
     void collectTreasure();
 
+    void collectTreasureUsingInterrupt();
+
     /**
      * Deploys the storage box to be released.
      */

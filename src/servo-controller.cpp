@@ -68,16 +68,15 @@ void Servos::configArmClawPins() {
 
 void Servos::collectTreasure() {
     BombDetection::configMagneticSensorPin;
-
-    // should be in lifted arm, partly closed claw position
+    // should be in lifted arm, partly opened claw position
 
     // open claw as we lower arm
     clawServo.write(claw_part_open_angle);
-    delay(300);
     armServo.write(above_treasure_below_IR_angle);
     delay(300);
     clawServo.write(claw_full_open_angle);
     delay(500);
+
     // hall effect
     if (!BombDetection::bombEncounteredFlag) {
         armServo.write(arm_bomb_detect_angle);
@@ -111,6 +110,54 @@ void Servos::collectTreasure() {
     delay(500);
     clawServo.write(claw_part_open_angle);
     delay(300);
+}
+
+void Servos::collectTreasureUsingInterrupt() {
+    BombDetection::configMagneticSensorPin;
+    // should be in lifted arm, partly opened claw position
+
+    // open claw as we lower arm
+    clawServo.write(claw_part_open_angle);
+    armServo.write(above_treasure_below_IR_angle);
+    delay(300);
+    clawServo.write(claw_full_open_angle);
+    delay(200);
+
+    // hall effect routine
+    if (!BombDetection::bombEncounteredFlag) {
+        armServo.write(arm_bomb_detect_angle);
+        delay(300);
+        if (!BombDetection::bombEncounteredFlag) {
+            clawServo.write(claw_bomb_detect_angle);
+            delay(300);
+        } 
+        if (!BombDetection::bombEncounteredFlag) {
+            clawServo.write(claw_full_open_angle);
+            delay(300);
+            armServo.write(arm_lowered_angle);
+            delay(500);
+        }
+        if (!BombDetection::bombEncounteredFlag) {
+            clawServo.write(claw_close_angle);
+            delay(300);
+        }
+
+        // bomb found along the routine
+        if (BombDetection::bombEncounteredFlag) {
+            clawServo.write(claw_part_open_angle);
+            delay(300);
+        } 
+    } else {
+        // already encountered bomb before - straight to treasure pickup
+        armServo.write(arm_lowered_angle);    
+        delay(400);
+        clawServo.write(claw_close_angle);
+        delay(300);
+    }
+    armServo.write(arm_lifted_angle);
+    delay(500);
+    clawServo.write(claw_part_open_angle);
+    delay(100);
 }
 
 void Servos::deployBox() {

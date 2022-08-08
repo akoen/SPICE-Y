@@ -33,7 +33,6 @@ namespace TreasureDetection {
 
 
     bool obtainTapeTreasure(int treasureNum, bool retToOriginalPos) {
-
         Servos::configArmClawPins();
 
         double firstSideSonarTreausureDist = side_sonar_treasure_dists[treasureNum-1];
@@ -46,11 +45,6 @@ namespace TreasureDetection {
         double loopCount = 0;
         double rightSonarDist = 0;
         int goodSideSonarReadings = 0;
-
-        // // only drive fwd 
-        // Encoders::driveMotorsDistance(Motors::max_drive_dutyCycle, true, near_treasure_dists[treasureNum-1]);
-        // // look for tape
-        // TapeFollow::findBlackTape(TapeFollow::DEF_TAPE_SEARCH_ANGLE, Motors::min_rotate_dutyCycle, Motors::BOTH_WHEELS);
 
         long startMillis = millis();
         long currMillis = startMillis;
@@ -81,6 +75,9 @@ namespace TreasureDetection {
                 goodSideSonarReadings = 0;
             }
             // if inf loop --> return false (some sort of timeout)
+            // if (treasureNum == 1 && TapeFollow::crossedChickenWire) {
+            //     return false;
+            // }
         }
 
         Motors::stopWithBrake(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, LW_PWM_DUTY, 50);
@@ -91,15 +88,15 @@ namespace TreasureDetection {
         // 2nd treasure special: rotate until treasure not seen for second treasure
         if (treasureNum == 2) {
             double driveCalibration = 5;
-            Encoders::startAddActionCache(Motors::DRIVE_BACK, Motors::NONE, Motors::min_drive_dutyCycle);
+            if (retToOriginalPos) Encoders::startAddActionCache(Motors::DRIVE_BACK, Motors::NONE, Motors::min_drive_dutyCycle);
             // drive back a bit
             Encoders::driveMotorsDistance(Motors::min_drive_dutyCycle, false, driveCalibration);
-            Encoders::endAddActionCache();
+            if (retToOriginalPos) Encoders::endAddActionCache();
  
             // rotate right past treasure
-            Encoders::startAddActionCache(Motors::ROTATE_RIGHT, Motors::BACKWARDS, Motors::default_rotate_pwm);
+            if (retToOriginalPos) Encoders::startAddActionCache(Motors::ROTATE_RIGHT, Motors::BACKWARDS, Motors::default_rotate_pwm);
             Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, true, Motors::RotateMode::BACKWARDS, 65);
-            Encoders::endAddActionCache();
+            if (retToOriginalPos) Encoders::endAddActionCache();
         }
 
         Sonars::SonarType sonarType = Sonars::SonarType::RIGHT;
@@ -153,7 +150,8 @@ namespace TreasureDetection {
         if (cache) Encoders::endAddActionCache();
         
         // collect
-        Servos::collectTreasure();
+        // Servos::collectTreasure();
+        Servos::collectTreasureUsingInterrupt();
 
         // return to original location
         if (cache) Encoders::executeReverseCache();
@@ -296,7 +294,8 @@ namespace TreasureDetection {
         if (retOriginalPos) Encoders::endAddActionCache();    
     
         // collect
-        Servos::collectTreasure();
+        // Servos::collectTreasure();
+        Servos::collectTreasureUsingInterrupt();
 
         // return to original position
         if (retOriginalPos) Encoders::executeReverseCache();

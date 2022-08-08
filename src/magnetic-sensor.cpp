@@ -6,11 +6,22 @@ namespace BombDetection {
     bool hasConfiged = false;
 
     void configMagneticSensorPin() {
-        if (!hasConfiged) pinMode(MAGNETIC_SENSOR_PIN, INPUT);
+        if (!hasConfiged) {
+            pinMode(MAGNETIC_SENSOR_PIN, INPUT);
+            configInterrupt();
+        }
         hasConfiged = true;
     }
-
+    
     bool isBombDetected() {
         return !digitalRead(MAGNETIC_SENSOR_PIN);
+    }
+
+    void configInterrupt() {
+        attachInterrupt(digitalPinToInterrupt(MAGNETIC_SENSOR_PIN), BombDetection::ISR_BombDetection, FALLING);
     }    
+
+    void ISR_BombDetection() {
+        bombEncounteredFlag = true;
+    }
 }
