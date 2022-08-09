@@ -52,7 +52,7 @@ namespace TreasureDetection {
     /**
      * Routine for collecting the fourth treasure after the robot has fully crossed the bridge.
      */ 
-    bool obtainFourthTreasure(int driveDuty, double rotateRightDegs, double driveBackDist, bool cache);
+    bool obtainFifthTreasure(int driveDuty, double rotateRightDegs, double driveBackDist, bool cache);
     /**
      * Collects the treasure upon initial detection. Returns to the original position if specified, and this is 
      * only possible if the cache is empty at the time of the method call (since it will execute all in cache)
@@ -63,7 +63,7 @@ namespace TreasureDetection {
      * Drives to the treasure when the front sonar has detected it, given the distance of the robot at the time of the method call.
      * Reecalibrates the treasure within V range prior to collection routine if needed.
      */
-    void driveToTreasureFrontSonar(double initialDist, int reqGoodReadings, int timeout, bool retOriginalPos, int dutyCycle=def_drive_to_treasure_duty);
+    void driveToTreasureFrontSonar(double initialDist, int treasureNum, int timeout, bool retOriginalPos, int dutyCycle=def_drive_to_treasure_duty);
 
     void driveToTreasureFrontSonarIR3(double initialDist, int reqGoodReadings, int timeout);
     
@@ -77,6 +77,7 @@ namespace TreasureDetection {
      * so it is externally required to position the robot into a position for treasure pickup
      * If not found, returns to the original position but backed up for rotation.
      */
-    bool treasureCalibration(double backUpDist, double turnDegs, double expectedMaxDist, int reqGoodReadings);
+    // bool treasureCalibration(double backUpDist, double turnDegs, double expectedMaxDist, int reqGoodReadings);
+    bool treasureCalibration(double backUpDist, double turnDegs, double expectedMaxDist, int treasureNum);
 }
 #endif

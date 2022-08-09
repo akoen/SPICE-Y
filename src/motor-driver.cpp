@@ -1,9 +1,9 @@
 #include "motor-driver.h"
-
+#include "reflectance-sensor.h"
 // TODO: need min pwm duty cycle for driving & rotation
 int Motors::min_drive_dutyCycle = 20;
 int Motors::max_drive_dutyCycle = 80;
-const int Motors::min_rotate_dutyCycle = 18;
+const int Motors::min_rotate_dutyCycle = 20;
 
 const int Motors::pwm_clock_freq = 100; // hz
 const int Motors::ref_duty_cycle = 80; // %
@@ -177,6 +177,7 @@ void Motors::rotate(int dutyCycle, bool rotateRight, RotateMode rotateMode) {
 }
 
 void Motors::stopWithBrake(MotorAction initialAction, RotateMode initialRotateMode, int initialDutyCycle, int durationMillis, int stopMotorsPWMDelayMillis, int offsetDutyRW) {
+    initialDutyCycle += initialDutyCycle *0.15;
     // bad input
     if ((initialAction == MotorAction::DRIVE_BACK || initialAction == MotorAction::DRIVE_FWD) && initialRotateMode != RotateMode::NONE) {
         return;
@@ -209,6 +210,21 @@ void Motors::stopWithBrake(MotorAction initialAction, RotateMode initialRotateMo
     }
     delay(durationMillis);
     Motors::stopMotorsPWM(stopMotorsPWMDelayMillis);
+}
+
+void Motors::driveBackRearReflectance(int duty, int stopDuty, int stopMillis) {
+    Motors::driveBack(duty);
+    // both reflectance sensors on surface
+    ReflectanceSensors::readSideReflectanceSensors();
+    while (!ReflectanceSensors::sideSensorLval && !ReflectanceSensors::sideSensorRval) {
+        ReflectanceSensors::readSideReflectanceSensors();
+        Serial.print("Reflectance: ");
+        Serial.print(ReflectanceSensors::sideSensorLval);
+        Serial.print(" ");
+        Serial.println(ReflectanceSensors::sideSensorRval);
+    }
+    // stop w/ greater PWM in case wheels are falling off
+    Motors::stopWithBrake(Motors::MotorAction::DRIVE_BACK, Motors::RotateMode::NONE, stopDuty, stopMillis);
 }
 /*
  * TODO check that pwm offset is constant across all duty cycles

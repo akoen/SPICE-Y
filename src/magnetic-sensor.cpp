@@ -5,10 +5,10 @@ namespace BombDetection {
     bool bombEncounteredFlag = false;
     bool hasConfiged = false;
 
-    void configMagneticSensorPin() {
+    void configMagneticSensorPin(bool usingInterrupt) {
         if (!hasConfiged) {
             pinMode(MAGNETIC_SENSOR_PIN, INPUT);
-            configInterrupt();
+            if (usingInterrupt) configInterrupt();
         }
         hasConfiged = true;
     }

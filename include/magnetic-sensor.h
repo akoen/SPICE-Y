@@ -10,7 +10,7 @@ namespace BombDetection {
     /**
      * Configures the magnetic sensor pin once and attaches an interrupt to the pin.
      */
-    void configMagneticSensorPin();
+    void configMagneticSensorPin(bool usingInterrupt);
     
     /**
      * True if sensor detects a magnet (LOW) 

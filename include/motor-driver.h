@@ -98,6 +98,7 @@ namespace Motors {
      * duty cycle for a specified duration of the driving action.
      */
     void stopWithBrake(MotorAction initialAction, RotateMode initialRotateMode, int initialDutyCycle, int durationMillis, int stopMotorsPWMDelayMillis=default_motors_stop_millis, int offsetDutyRW=0);
+    void driveBackRearReflectance(int duty, int stopDuty, int stopMillis);
 }
 
 #endif

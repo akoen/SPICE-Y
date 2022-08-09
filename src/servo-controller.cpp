@@ -2,14 +2,14 @@
 #include "magnetic-sensor.h"
 
 // pos when gripping treasure in claw 
-const int Servos::claw_close_angle = 37;
+const int Servos::claw_close_angle = 10;
 // pos when dropping treasure and initial position when claw is lifted up. Must clear the beacon mounts
-const int Servos::claw_part_open_angle = 100;  
+const int Servos::claw_part_open_angle = 803;  
 // pos when opening claw to collect treasure
-const int Servos::claw_full_open_angle = 200;
-const int Servos::claw_bomb_detect_angle = 110;
+const int Servos::claw_full_open_angle = 180;
+const int Servos::claw_bomb_detect_angle = 57;
 
-const int Servos::arm_bomb_detect_angle = 78;
+const int Servos::arm_bomb_detect_angle = 80;
 const int Servos::above_treasure_below_IR_angle = 120;
 const int Servos::arm_lowered_angle = 60;   // parallel
 const int Servos::arm_lifted_angle = 165;
@@ -67,7 +67,7 @@ void Servos::configArmClawPins() {
 }
 
 void Servos::collectTreasure() {
-    BombDetection::configMagneticSensorPin;
+    BombDetection::configMagneticSensorPin(false);
     // should be in lifted arm, partly opened claw position
 
     // open claw as we lower arm
@@ -75,28 +75,32 @@ void Servos::collectTreasure() {
     armServo.write(above_treasure_below_IR_angle);
     delay(300);
     clawServo.write(claw_full_open_angle);
-    delay(500);
+    delay(300);
 
     // hall effect
     if (!BombDetection::bombEncounteredFlag) {
         armServo.write(arm_bomb_detect_angle);
         delay(300);
         clawServo.write(claw_bomb_detect_angle);
-        delay(300);
+        delay(500);
         if (!BombDetection::isBombDetected()) {
             // bomb not found
             clawServo.write(claw_full_open_angle);
             delay(300);
             armServo.write(arm_lowered_angle);
-            delay(500);
-            clawServo.write(claw_close_angle);
+            delay(400);
+            clawServo.write(claw_part_open_angle);
             delay(500);
             // check again
-            if (BombDetection::isBombDetected()) {
+            if (!BombDetection::isBombDetected()) {
+                clawServo.write(claw_close_angle);
+                delay(500);
+            } else {
                 BombDetection::bombEncounteredFlag = true;
-                clawServo.write(claw_part_open_angle);
+                
+                clawServo.write(claw_full_open_angle);
                 delay(300);
-            } 
+            }
         } else {
             // don't pick up - bomb found
             BombDetection::bombEncounteredFlag = true;
@@ -105,16 +109,18 @@ void Servos::collectTreasure() {
         armServo.write(arm_lowered_angle);    
         delay(400);
         clawServo.write(claw_close_angle);
-        delay(300);
+        delay(500);
     }
     armServo.write(arm_lifted_angle);
     delay(500);
+    clawServo.write(claw_full_open_angle);
+    delay(300);
     clawServo.write(claw_part_open_angle);
     delay(100);
 }
 
 void Servos::collectTreasureUsingInterrupt() {
-    BombDetection::configMagneticSensorPin();
+    BombDetection::configMagneticSensorPin(true);
     // should be in lifted arm, partly opened claw position
 
     // open claw as we lower arm
@@ -122,7 +128,7 @@ void Servos::collectTreasureUsingInterrupt() {
     armServo.write(above_treasure_below_IR_angle);
     delay(300);
     clawServo.write(claw_full_open_angle);
-    delay(200);
+    delay(300);
 
     // hall effect routine
     if (!BombDetection::bombEncounteredFlag) {
@@ -130,13 +136,13 @@ void Servos::collectTreasureUsingInterrupt() {
         delay(300);
         if (!BombDetection::bombEncounteredFlag) {
             clawServo.write(claw_bomb_detect_angle);
-            delay(300);
+            delay(400);
         } 
         if (!BombDetection::bombEncounteredFlag) {
             clawServo.write(claw_full_open_angle);
             delay(300);
             armServo.write(arm_lowered_angle);
-            delay(500);
+            delay(600);
         }
         // check again for bomb - part so it doesn't knock off
         if (!BombDetection::bombEncounteredFlag) {
@@ -145,7 +151,7 @@ void Servos::collectTreasureUsingInterrupt() {
         }
         if (!BombDetection::bombEncounteredFlag) {
             clawServo.write(claw_close_angle);
-            delay(300);
+            delay(400);
         }
 
         // bomb found along the routine
@@ -158,10 +164,12 @@ void Servos::collectTreasureUsingInterrupt() {
         armServo.write(arm_lowered_angle);    
         delay(400);
         clawServo.write(claw_close_angle);
-        delay(300);
+        delay(400);
     }
     armServo.write(arm_lifted_angle);
     delay(500);
+    clawServo.write(claw_full_open_angle);
+    delay(300);
     clawServo.write(claw_part_open_angle);
     delay(100);
 }

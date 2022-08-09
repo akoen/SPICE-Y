@@ -23,7 +23,6 @@ void setup() {
     ReflectanceSensors::configFrontReflectanceSensors();
     // Servos::configArmClawPins();
     Servos::configAllServoPins();
-
     // /* Run the ADC calibration */
     HAL_ADCEx_Calibration_Start(&AdcHandle);
     pinMode(PA12, OUTPUT);
@@ -65,9 +64,13 @@ void loop() {
     // delay(500);
     // Encoders::driveMotorsDistance(30, false, 5);
     // delay(500);
-    // Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::BOTH_WHEELS, firstTurnDeg, 1.5);
+    // Motors::driveFwd(50);
+    // delay(500);
+    // Motors::driveBack(50);
+    // delay(500);
+    // Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::BOTH_WHEELS, 50, 5);
     // Encoders::driveMotorsDistance(driveDuty, true, 8);
-    // Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::BACKWARDS, secondTurnDeg, 1.5);
+    // Encoders::rotateMotorsDegs(Motors::min_rotate_dutyCycle, true, Motors::RotateMode::BOTH_WHEELS, 50, 5);
     
     // Encoders::driveMotorsDistance(driveDuty, false, 35, 2);
     // Servos::deployBridge();
@@ -79,7 +82,30 @@ void loop() {
     // TreasureDetection::obtainThirdIRtreasure(driveFwdCm, rotateLeftDegs, driveDuty, cacheThirdTreasure);
 
     Executor::execute();
-
+    // ReflectanceSensors::readSideReflectanceSensors();
+    // Serial.print(ReflectanceSensors::sideSensorLval);
+    // Serial.print(" ");
+    // Serial.println(ReflectanceSensors::sideSensorRval);
+    // Encoders::driveMotorsDistance(40, true, 5);
+    // Motors::driveFwd(50);
+    // delay(1000);
+    // Motors::stopMotorsPWM();
+    // Motors::driveBack(50);
+    // delay(1000);
+    // Motors::stopMotorsPWM();
+    // delay(1000);
+    // Encoders::driveMotorsDistance(40, false, 5);
+    // delay(1000);
+    // Servos::collectTreasureUsingInterrupt();
+    // delay(1000);
+    // Servos::clawServo.write(Servos::claw_close_angle);
+    // delay(1000);
+    // Servos::clawServo.write(Servos::claw_part_open_angle);
+    // delay(1000);
+    // Servos::clawServo.write(Servos::claw_bomb_detect_angle);
+    // delay(1000);
+    // Servos::clawServo.write(Servos::claw_full_open_angle);
+    // delay(1000);
     /////////
     //     float val = 0;
     //     float alpha = 0.1;
