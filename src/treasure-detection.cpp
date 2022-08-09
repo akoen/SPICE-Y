@@ -555,7 +555,7 @@ namespace TreasureDetection {
         /// below should be drop treasures func ///
         // turn to line up to drop treasures
         Encoders::rotateMotorsDegs(Motors::min_rotate_dutyCycle, false, Motors::RotateMode::BACKWARDS, 15);
-        Motors::driveBackRearReflectance(Motors::min_drive_dutyCycle, 70, 100);
+        Motors::driveBackRearReflectance(Motors::min_drive_dutyCycle, 40, 50);
         Encoders::driveMotorsDistance(40, true, 2, 1);
         Encoders::rotateMotorsDegs(Motors::min_rotate_dutyCycle, true, Motors::RotateMode::FORWARDS, 30);
         delay(200);
