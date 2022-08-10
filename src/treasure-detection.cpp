@@ -88,13 +88,13 @@ namespace TreasureDetection {
         // 2nd treasure special: rotate until treasure not seen for second treasure
         if (treasureNum == 2) {
             double driveCalibration = 5;
-            if (retToOriginalPos) Encoders::startAddActionCache(Motors::DRIVE_BACK, Motors::NONE, Motors::min_drive_dutyCycle);
+            if (retToOriginalPos) Encoders::startAddActionCache(Motors::DRIVE_BACK, Motors::NONE, Motors::min_drive_dutyCycle + 20);
             // drive back a bit
             Encoders::driveMotorsDistance(Motors::min_drive_dutyCycle, false, driveCalibration);
             if (retToOriginalPos) Encoders::endAddActionCache();
  
             // rotate right past treasure
-            if (retToOriginalPos) Encoders::startAddActionCache(Motors::ROTATE_RIGHT, Motors::BACKWARDS, Motors::default_rotate_pwm);
+            if (retToOriginalPos) Encoders::startAddActionCache(Motors::ROTATE_RIGHT, Motors::BACKWARDS, Motors::default_rotate_pwm+20);
             Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, true, Motors::RotateMode::BACKWARDS, 65);
             if (retToOriginalPos) Encoders::endAddActionCache();
         }
@@ -223,6 +223,7 @@ namespace TreasureDetection {
         // drive back a bit if needed
         if (treasureNum == 1) {
             int driveCalibration = 6;    // cm
+            if (retOriginalPos) Encoders::startAddActionCache(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, def_drive_to_treasure_duty+20);
             Encoders::driveMotorsDistance(def_drive_to_treasure_duty, false, driveCalibration);
         }
 

@@ -4,7 +4,7 @@
 // pos when gripping treasure in claw 
 const int Servos::claw_close_angle = 8;
 // pos when dropping treasure and initial position when claw is lifted up. Must clear the beacon mounts
-const int Servos::claw_part_open_angle = 803;  
+const int Servos::claw_part_open_angle = 80;  
 // pos when opening claw to collect treasure
 const int Servos::claw_full_open_angle = 180;
 const int Servos::claw_bomb_detect_angle = 57;
