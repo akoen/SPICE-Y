@@ -11,8 +11,8 @@ namespace TreasureDetection {
     const double side_sonar_treasure_dists[6] = {25, 29, 40, 17, 20, 20}; // cm
     const double side_sonar_treasure_dists_err[6] = {15 , 7, 7, 13, 10, 10}; // cm
 
-    const double front_sonar_treasure_dists[6] = {24, 30, 24, 17, 20, 25}; // cm
-    const double front_sonar_treasure_dists_err[6] = {11, 12, 10, 12, 10, 5}; // cm 
+    const double front_sonar_treasure_dists[6] = {24, 30, 24, 17, 20, 20}; // cm
+    const double front_sonar_treasure_dists_err[6] = {11, 12, 10, 12, 10, 7}; // cm 
 
     const double treasure_in_claw_dist = 14.5; // cm
     const double treasure_in_claw_dist_err = 1.5; // cm
@@ -270,6 +270,7 @@ namespace TreasureDetection {
                 else {
                     goodReadingsCount = 0;
                 }
+                Serial.print("Front sonar: ");
                 Serial.println(treasureFrontSonarDists);
             }
             avgTreasureFrontSonarDists /= (1.0 * front_sonar_req_good_readings[treasureNum-1]);
@@ -287,6 +288,10 @@ namespace TreasureDetection {
             avgTreasureFrontSonarDists = Sonars::getAvgDistancePulses(10, Sonars::SonarType::FRONT);
         }
 
+        // fourth one special
+        if (treasureNum == 4) {
+            Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, true, Motors::RotateMode::BOTH_WHEELS, 8);
+        }
         // treasure in front
         if (retOriginalPos) Encoders::startAddActionCache(Motors::DRIVE_FWD, Motors::RotateMode::NONE, def_drive_to_treasure_duty);
 
@@ -545,19 +550,20 @@ namespace TreasureDetection {
         // manuveur so we can start treasure scanning front treasure
         Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, true, Motors::RotateMode::BOTH_WHEELS, rotateRightDegs, 2);
         Encoders::driveMotorsDistance(driveDuty, false, driveBackDist);
-        Motors::driveBackRearReflectance(Motors::min_drive_dutyCycle, 70, 100);
-        Encoders::driveMotorsDistance(driveDuty, true, 5);
-        treasureCollectionRoutine(Sonars::SonarType::RIGHT, front_sonar_treasure_dists[4], front_sonar_treasure_dists_err[4], false, 5);
+        Motors::driveBackRearReflectance(Motors::min_drive_dutyCycle, 30, 50);
+        Encoders::driveMotorsDistance(driveDuty, true, 2.5);
+        treasureCollectionRoutine(Sonars::SonarType::RIGHT, front_sonar_treasure_dists[5], front_sonar_treasure_dists_err[5], false, 5);
 
         // back up some cm
-        Encoders::driveMotorsDistance(driveDuty, false, 1);
+        Encoders::driveMotorsDistance(driveDuty, false, 1.5);
 
         /// below should be drop treasures func ///
         // turn to line up to drop treasures
-        Encoders::rotateMotorsDegs(Motors::min_rotate_dutyCycle, false, Motors::RotateMode::BACKWARDS, 15);
+        Encoders::rotateMotorsDegs(Motors::min_rotate_dutyCycle, false, Motors::RotateMode::BACKWARDS, 20);
         Motors::driveBackRearReflectance(Motors::min_drive_dutyCycle, 40, 50);
-        Encoders::driveMotorsDistance(40, true, 2, 1);
-        Encoders::rotateMotorsDegs(Motors::min_rotate_dutyCycle, true, Motors::RotateMode::FORWARDS, 30);
+        Encoders::driveMotorsDistance(40, true, 6, 1);
+        Encoders::rotateMotorsDegs(Motors::min_rotate_dutyCycle, false, Motors::RotateMode::FORWARDS, 40);
+        Encoders::driveMotorsDistance(driveDuty, false, 5.5);
         delay(200);
         Servos::deployBox();
         delay(400);

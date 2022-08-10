@@ -62,8 +62,6 @@ namespace Executor {
     }
 
     void execute() {
-
-        /*
         // follow tape & obtain first treasure and come back to tape
         TreasureDetection::obtainTapeTreasure(1, true);
         // back up - easier to find tape (and not worry for 1 1 1 instead of tape)
@@ -83,7 +81,6 @@ namespace Executor {
         double driveDist = 44;
         archWayHandler(turnDuty, timeout, driveDist, Motors::RotateMode::FORWARDS, offsetDutyRW);
         // drive fwd until fully out of arch
-        */
 
         int driveDuty = 40;
         
@@ -121,9 +118,9 @@ namespace Executor {
         int rotateDuty = 30;
         Encoders::driveMotorsDistance(driveDuty, false, 6);
         Encoders::rotateMotorsDegs(rotateDuty, false, Motors::RotateMode::BOTH_WHEELS, firstTurnDeg, 1.5);
-        Encoders::driveMotorsDistance(driveDuty, true, 9);
+        Encoders::driveMotorsDistance(driveDuty, true, 11);
         Encoders::rotateMotorsDegs(rotateDuty, false, Motors::RotateMode::BOTH_WHEELS, secondTurnDeg, 1.5);
-        Encoders::driveMotorsDistance(driveDuty, false, 39);
+        Encoders::driveMotorsDistance(driveDuty, false, 37);
 
         // /*
         // // hit pole
@@ -169,6 +166,7 @@ namespace Executor {
         // drive back over bridge completely
         Encoders::driveMotorsDistance(75, false, 80);
         
+        // hit tape on bridge for reef
         Motors::driveFwd(30);
         ReflectanceSensors::readFrontReflectanceSensors();
         while (!ReflectanceSensors::frontSensorLval && !ReflectanceSensors::frontSensorMval && !ReflectanceSensors::frontSensorRval) {
