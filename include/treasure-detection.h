@@ -62,8 +62,10 @@ namespace TreasureDetection {
     /**
      * Drives to the treasure when the front sonar has detected it, given the distance of the robot at the time of the method call.
      * Reecalibrates the treasure within V range prior to collection routine if needed.
+     * 
+     * true if in v, false if in rocks
      */
-    void driveToTreasureFrontSonar(double initialDist, int treasureNum, int timeout, bool retOriginalPos, int dutyCycle=def_drive_to_treasure_duty);
+    bool driveToTreasureFrontSonar(double initialDist, int treasureNum, int timeout, bool retOriginalPos, int dutyCycle=def_drive_to_treasure_duty);
 
     void driveToTreasureFrontSonarIR3(double initialDist, int reqGoodReadings, int timeout);
     

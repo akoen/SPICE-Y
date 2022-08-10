@@ -252,8 +252,8 @@ namespace Encoders {
                         return false;
                     }
                 }
-                delayMiliis = 10;
-                brakeDurationMillis = 50;
+                delayMiliis = 1;
+                brakeDurationMillis = 90;
                 break;
             case Motors::MotorAction::DRIVE_BACK:
                 Motors::setDir(false, false);
@@ -266,8 +266,8 @@ namespace Encoders {
                         return false;
                     }
                 }
-                delayMiliis = 10;
-                brakeDurationMillis = 50;
+                delayMiliis = 1;
+                brakeDurationMillis = 90;
                 break;
             case Motors::MotorAction::ROTATE_LEFT:
             case Motors::MotorAction::ROTATE_RIGHT:

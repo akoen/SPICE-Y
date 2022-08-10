@@ -2,7 +2,7 @@
 #include "reflectance-sensor.h"
 // TODO: need min pwm duty cycle for driving & rotation
 int Motors::min_drive_dutyCycle = 20;
-int Motors::max_drive_dutyCycle = 80;
+int Motors::max_drive_dutyCycle = 83;
 const int Motors::min_rotate_dutyCycle = 20;
 
 const int Motors::pwm_clock_freq = 100; // hz
@@ -213,9 +213,9 @@ void Motors::stopWithBrake(MotorAction initialAction, RotateMode initialRotateMo
 }
 
 void Motors::driveBackRearReflectance(int duty, int stopDuty, int stopMillis) {
+    ReflectanceSensors::readSideReflectanceSensors();
     Motors::driveBack(duty);
     // both reflectance sensors on surface
-    ReflectanceSensors::readSideReflectanceSensors();
     while (!ReflectanceSensors::sideSensorLval && !ReflectanceSensors::sideSensorRval) {
         ReflectanceSensors::readSideReflectanceSensors();
         Serial.print("Reflectance: ");

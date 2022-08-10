@@ -23,18 +23,18 @@ namespace Executor {
 
     void secondTreasureToArchSetup() {
         // get ready for archway
-        Encoders::driveMotorsDistance(40, false, 19);
+        Encoders::driveMotorsDistance(55, false, 19);
 
-        Encoders::rotateMotorsDegs(35, false, Motors::RotateMode::BOTH_WHEELS, 20, 2);
-        Encoders::driveMotorsDistance(40, true, 16.8, 2);
-        Encoders::rotateMotorsDegs(35, false, Motors::RotateMode::BOTH_WHEELS, 33, 2);
+        Encoders::rotateMotorsDegs(40, false, Motors::RotateMode::BOTH_WHEELS, 20, 2);
+        Encoders::driveMotorsDistance(55, true, 16.8, 2);
+        Encoders::rotateMotorsDegs(40, false, Motors::RotateMode::BOTH_WHEELS, 33, 2);
     }
 
     void fourthTreasureToBeacon() { 
-        int driveDuty = 40;
+        int driveDuty = 60;
         int rotateDuty = 35;
         // back up a bit
-        Encoders::driveMotorsDistance(40, false, 7.5, 1);
+        Encoders::driveMotorsDistance(50, false, 7.5, 1);
         // Encoders::rotateMotorsDegs(35, false, Motors::RotateMode::BOTH_WHEELS, 70);
         
         // multiple turns to ensure robot in line w/ beacon
@@ -42,7 +42,7 @@ namespace Executor {
         double secondTurnDegs = 25;
         Encoders::rotateMotorsDegs(rotateDuty, false, Motors::RotateMode::BOTH_WHEELS, firstTurnDegs);
         Encoders::driveMotorsDistance(driveDuty, true, 16, 1);
-        Encoders::rotateMotorsDegs(rotateDuty, false, Motors::RotateMode::BOTH_WHEELS, secondTurnDegs);
+        Encoders::rotateMotorsDegs(rotateDuty, false, Motors::RotateMode::BACKWARDS, secondTurnDegs);
         Encoders::driveMotorsDistance(driveDuty, false, 14, 1);
 
         // find IR
@@ -65,7 +65,7 @@ namespace Executor {
         // follow tape & obtain first treasure and come back to tape
         TreasureDetection::obtainTapeTreasure(1, true);
         // back up - easier to find tape (and not worry for 1 1 1 instead of tape)
-        Encoders::driveMotorsDistance(50, false, 13.5);
+        Encoders::driveMotorsDistance(50, false, 7.5);
         // find tape - look for right first
         double searchAngle = 30;
         TapeFollow::findBlackTape(searchAngle, Motors::min_rotate_dutyCycle, Motors::RotateMode::BOTH_WHEELS, false);
@@ -78,13 +78,13 @@ namespace Executor {
     
         // go through archway
         int turnDuty = 20, offsetDutyRW = 40, timeout = 3;
-        double driveDist = 44;
+        double driveDist = 39;
         archWayHandler(turnDuty, timeout, driveDist, Motors::RotateMode::FORWARDS, offsetDutyRW);
         // drive fwd until fully out of arch
 
         int driveDuty = 40;
         
-        Encoders::driveMotorsDistance(driveDuty, true, 14);
+        Encoders::driveMotorsDistance(driveDuty, true, 11);
         // back up until front reflectance sensors see 1 1 1 or 0 1 0 (in case missed)
         Motors::driveBack(driveDuty);
         while (!(ReflectanceSensors::frontSensorLval && ReflectanceSensors::frontSensorMval && ReflectanceSensors::frontSensorRval) || !ReflectanceSensors::frontSensorMval) {
@@ -99,7 +99,7 @@ namespace Executor {
         TreasureDetection::obtainThirdIRtreasure(driveFwdCm, rotateLeftDegs, 30, cacheThirdTreasure);
 
         // line up with IR beacon to start IR pid for fourth treasure
-        Encoders::driveMotorsDistance(driveDuty, false, 16.5, 3);
+        Encoders::driveMotorsDistance(driveDuty, false, 15.5, 3);
         Encoders::rotateMotorsDegs(driveDuty, true, Motors::RotateMode::BOTH_WHEELS, 85, 2);
 
         // decrease max duty cycle so more/more reliable sonar readings can be taken (serial this to be sure)
@@ -114,13 +114,13 @@ namespace Executor {
         
         // back up a bit and turn right about 90 degs and drive until edge detected
         double firstTurnDeg = 30;
-        double secondTurnDeg = 60;
+        double secondTurnDeg = 58;
         int rotateDuty = 30;
         Encoders::driveMotorsDistance(driveDuty, false, 6);
         Encoders::rotateMotorsDegs(rotateDuty, false, Motors::RotateMode::BOTH_WHEELS, firstTurnDeg, 1.5);
-        Encoders::driveMotorsDistance(driveDuty, true, 11);
+        Encoders::driveMotorsDistance(driveDuty, true, 12.3);
         Encoders::rotateMotorsDegs(rotateDuty, false, Motors::RotateMode::BOTH_WHEELS, secondTurnDeg, 1.5);
-        Encoders::driveMotorsDistance(driveDuty, false, 37);
+        Encoders::driveMotorsDistance(driveDuty, false, 36);
 
         // /*
         // // hit pole
@@ -166,7 +166,7 @@ namespace Executor {
         // drive back over bridge completely
         Encoders::driveMotorsDistance(75, false, 80);
         
-        // hit tape on bridge for reef
+        // hit tape on bridge for ref
         Motors::driveFwd(30);
         ReflectanceSensors::readFrontReflectanceSensors();
         while (!ReflectanceSensors::frontSensorLval && !ReflectanceSensors::frontSensorMval && !ReflectanceSensors::frontSensorRval) {
@@ -181,7 +181,7 @@ namespace Executor {
         Motors::stopWithBrake(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, 30, 60);
         delay(300);
 
-        TreasureDetection::obtainFifthTreasure(30, 35, 21, false);
+        TreasureDetection::obtainFifthTreasure(30, 39, 21, false);
         while (true) {
             Serial.print(Sonars::getDistanceSinglePulse(Sonars::SonarType::RIGHT));
             Serial.print(" ");

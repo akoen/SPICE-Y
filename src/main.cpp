@@ -38,7 +38,8 @@ void loop() {
     // Servos::bridgeServo.write(Servos::bridge_closed_angle);
     // delay (1000);
     // Serial.println("loop");
-    
+    // Serial.println("hit");
+    // Serial.println(Sonars::getDistanceSinglePulse(Sonars::SonarType::FRONT));
     // float mags[2];
     // IR::getMagnitude(mags);
     // int goodReadings = 0;
@@ -80,7 +81,7 @@ void loop() {
     // int driveDuty = 40;
     // bool cacheThirdTreasure = false;
     // TreasureDetection::obtainThirdIRtreasure(driveFwdCm, rotateLeftDegs, driveDuty, cacheThirdTreasure);
-
+    // TreasureDetection::obtainFifthTreasure(30, 35, 21, false);
     Executor::execute();
     // ReflectanceSensors::readSideReflectanceSensors();
     // Serial.print(ReflectanceSensors::sideSensorLval);
@@ -121,6 +122,7 @@ void loop() {
     // Serial.print(Sonars::getDistanceSinglePulse(Sonars::SonarType::RIGHT));
     // Serial.print(" ");
     // Serial.println(Sonars::getDistanceSinglePulse(Sonars::SonarType::FRONT));
+    exit(0);
 }
 
 void pwmServoTest() {
