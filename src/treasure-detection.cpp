@@ -394,7 +394,7 @@ namespace TreasureDetection {
                 }   
             }
             checkEncoderPulses = startEncoderPulses;
-            double radius = treasureTurnAction == Motors::RotateMode::BOTH_WHEELS ? Motors::WHEELS_WIDTH / 2.0 : Motors::WHEELS_WIDTH;
+            double radius = treasureTurnRotateMode == Motors::RotateMode::BOTH_WHEELS ? Motors::WHEELS_WIDTH / 2.0 : Motors::WHEELS_WIDTH;
             int maxRotTurnPulses = Encoders::degsToPulses(maxRotAngle, radius);
 
             if (treasureNum == 1) {
@@ -430,11 +430,12 @@ namespace TreasureDetection {
                         goodReadingsCount = 0;
                     }
                 }
+
                 // end condition - max rotation)
                 if (maxRotReached) {
                     break;
                 }
-                if (treasureTurnAction == Motors::RotateMode::BACKWARDS) {
+                if (treasureTurnRotateMode == Motors::RotateMode::BACKWARDS) {
                     // pulses decrease
                     if (checkEncoderPulses < startEncoderPulses - maxRotTurnPulses) {
                         maxRotReached = true;
