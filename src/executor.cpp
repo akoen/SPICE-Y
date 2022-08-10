@@ -26,7 +26,7 @@ namespace Executor {
         Encoders::driveMotorsDistance(55, false, 19);
 
         Encoders::rotateMotorsDegs(40, false, Motors::RotateMode::BOTH_WHEELS, 20, 2);
-        Encoders::driveMotorsDistance(55, true, 16.8, 2);
+        Encoders::driveMotorsDistance(55, true, 17.3, 2);
         Encoders::rotateMotorsDegs(40, false, Motors::RotateMode::BOTH_WHEELS, 33, 2);
     }
 
@@ -82,7 +82,7 @@ namespace Executor {
         archWayHandler(turnDuty, timeout, driveDist, Motors::RotateMode::FORWARDS, offsetDutyRW);
         // drive fwd until fully out of arch
 
-        int driveDuty = 40;
+        int driveDuty = 60;
         
         Encoders::driveMotorsDistance(driveDuty, true, 11);
         // back up until front reflectance sensors see 1 1 1 or 0 1 0 (in case missed)
@@ -114,11 +114,11 @@ namespace Executor {
         
         // back up a bit and turn right about 90 degs and drive until edge detected
         double firstTurnDeg = 30;
-        double secondTurnDeg = 58;
-        int rotateDuty = 30;
-        Encoders::driveMotorsDistance(driveDuty, false, 6);
+        double secondTurnDeg = 55;
+        int rotateDuty = 25;
+        Encoders::driveMotorsDistance(driveDuty, false, 6, 1.5);
         Encoders::rotateMotorsDegs(rotateDuty, false, Motors::RotateMode::BOTH_WHEELS, firstTurnDeg, 1.5);
-        Encoders::driveMotorsDistance(driveDuty, true, 12.3);
+        Encoders::driveMotorsDistance(driveDuty, true, 12);
         Encoders::rotateMotorsDegs(rotateDuty, false, Motors::RotateMode::BOTH_WHEELS, secondTurnDeg, 1.5);
         Encoders::driveMotorsDistance(driveDuty, false, 36);
 
@@ -167,7 +167,7 @@ namespace Executor {
         Encoders::driveMotorsDistance(75, false, 80);
         
         // hit tape on bridge for ref
-        Motors::driveFwd(30);
+        Motors::driveFwd(25);
         ReflectanceSensors::readFrontReflectanceSensors();
         while (!ReflectanceSensors::frontSensorLval && !ReflectanceSensors::frontSensorMval && !ReflectanceSensors::frontSensorRval) {
             ReflectanceSensors::readFrontReflectanceSensors();
@@ -178,8 +178,8 @@ namespace Executor {
             Serial.print(" ");
             Serial.println(ReflectanceSensors::frontSensorRval);
         }
-        Motors::stopWithBrake(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, 30, 60);
-        delay(300);
+        Motors::stopWithBrake(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, 50, 60);
+        delay(200);
 
         TreasureDetection::obtainFifthTreasure(30, 39, 21, false);
         while (true) {

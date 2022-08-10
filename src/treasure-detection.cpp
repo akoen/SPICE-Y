@@ -12,7 +12,7 @@ namespace TreasureDetection {
     const double side_sonar_treasure_dists_err[6] = {15 , 7, 7, 13, 10, 10}; // cm
 
     const double front_sonar_treasure_dists[6] = {24, 30, 24, 18, 20, 20}; // cm
-    const double front_sonar_treasure_dists_err[6] = {11, 12, 10, 11, 10, 7}; // cm 
+    const double front_sonar_treasure_dists_err[6] = {11, 14, 10, 10, 10, 7}; // cm 
 
     const double treasure_in_claw_dist = 14.5; // cm
     const double treasure_in_claw_dist_err = 1.5; // cm
@@ -59,8 +59,9 @@ namespace TreasureDetection {
 
         int rampDist = 180;
         int pulseIntervalRamp = Encoders::cmToPulses(rampDist);
-        if (treasureNum == 1) Motors::max_drive_dutyCycle = 95;
+        if (treasureNum == 1) Motors::max_drive_dutyCycle = 100;
         bool upRamp = false;
+
         while (goodSideSonarReadings < side_sonar_req_good_readings[treasureNum - 1]) {
             if (!upRamp && treasureNum == 1) {
                 checkEncoderLW = Encoders::pulseLW;                
@@ -79,7 +80,9 @@ namespace TreasureDetection {
                 // sonar every 35 ms
                 if (currMillis > startMillis + 35) {
                     rightSonarDist = Sonars::getDistanceSinglePulse(Sonars::SonarType::RIGHT, 0);
-                    startMillis = currMillis;
+                    startMillis = currMillis; // update
+                } else {
+                    rightSonarDist = -1;
                 }
             }
             currMillis = millis();
@@ -88,12 +91,13 @@ namespace TreasureDetection {
             Serial.println(rightSonarDist);
 
             ReflectanceSensors::printFrontReflectance();
-
-            // consecutive good readings
-            if (rightSonarDist < firstSideSonarTreausureDist + firstSideSonarTreausureDistErr && rightSonarDist > firstSideSonarTreausureDist - firstSideSonarTreausureDistErr) {
-                goodSideSonarReadings++;
-            } else {
-                goodSideSonarReadings = 0;
+            if (rightSonarDist != -1) {
+                // consecutive good readings
+                if (rightSonarDist < firstSideSonarTreausureDist + firstSideSonarTreausureDistErr && rightSonarDist > firstSideSonarTreausureDist - firstSideSonarTreausureDistErr) {
+                    goodSideSonarReadings++;
+                } else {
+                    goodSideSonarReadings = 0;
+                }
             }
             // if inf loop --> return false (some sort of timeout)
             // if (treasureNum == 1 && TapeFollow::crossedChickenWire) {
@@ -101,7 +105,7 @@ namespace TreasureDetection {
             // }
         }
         // Motors::stopWithBrake(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, LW_PWM_DUTY, 50);
-        Motors::stopWithBrake(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, Motors::dutyCycleL + 30, 50, Motors::default_motors_stop_millis, Motors::dutyCycleR - Motors::dutyCycleL + 30);
+        Motors::stopWithBrake(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, Motors::dutyCycleL + 30, 100, Motors::default_motors_stop_millis, Motors::dutyCycleR - Motors::dutyCycleL + 30);
 
         Serial.print("Found treasure right: ");    
         Serial.println(rightSonarDist);    
@@ -166,6 +170,7 @@ namespace TreasureDetection {
                 IRtimeoutFlag = true;
                 Encoders::driveMotorsDistance(60, true, 6);
             }
+            checkIRmillis = millis();
         }
 
         Motors::stopWithBrake(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, driveDuty, 30);
@@ -183,7 +188,7 @@ namespace TreasureDetection {
         if (cache) Encoders::startAddActionCache(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, def_drive_to_treasure_duty);
 
         // drive to treasure
-        bool inRocks = !driveToTreasureFrontSonarIR3(38, claw_req_good_readings[2], timeout);
+        bool inRocks = !driveToTreasureFrontSonar(38, claw_req_good_readings[2], timeout, false, def_drive_to_treasure_duty);
         driveBackToTreasureFrontSonar(3, inRocks);
         // Encoders::driveMotorsDistance(TreasureDetection::def_drive_to_treasure_duty, false, 4.5);
 
@@ -228,7 +233,9 @@ namespace TreasureDetection {
             
             if (currMillis > startMillis + 35) {
                 rightSonarDist = Sonars::getDistanceSinglePulse(Sonars::SonarType::RIGHT, 0);
-                startMillis = currMillis;
+                startMillis = currMillis;   // update time
+            } else {
+                rightSonarDist = -1;
             }
             currMillis = millis();
             
@@ -237,16 +244,18 @@ namespace TreasureDetection {
 
             // TODO maybe bad readigns
             // consecutive good readings
-            if (rightSonarDist < side_sonar_treasure_dists[treasureNum-1] + side_sonar_treasure_dists_err[treasureNum-1] && rightSonarDist > side_sonar_treasure_dists[treasureNum-1] - side_sonar_treasure_dists_err[treasureNum-1]) {
-                goodSideSonarReadings++;
-            } else {
-                // last good reading
-                if (goodSideSonarReadings >= side_sonar_req_good_readings[treasureNum-1]) {
-                    break;
+            if (rightSonarDist != -1) {
+                if (rightSonarDist < side_sonar_treasure_dists[treasureNum-1] + side_sonar_treasure_dists_err[treasureNum-1] && rightSonarDist > side_sonar_treasure_dists[treasureNum-1] - side_sonar_treasure_dists_err[treasureNum-1]) {
+                    goodSideSonarReadings++;
                 } else {
-                    goodSideSonarReadings = 0;
-                }
-            }            
+                    // last good reading
+                    if (goodSideSonarReadings >= side_sonar_req_good_readings[treasureNum-1]) {
+                        break;
+                    } else {
+                        goodSideSonarReadings = 0;
+                    }
+                }            
+            }
         }
         // stop
         Motors::stopWithBrake(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, Motors::dutyCycleL+10, 50, 150, Motors::dutyCycleR - Motors::dutyCycleL+10);
@@ -262,10 +271,10 @@ namespace TreasureDetection {
         double initRightRotation;
         if (hasNotFoundUsingSonar) {
             Encoders::driveMotorsDistance(driveDuty, true, 5);
-            initRightRotation = 58;
+            initRightRotation = 56.5;
         } else {
             Encoders::driveMotorsDistance(driveDuty, true, 19.5);
-            initRightRotation = 58;
+            initRightRotation = 56.5;
 
         }
         if (!Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, true, Motors::RotateMode::BOTH_WHEELS, initRightRotation, 2)) {
@@ -277,6 +286,50 @@ namespace TreasureDetection {
         return treasureCollectionRoutine(sonarType, front_sonar_treasure_dists[treasureNum-1], front_sonar_treasure_dists_err[treasureNum-1], cache, treasureNum);
     }
     
+    bool obtainFifthTreasure(int driveDuty, double rotateRightDegs, double driveBackDist, bool cache) {
+        // driveBackDist = 25;
+        // driveBackDistErr = 5;
+        // for(int i = 0; i < 10; i++) {
+        //     Serial.println("Hit");
+        //     delay(300);
+        // }
+        // manuveur so we can start treasure scanning front treasure
+        if (!Encoders::rotateMotorsDegs(40, true, Motors::RotateMode::BOTH_WHEELS, rotateRightDegs, 2)) {
+            Encoders::rotateMotorsDegs(40, false, Motors::RotateMode::BOTH_WHEELS, 10, 2);
+        }
+        Encoders::driveMotorsDistance(driveDuty, false, driveBackDist);
+        Motors::driveBackRearReflectance(Motors::min_drive_dutyCycle+10, 50, 50);
+        Encoders::driveMotorsDistance(driveDuty, true, 2.5);
+
+        treasureCollectionRoutine(Sonars::SonarType::RIGHT, front_sonar_treasure_dists[4], front_sonar_treasure_dists_err[4], false, 5);
+
+        // back up some cm
+        Encoders::driveMotorsDistance(driveDuty, false, 1.5);
+
+        /// below should be drop treasures func ///
+        // turn to line up to drop treasures
+        Encoders::rotateMotorsDegs(50, false, Motors::RotateMode::BACKWARDS, 30, 1);
+        Motors::driveBackRearReflectance(Motors::min_drive_dutyCycle+10, 40, 50);
+        Encoders::driveMotorsDistance(50, true, 7, 1);
+        Encoders::rotateMotorsDegs(50, false, Motors::RotateMode::BOTH_WHEELS, 30);
+        Encoders::driveMotorsDistance(driveDuty, false, 6, 2);
+        delay(100);
+        Motors::driveBackRearReflectance(Motors::min_drive_dutyCycle, 50, 100);
+        Encoders::driveMotorsDistance(50, true, 1, 1);
+        Servos::deployBox();
+        Encoders::driveMotorsDistance(50, true, 3, 1);
+        Encoders::driveMotorsDistance(50, false, 2.7, 1);
+        for (int i = 0; i < 10; i++) {
+            Encoders::driveMotorsDistance(50, true, 7, 1);
+            Encoders::driveMotorsDistance(80, false, 7, 1);
+            Encoders::rotateMotorsDegs(30, true, Motors::RotateMode::FORWARDS, 7, 1);
+
+        }
+        Encoders::driveMotorsDistance(50, true, 5, 1);
+
+        return true;
+    }
+
     bool treasureCollectionRoutine(Sonars::SonarType treasureLoc, double distFront, double distFrontErr, bool retOriginalPos, int treasureNum) {
         // drive back a bit if needed
         if (treasureNum == 1) {
@@ -316,23 +369,100 @@ namespace TreasureDetection {
             long startMillis = millis();
             long currMillis = startMillis;
             
+            int sonarDelayMillis = 35;
+            if (treasureNum == 4) sonarDelayMillis = 60;
+
             int goodReadingsCount = 0;
+            int maxRotAngle;
+            int turnBackAngle;
+            bool maxRotReached = false;
+
+            long startEncoderPulses;
+            long checkEncoderPulses;
+            
+            if (treasureTurnAction == Motors::MotorAction::ROTATE_LEFT) {
+                if (treasureTurnRotateMode == Motors::RotateMode::BACKWARDS) {
+                    startEncoderPulses = Encoders::pulseLW;
+                } else {
+                    startEncoderPulses = Encoders::pulseRW;
+                }
+            } else {
+                if (treasureTurnRotateMode == Motors::RotateMode::BACKWARDS) {
+                    startEncoderPulses = Encoders::pulseRW;
+                } else {
+                    startEncoderPulses = Encoders::pulseLW;
+                }   
+            }
+            checkEncoderPulses = startEncoderPulses;
+            double radius = treasureTurnAction == Motors::RotateMode::BOTH_WHEELS ? Motors::WHEELS_WIDTH / 2.0 : Motors::WHEELS_WIDTH;
+            int maxRotTurnPulses = Encoders::degsToPulses(maxRotAngle, radius);
+
+            if (treasureNum == 1) {
+                maxRotAngle = 90;
+                turnBackAngle = 65;
+            } else if (treasureNum == 2) {
+                maxRotAngle = 90;
+                turnBackAngle = 60;
+            } else if (treasureNum == 4) {
+                maxRotAngle = 90;
+                turnBackAngle = 65;
+            } else if (treasureNum == 5) {
+                maxRotAngle = 70;
+                turnBackAngle = 50;
+            }
+
             while (goodReadingsCount < front_sonar_req_good_readings[treasureNum-1]) {
-                if (currMillis > startMillis + 35) {
+                if (currMillis > startMillis + sonarDelayMillis) {
                     treasureFrontSonarDists = Sonars::getDistanceSinglePulse(Sonars::SonarType::FRONT, 0);
                     startMillis = currMillis;
+                    Serial.print("Front sonar: ");
+                    Serial.println(treasureFrontSonarDists);
+                } else {
+                    treasureFrontSonarDists = -1;
                 }
                 currMillis = millis();
-
-                if (treasureFrontSonarDists < distFront + distFrontErr && treasureFrontSonarDists > distFront - distFrontErr) {
-                    goodReadingsCount++;
-                    avgTreasureFrontSonarDists += treasureFrontSonarDists;
+                if (treasureFrontSonarDists != -1) {
+                    if (treasureFrontSonarDists < distFront + distFrontErr && treasureFrontSonarDists > distFront - distFrontErr) {
+                        goodReadingsCount++;
+                        avgTreasureFrontSonarDists += treasureFrontSonarDists;
+                    }
+                    else {
+                        goodReadingsCount = 0;
+                    }
                 }
-                else {
-                    goodReadingsCount = 0;
+                // end condition - max rotation)
+                if (maxRotReached) {
+                    break;
                 }
-                Serial.print("Front sonar: ");
-                Serial.println(treasureFrontSonarDists);
+                if (treasureTurnAction == Motors::RotateMode::BACKWARDS) {
+                    // pulses decrease
+                    if (checkEncoderPulses < startEncoderPulses - maxRotTurnPulses) {
+                        maxRotReached = true;
+                    }
+                } else {
+                    // pulses increase
+                    if (checkEncoderPulses > startEncoderPulses + maxRotTurnPulses) {
+                        maxRotReached = true;
+                    }
+                }
+                // update encoder
+                if (treasureTurnAction == Motors::MotorAction::ROTATE_LEFT) {
+                    if (treasureTurnRotateMode == Motors::RotateMode::BACKWARDS) {
+                        checkEncoderPulses = Encoders::pulseLW;
+                    } else {
+                        checkEncoderPulses = Encoders::pulseRW;
+                    }
+                } else {
+                    if (treasureTurnRotateMode == Motors::RotateMode::BACKWARDS) {
+                        checkEncoderPulses = Encoders::pulseRW;
+                    } else {
+                        checkEncoderPulses = Encoders::pulseLW;
+                    }   
+                } 
+            }
+            // if sonar misses
+            if (maxRotReached) {
+                Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, treasureTurnAction == Motors::MotorAction::ROTATE_RIGHT, treasureTurnRotateMode, turnBackAngle, 2);
             }
             avgTreasureFrontSonarDists /= (1.0 * front_sonar_req_good_readings[treasureNum-1]);
 
@@ -340,7 +470,7 @@ namespace TreasureDetection {
 
             // empirical - 2nd treasure requires some degs to be rotated to the left to be aligned to treasure
             if (treasureNum == 2) {
-                Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::FORWARDS, 12);
+                Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, false, Motors::RotateMode::FORWARDS, 13);
             }
             if (retOriginalPos) Encoders::endAddActionCache();
 
@@ -351,24 +481,32 @@ namespace TreasureDetection {
 
         // special
         if (treasureNum == 1) {
-            Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, true, Motors::RotateMode::BOTH_WHEELS, 5);
+            Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, true, Motors::RotateMode::BOTH_WHEELS, 4);
         }
         if (treasureNum == 4) {
-            Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, true, Motors::RotateMode::BOTH_WHEELS, 7);
+            Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, true, Motors::RotateMode::BOTH_WHEELS, 3.5);
         } else if (treasureNum == 5) {
-            Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, true, Motors::RotateMode::BOTH_WHEELS, 7.5);
+            Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, true, Motors::RotateMode::BOTH_WHEELS, 5.5);
         } 
 
         // treasure in front
         if (retOriginalPos) Encoders::startAddActionCache(Motors::DRIVE_FWD, Motors::RotateMode::NONE, def_drive_to_treasure_duty);
 
         bool inRocks;
-        if (treasureNum == 4) {
+        int driveToTreasureDuty;
+        int timeoutTreasure;
+        if (treasureNum == 4 || treasureNum == 5) {
             // drive in slowly for 4th treasure
-            inRocks = !driveToTreasureFrontSonar(avgTreasureFrontSonarDists, treasureNum, 1.5, false, 30); 
+            driveToTreasureDuty = 30;
         } else {
-            inRocks = !driveToTreasureFrontSonar(avgTreasureFrontSonarDists, treasureNum, 1.5, false, 45);   // this backs up initially - don't cache, done externally
+            driveToTreasureDuty = 30;
         }
+        if (treasureNum == 3 || treasureNum == 5) {
+            timeoutTreasure = 1;
+        } else {
+            timeoutTreasure = 1.5;
+        }
+        inRocks = !driveToTreasureFrontSonar(avgTreasureFrontSonarDists, treasureNum, timeoutTreasure, false, driveToTreasureDuty);
         // too close to the treasure
         driveBackToTreasureFrontSonar(treasureNum, inRocks);
         
@@ -443,7 +581,7 @@ namespace TreasureDetection {
         // Motors::driveFwd(def_drive_to_treasure_duty);
 
         // drive fwd until treasure inside V
-        Encoders::driveMotorsDistance(dutyCycle, true, 27, timeout);
+        Encoders::driveMotorsDistance(dutyCycle, true, 40, timeout);
         // delay to check sonar readings reliably
 
         // check readings
@@ -459,7 +597,8 @@ namespace TreasureDetection {
         int inRocksCount = 0;
 
         Encoders::driveMotorsDistance(def_drive_to_treasure_duty, false, 1);
-
+        
+        if (treasureNum == 3) delay(250);
         // needs 4 out of 10 readings within the V distance to be considered as good
         for (int i = 0; i < 20; i++) {
             treasureFrontSonarDists = Sonars::getDistanceSinglePulse(Sonars::SonarType::FRONT);
@@ -482,8 +621,8 @@ namespace TreasureDetection {
             Serial.print(" dist: ");
             Serial.println(treasureFrontSonarDists);
         }
+        bool doubleCalibrationFlag = false;
         if (needsCalibrationFlag) {
-            bool doubleCalibration = false;
             delay(300);
             for (int i = 0; i < 20; i++) {
                 treasureFrontSonarDists = Sonars::getDistanceSinglePulse(Sonars::SonarType::FRONT);
@@ -492,7 +631,7 @@ namespace TreasureDetection {
                     needsCalibrationCount++;
                 } 
                 if (needsCalibrationCount >= 15) {
-                    doubleCalibration = true;
+                    doubleCalibrationFlag = true;
                     break;
                 }            
                 Serial.print("i : ");
@@ -500,20 +639,23 @@ namespace TreasureDetection {
                 Serial.print(" dist: ");
                 Serial.println(treasureFrontSonarDists);
             }
-            if (!doubleCalibration) {
-                needsCalibrationFlag = false;
-            }
         }
-        if (needsCalibrationFlag) {
+
+        if (doubleCalibrationFlag) {
             double backUpDist = 11;
             int turnDegs = 30;
             double expectedMaxDist = 28;
+            if (treasureNum == 3) {
+                backUpDist = 6.5;
+                turnDegs = 40;
+                expectedMaxDist = 24;
+            }
             if (treasureNum == 5) {
                 expectedMaxDist = 30;
             }
             if (treasureCalibration(backUpDist, turnDegs, expectedMaxDist, treasureNum)) {
                 // found treasure post calibration - in line with treasure
-                // drive in with same amount driven out
+                // drive in with more than amount driven out
                 Encoders::driveMotorsDistance(dutyCycle, true, backUpDist+10, 1.8);
 
                 // drive out to claw distance
@@ -543,10 +685,15 @@ namespace TreasureDetection {
 
         bool needsCalibrationFlag = false;
         double treasureFrontSonarDists;
+        
         int inVCount = 0;
         int inRocksCount = 0;
+        
+        Encoders::driveMotorsDistance(def_drive_to_treasure_duty, false, 1);
+
         delay(500);
-        for (int i = 0; i < 10; i++) {
+
+        for (int i = 0; i < 20; i++) {
             treasureFrontSonarDists = Sonars::getDistanceSinglePulse(Sonars::SonarType::FRONT);
             if (treasureFrontSonarDists > treasure_in_v_rocks_dist) {   // worst of the two
                 needsCalibrationCount++;
@@ -560,7 +707,7 @@ namespace TreasureDetection {
             if (treasureFrontSonarDists > treasure_in_claw_dist) {
                 needsCalibrationCount++;
             }
-            if (needsCalibrationCount >= 6) {
+            if (needsCalibrationCount >= 15) {
                 needsCalibrationFlag = true;
                 break;
             }            
@@ -648,50 +795,6 @@ namespace TreasureDetection {
         return false;   // didn't find treasure
     }
 
-    bool obtainFifthTreasure(int driveDuty, double rotateRightDegs, double driveBackDist, bool cache) {
-        // driveBackDist = 25;
-        // driveBackDistErr = 5;
-        // for(int i = 0; i < 10; i++) {
-        //     Serial.println("Hit");
-        //     delay(300);
-        // }
-        // manuveur so we can start treasure scanning front treasure
-        if (!Encoders::rotateMotorsDegs(50, true, Motors::RotateMode::BOTH_WHEELS, rotateRightDegs, 2)) {
-            Encoders::rotateMotorsDegs(50, false, Motors::RotateMode::BOTH_WHEELS, 10, 2);
-        }
-        Encoders::driveMotorsDistance(driveDuty, false, driveBackDist);
-        Motors::driveBackRearReflectance(Motors::min_drive_dutyCycle+10, 50, 50);
-        Encoders::driveMotorsDistance(driveDuty, true, 2.5);
-
-        treasureCollectionRoutine(Sonars::SonarType::RIGHT, front_sonar_treasure_dists[4], front_sonar_treasure_dists_err[4], false, 5);
-
-        // back up some cm
-        Encoders::driveMotorsDistance(driveDuty, false, 1.5);
-
-        /// below should be drop treasures func ///
-        // turn to line up to drop treasures
-        Encoders::rotateMotorsDegs(50, false, Motors::RotateMode::BACKWARDS, 30, 1);
-        Motors::driveBackRearReflectance(Motors::min_drive_dutyCycle+10, 40, 50);
-        Encoders::driveMotorsDistance(50, true, 7, 1);
-        Encoders::rotateMotorsDegs(50, false, Motors::RotateMode::BOTH_WHEELS, 30);
-        Encoders::driveMotorsDistance(driveDuty, false, 6, 2);
-        delay(300);
-        Motors::driveBackRearReflectance(Motors::min_drive_dutyCycle, 50, 50);
-        Encoders::driveMotorsDistance(50, true, 2.5, 1);
-        delay(200);
-        Servos::deployBox();
-        delay(400);
-        Encoders::driveMotorsDistance(50, false, 2, 1);
-        for (int i = 0; i < 10; i++) {
-            Encoders::driveMotorsDistance(50, true, 7, 1);
-            Encoders::driveMotorsDistance(80, false, 7, 1);
-            Encoders::rotateMotorsDegs(30, true, Motors::RotateMode::FORWARDS, 7, 1);
-
-        }
-        Encoders::driveMotorsDistance(50, true, 5, 1);
-
-        return true;
-    }
 }
 /*
  * Two ways of returning to original location after obtaining first treasure:

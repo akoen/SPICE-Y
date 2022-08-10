@@ -31,6 +31,8 @@ void setup() {
     Serial.println("Serial connected");
 }
 void pwmServoTest();
+long startMillis = millis();
+long currMillis = startMillis;
 void loop() {
     
     // Servos::bridgeServo.write(Servos::bridge_open_angle);
@@ -38,7 +40,12 @@ void loop() {
     // Servos::bridgeServo.write(Servos::bridge_closed_angle);
     // delay (1000);
     // Serial.println("loop");
-    // Serial.println("hit");
+    Serial.println("hit");
+    // if (currMillis > startMillis + 35) {
+    //     Serial.println(Sonars::getDistanceSinglePulse(Sonars::SonarType::FRONT, 0));
+    //     startMillis = currMillis;
+    // }
+    // currMillis = millis();
     // Serial.println(Sonars::getDistanceSinglePulse(Sonars::SonarType::FRONT));
     // float mags[2];
     // IR::getMagnitude(mags);
@@ -122,7 +129,7 @@ void loop() {
     // Serial.print(Sonars::getDistanceSinglePulse(Sonars::SonarType::RIGHT));
     // Serial.print(" ");
     // Serial.println(Sonars::getDistanceSinglePulse(Sonars::SonarType::FRONT));
-    exit(0);
+    // exit(0);
 }
 
 void pwmServoTest() {

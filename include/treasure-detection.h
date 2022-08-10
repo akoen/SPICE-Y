@@ -67,6 +67,7 @@ namespace TreasureDetection {
      */
     bool driveToTreasureFrontSonar(double initialDist, int treasureNum, int timeout, bool retOriginalPos, int dutyCycle=def_drive_to_treasure_duty);
 
+    
     bool driveToTreasureFrontSonarIR3(double initialDist, int reqGoodReadings, int timeout);
     
     void regularDriveToTreasureFront(int treasureNum, int timeout); 
