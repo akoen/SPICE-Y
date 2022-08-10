@@ -93,13 +93,13 @@ namespace Executor {
         Motors::stopWithBrake(Motors::MotorAction::DRIVE_BACK, Motors::RotateMode::NONE, driveDuty, 50);
 
         // obtain third treasure using IR PID
-        double driveFwdCm = 6;
-        double rotateLeftDegs = 90;
+        double driveFwdCm = 5;
+        double rotateLeftDegs = 90.5;
         bool cacheThirdTreasure = false;
         TreasureDetection::obtainThirdIRtreasure(driveFwdCm, rotateLeftDegs, 30, cacheThirdTreasure);
 
         // line up with IR beacon to start IR pid for fourth treasure
-        Encoders::driveMotorsDistance(driveDuty, false, 15.5, 3);
+        Encoders::driveMotorsDistance(driveDuty, false, 16, 3);
         Encoders::rotateMotorsDegs(driveDuty, true, Motors::RotateMode::BOTH_WHEELS, 85, 2);
 
         // decrease max duty cycle so more/more reliable sonar readings can be taken (serial this to be sure)
