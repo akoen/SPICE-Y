@@ -90,7 +90,6 @@ void Servos::collectTreasure() {
             delay(500);
             clawServo.write(claw_close_angle);
             delay(400);
-            bombNowDetected = true;
             /*
             clawServo.write(claw_part_open_angle);
             delay(250);
@@ -117,6 +116,8 @@ void Servos::collectTreasure() {
         } else {
             // don't pick up - bomb found
             BombDetection::bombEncounteredFlag = true;
+            bombNowDetected = true;
+
         }
     } else {
         armServo.write(arm_lowered_angle);    
@@ -124,7 +125,9 @@ void Servos::collectTreasure() {
         clawServo.write(claw_close_angle);
         delay(400);
     }
+
     armServo.write(arm_lifted_angle);
+    
     if (!bombNowDetected || BombDetection::bombEncounteredFlag) {
         // lowered to lifted - no bomb
         delay(500);
