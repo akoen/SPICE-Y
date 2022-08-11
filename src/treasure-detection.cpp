@@ -309,6 +309,8 @@ namespace TreasureDetection {
         Encoders::driveMotorsDistance(driveDuty, true, 3.5);
 
         treasureCollectionRoutine(Sonars::SonarType::RIGHT, front_sonar_treasure_dists[4], front_sonar_treasure_dists_err[4], false, 5);
+        // very last treasure - open claw so box can be opened
+        Servos::clawServo.write(Servos::claw_full_open_angle);
 
         // back up some cm
         Encoders::driveMotorsDistance(driveDuty, false, 1.5);
@@ -555,7 +557,7 @@ namespace TreasureDetection {
         // Motors::driveFwd(def_drive_to_treasure_duty);
 
         // drive fwd until treasure inside V
-        Encoders::driveMotorsDistance(dutyCycle, true, 40, timeout);
+        Encoders::driveMotorsDistance(dutyCycle, true, 43, timeout);
         // delay to check sonar readings reliably
 
         // check readings

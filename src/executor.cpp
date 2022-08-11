@@ -116,7 +116,7 @@ namespace Executor {
         int rotateDuty = 30;
         Encoders::driveMotorsDistance(driveDuty, false, 6, 1.5);
         Encoders::rotateMotorsDegs(rotateDuty, false, Motors::RotateMode::BOTH_WHEELS, firstTurnDeg, 1.5);
-        Encoders::driveMotorsDistance(driveDuty, true, 13);
+        Encoders::driveMotorsDistance(driveDuty, true, 12);
         Encoders::rotateMotorsDegs(rotateDuty, false, Motors::RotateMode::BOTH_WHEELS, secondTurnDeg, 1.5);
         Encoders::driveMotorsDistance(driveDuty, false, 36);
 
