@@ -66,7 +66,7 @@ namespace Encoders {
      * 
      * Returns true if the action can be executed
      */ 
-    bool executeReverseCache(int actionDelayMillis=400);
+    bool executeReverseCache(int actionDelayMillis=Motors::default_motors_stop_millis);
 
     /**
      * Drives the motors for the given interval of pulses.

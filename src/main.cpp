@@ -40,7 +40,6 @@ void loop() {
     // Servos::bridgeServo.write(Servos::bridge_closed_angle);
     // delay (1000);
     // Serial.println("loop");
-    Serial.println("hit");
     // if (currMillis > startMillis + 35) {
     //     Serial.println(Sonars::getDistanceSinglePulse(Sonars::SonarType::FRONT, 0));
     //     startMillis = currMillis;
@@ -90,6 +89,8 @@ void loop() {
     // TreasureDetection::obtainThirdIRtreasure(driveFwdCm, rotateLeftDegs, driveDuty, cacheThirdTreasure);
     // TreasureDetection::obtainFifthTreasure(30, 35, 21, false);
     Executor::execute();
+    // Servos::collectTreasure();
+    // delay(1000);
     // ReflectanceSensors::readSideReflectanceSensors();
     // Serial.print(ReflectanceSensors::sideSensorLval);
     // Serial.print(" ");
@@ -101,6 +102,8 @@ void loop() {
     // Motors::driveBack(50);
     // delay(1000);
     // Motors::stopMotorsPWM();
+    // delay(1000);
+    // Encoders::driveMotorsDistance(40, true, 5);
     // delay(1000);
     // Encoders::driveMotorsDistance(40, false, 5);
     // delay(1000);

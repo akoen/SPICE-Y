@@ -6,8 +6,8 @@
 #include <utility>
 
 
-# define LW_PWM_DUTY 66
-# define RW_PWM_DUTY 62
+# define LW_PWM_DUTY 76
+# define RW_PWM_DUTY 72
 # define CHICKEN_WIRE_OFFSET_DUTY 14
 
 namespace Motors {

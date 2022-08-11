@@ -10,7 +10,7 @@ const int Motors::ref_duty_cycle = 80; // %
 
 const int Motors::default_rotate_pwm = min_rotate_dutyCycle+5; // %
 const int Motors::default_motors_offset = RW_PWM_DUTY - LW_PWM_DUTY; // > 0 for RW, < 0 for LW
-const int Motors::default_motors_stop_millis = 250;
+const int Motors::default_motors_stop_millis = 200;
 
 const double Motors::WHEELS_WIDTH = 24.5;   // cm
 const double Motors::WHEEL_DIAMETER = 8.7; // cm

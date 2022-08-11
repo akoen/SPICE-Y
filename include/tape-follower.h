@@ -28,6 +28,8 @@ namespace TapeFollow {
     extern bool prevOnTapeM;
     extern bool prevOnTapeR;
 
+    extern bool checkChickenWire;
+
     extern int err;
     extern int prevErr;
  

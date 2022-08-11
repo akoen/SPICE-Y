@@ -7,7 +7,7 @@ double TapeFollow::ki = 0;
 double TapeFollow::kd = 15;
 double TapeFollow::maxI = 100;
 // chicken wire
-const double TapeFollow::CHICKEN_WIRE_DIST = 17+8;
+const double TapeFollow::CHICKEN_WIRE_DIST = 17+7;
 const double TapeFollow::DEF_TAPE_SEARCH_ANGLE = 45;
 // vars
 bool TapeFollow::crossedChickenWire = false;
@@ -17,7 +17,7 @@ bool TapeFollow::onTapeR = false;
 bool TapeFollow::prevOnTapeL = false;
 bool TapeFollow::prevOnTapeM = false;
 bool TapeFollow::prevOnTapeR = false;
-
+bool TapeFollow::checkChickenWire = true;
 int TapeFollow::err = 0;
 int TapeFollow::prevErr = 0;
 
@@ -40,9 +40,11 @@ double TapeFollow::calcPidBlackTape() {
     if ((onTapeL && onTapeM && onTapeR) && !crossedChickenWire) { 
         // stop
         // int stopDuty = Motors::dutyCycleL > Motors::dutyCycleR ? Motors::dutyCycleL : Motors::dutyCycleR;
-        Motors::stopWithBrake(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, Motors::dutyCycleL, 50, Motors::default_motors_stop_millis, Motors::dutyCycleR - Motors::dutyCycleL);  
-        chickenWireRoutine();
-        crossedChickenWire = true;
+        if (checkChickenWire) {
+            Motors::stopWithBrake(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, Motors::dutyCycleL, 50, Motors::default_motors_stop_millis, Motors::dutyCycleR - Motors::dutyCycleL);  
+            chickenWireRoutine();
+            crossedChickenWire = true;
+        }
         // chickenWireRoutine2(prevErr, err);   
 
         // this updates prevOnTape and onTape readings - can continue PID
@@ -102,7 +104,6 @@ void TapeFollow::chickenWireRoutine() {
     // drive across bridge
     int dutyCycle = LW_PWM_DUTY;
     Encoders::driveMotorsDistance(dutyCycle, true, CHICKEN_WIRE_DIST);
-    delay(10);
     Motors::stopWithBrake(Motors::DRIVE_FWD, Motors::NONE, dutyCycle, 50);
     // Motors::stopWithBrake(Motors::DRIVE_FWD, Motors::NONE, Motors::dutyCycleL, 50, Motors::default_motors_stop_millis, Motors::dutyCycleR-Motors::dutyCycleL);
 // 
