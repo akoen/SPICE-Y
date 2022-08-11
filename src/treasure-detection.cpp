@@ -18,8 +18,8 @@ namespace TreasureDetection {
     const double treasure_in_claw_dist_err = 1.5; // cm
 
     // extern const double treasure_in_v_dist = 12;
-    extern const double treasure_in_v_dist = 14;
-    extern const double treasure_in_v_rocks_dist = 18;
+    extern const double treasure_in_v_dist = 14.5;
+    extern const double treasure_in_v_rocks_dist = 19;
 
     const int side_sonar_req_good_readings[6] = {2, 2, 2, 3, 2, 2};
     const int front_sonar_req_good_readings[6] = {2, 2, 2, 2, 2, 2};
@@ -597,8 +597,9 @@ namespace TreasureDetection {
             Serial.println(treasureFrontSonarDists);
         }
         bool doubleCalibrationFlag = false;
-        if (needsCalibrationFlag) {
-            delay(200);
+
+        if (needsCalibrationFlag && treasureNum != 3) {
+            delay(250);
             for (int i = 0; i < 20; i++) {
                 treasureFrontSonarDists = Sonars::getDistanceSinglePulse(Sonars::SonarType::FRONT);
                 // if (treasureFrontSonarDists > treasure_in_v_dist) {
@@ -615,8 +616,7 @@ namespace TreasureDetection {
                 Serial.println(treasureFrontSonarDists);
             }
         }
-
-        if (doubleCalibrationFlag) {
+        if (doubleCalibrationFlag && treasureNum != 3) {
             double backUpDist = 11;
             int turnDegs = 30;
             double expectedMaxDist = 28;
