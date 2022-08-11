@@ -113,7 +113,7 @@ namespace Executor {
         // back up a bit and turn right about 90 degs and drive until edge detected
         double firstTurnDeg = 30;
         double secondTurnDeg = 56.5;
-        int rotateDuty = 30;
+        int rotateDuty = 25;
         Encoders::driveMotorsDistance(driveDuty, false, 6, 1.5);
         Encoders::rotateMotorsDegs(rotateDuty, false, Motors::RotateMode::BOTH_WHEELS, firstTurnDeg, 1.5);
         Encoders::driveMotorsDistance(driveDuty, true, 12);

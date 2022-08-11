@@ -199,6 +199,8 @@ namespace TreasureDetection {
         driveBackToTreasureFrontSonar(3, inRocks);
         // Encoders::driveMotorsDistance(TreasureDetection::def_drive_to_treasure_duty, false, 4.5);
 
+        // third treasure special
+        Encoders::driveMotorsDistance(25, true, 1, 1);
 
         if (cache) Encoders::endAddActionCache();
         
@@ -277,11 +279,11 @@ namespace TreasureDetection {
         // drive fwd less if ended using encoders - already drives more
         double initRightRotation;
         if (hasNotFoundUsingSonar) {
-            Encoders::driveMotorsDistance(driveDuty, true, 5);
-            initRightRotation = 52;
+            Encoders::driveMotorsDistance(driveDuty, true, 6.5);
+            initRightRotation = 53.1;
         } else {
-            Encoders::driveMotorsDistance(driveDuty, true, 19.5);
-            initRightRotation = 52;
+            Encoders::driveMotorsDistance(driveDuty, true, 20.5);
+            initRightRotation = 53.1;
 
         }
         if (!Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, true, Motors::RotateMode::BOTH_WHEELS, initRightRotation, 2)) {
