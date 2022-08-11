@@ -68,9 +68,14 @@ namespace Executor {
         double searchAngle = 30;
         TapeFollow::findBlackTape(searchAngle, Motors::min_rotate_dutyCycle, Motors::RotateMode::BOTH_WHEELS, false);
         TapeFollow::checkChickenWire = true;
+
+        Servos::clawServo.write(Servos::claw_part_open_angle);
+
         // follow tape & obtain second treasure - but don't return to original position
         // TapeFollow::crossedChickenWire = true;
         TreasureDetection::obtainTapeTreasure(2, false);
+        
+        Servos::clawServo.write(Servos::claw_part_open_angle);
 
         secondTreasureToArchSetup();
     
@@ -89,10 +94,12 @@ namespace Executor {
             ReflectanceSensors::readFrontReflectanceSensors();
         }
         Motors::stopWithBrake(Motors::MotorAction::DRIVE_BACK, Motors::RotateMode::NONE, driveDuty, 75);
+        
+        Servos::clawServo.write(Servos::claw_part_open_angle);
 
         // obtain third treasure using IR PID
-        double driveFwdCm = 5;
-        double rotateLeftDegs = 87.1;
+        double driveFwdCm = 5.9;
+        double rotateLeftDegs = 87.3;
         bool cacheThirdTreasure = false;
         TreasureDetection::obtainThirdIRtreasure(driveFwdCm, rotateLeftDegs, driveDuty, cacheThirdTreasure);
 
@@ -102,7 +109,7 @@ namespace Executor {
 
         // decrease max duty cycle so more/more reliable sonar readings can be taken (serial this to be sure)
         Motors::max_drive_dutyCycle = 40;
-
+        Servos::clawServo.write(Servos::claw_part_open_angle);
         // obtain fourth treasure using IR PID and return to original pos
         TreasureDetection::obtainIRTreasure(4, false);
     
@@ -178,6 +185,8 @@ namespace Executor {
         }
         Motors::stopWithBrake(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, 50, 60);
         delay(80);
+        
+        Servos::clawServo.write(Servos::claw_part_open_angle);
 
         TreasureDetection::obtainFifthTreasure(45, 39, 21, false);
         while (true) {

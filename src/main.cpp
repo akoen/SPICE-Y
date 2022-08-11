@@ -37,8 +37,29 @@ long currMillis = startMillis;
 
 void loop() {
     Executor::execute();
-  
-    // exit(0);
+    /*
+    Servos::clawServo.write(Servos::claw_part_open_angle);
+    delay(1000);
+    Servos::collectTreasure();
+    delay(400);
+    /*
+    Encoders::driveMotorsDistance(40, true, 5);
+    delay(1000);
+    Encoders::driveMotorsDistance(40, false, 5);
+    delay(1000);
+    */
+    /*
+    Servos::clawServo.write(Servos::claw_part_open_angle);
+    delay(500);
+    Servos::collectTreasure();
+    Servos::clawServo.write(Servos::claw_close_angle);
+    delay(1000);
+    Servos::clawServo.write(Servos::claw_part_open_angle);
+    delay(1000);
+    Servos::clawServo.write(Servos::claw_full_open_angle);l
+    delay(1000);
+    */
+exit(0);
 }
 
 void pwmServoTest() {

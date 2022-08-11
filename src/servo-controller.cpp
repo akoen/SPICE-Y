@@ -2,19 +2,19 @@
 #include "magnetic-sensor.h"
 
 // pos when gripping treasure in claw 
-const int Servos::claw_close_angle = 8;
+const int Servos::claw_close_angle = 6;
 // pos when dropping treasure and initial position when claw is lifted up. Must clear the beacon mounts
-const int Servos::claw_part_open_angle = 80;  
+const int Servos::claw_part_open_angle = 60;  
 // pos when opening claw to collect treasure
-const int Servos::claw_full_open_angle = 180;
-const int Servos::claw_bomb_detect_angle = 57;
+const int Servos::claw_full_open_angle = 150;
+const int Servos::claw_bomb_detect_angle = 50;
 
 const int Servos::arm_bomb_detect_angle = 80;
 const int Servos::above_treasure_below_IR_angle = 120;
-const int Servos::arm_lowered_angle = 60;   // parallel
-const int Servos::arm_lifted_angle = 170;
+const int Servos::arm_lowered_angle = 55;   // parallel
+const int Servos::arm_lifted_angle = 167;
 
-const int Servos::box_closed_angle = 60;
+const int Servos::box_closed_angle = 53;
 const int Servos::box_open_angle = 0;
 
 const int Servos::bridge_closed_angle = 100;
@@ -88,9 +88,7 @@ void Servos::collectTreasure() {
             delay(250);
             armServo.write(arm_lowered_angle);
             delay(500);
-            clawServo.write(claw_close_angle);
-            delay(400);
-            /*
+
             clawServo.write(claw_part_open_angle);
             delay(250);
             // check again
@@ -112,7 +110,7 @@ void Servos::collectTreasure() {
                 delay(300);
                 BombDetection::bombEncounteredFlag = true;
             }
-            */
+
         } else {
             // don't pick up - bomb found
             BombDetection::bombEncounteredFlag = true;
@@ -130,15 +128,14 @@ void Servos::collectTreasure() {
     
     if (!bombNowDetected || BombDetection::bombEncounteredFlag) {
         // lowered to lifted - no bomb
-        delay(500);
+        delay(600);
     } else {
         // IR to lifted - bomb now
         delay(100);
     }
     if (!bombNowDetected) {
         clawServo.write(claw_full_open_angle);
-        delay(450);
-        clawServo.write(claw_close_angle);
+        delay(600);
     }
 }
 
