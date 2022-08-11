@@ -38,14 +38,11 @@ double TapeFollow::calcPidBlackTape() {
 
     // chicken wire routine
     if ((onTapeL && onTapeM && onTapeR) && !crossedChickenWire) { 
-        // stop
-        // int stopDuty = Motors::dutyCycleL > Motors::dutyCycleR ? Motors::dutyCycleL : Motors::dutyCycleR;
         if (checkChickenWire) {
             Motors::stopWithBrake(Motors::MotorAction::DRIVE_FWD, Motors::RotateMode::NONE, Motors::dutyCycleL, 50, Motors::default_motors_stop_millis, Motors::dutyCycleR - Motors::dutyCycleL);  
             chickenWireRoutine();
             crossedChickenWire = true;
         }
-        // chickenWireRoutine2(prevErr, err);   
 
         // this updates prevOnTape and onTape readings - can continue PID
     }

@@ -121,11 +121,11 @@ void Servos::collectTreasure() {
     }
     armServo.write(arm_lifted_angle);
     
-    if (!bombNowDetected) {
-        // lowered to lifted
+    if (!bombNowDetected || BombDetection::bombEncounteredFlag) {
+        // lowered to lifted - no bomb
         delay(500);
     } else {
-        // IR to lifted
+        // IR to lifted - bomb now
         delay(100);
     }
     if (!bombNowDetected) {

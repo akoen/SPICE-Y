@@ -278,10 +278,10 @@ namespace TreasureDetection {
         double initRightRotation;
         if (hasNotFoundUsingSonar) {
             Encoders::driveMotorsDistance(driveDuty, true, 5);
-            initRightRotation = 56.5;
+            initRightRotation = 52;
         } else {
             Encoders::driveMotorsDistance(driveDuty, true, 19.5);
-            initRightRotation = 56.5;
+            initRightRotation = 52;
 
         }
         if (!Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, true, Motors::RotateMode::BOTH_WHEELS, initRightRotation, 2)) {
@@ -327,10 +327,9 @@ namespace TreasureDetection {
         Encoders::driveMotorsDistance(60, true, 3, 1);
         Encoders::driveMotorsDistance(60, false, 2.7, 1);
         for (int i = 0; i < 10; i++) {
-            Encoders::driveMotorsDistance(50, true, 7, 1);
-            Encoders::driveMotorsDistance(80, false, 7, 1);
-            Encoders::rotateMotorsDegs(30, true, Motors::RotateMode::FORWARDS, 7, 1);
-
+            Encoders::rotateMotorsDegs(30, true, Motors::RotateMode::BOTH_WHEELS, 20, 1);
+            Encoders::driveMotorsDistance(50, true, 10.3, 1);
+            Encoders::driveMotorsDistance(80, false, 10, 1);
         }
         Encoders::driveMotorsDistance(60, true, 5, 1);
 
@@ -493,12 +492,12 @@ namespace TreasureDetection {
 
         // special
         if (treasureNum == 1) {
-            Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, true, Motors::RotateMode::BOTH_WHEELS, 2.5);
+            Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, true, Motors::RotateMode::BOTH_WHEELS, 4);
         }
         if (treasureNum == 4) {
             Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, true, Motors::RotateMode::BOTH_WHEELS, 3.5);
         } else if (treasureNum == 5) {
-            Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, true, Motors::RotateMode::BOTH_WHEELS, 5.5);
+            Encoders::rotateMotorsDegs(Motors::default_rotate_pwm, true, Motors::RotateMode::BOTH_WHEELS, 4.3);
         } 
 
         // treasure in front
@@ -509,13 +508,17 @@ namespace TreasureDetection {
         int timeoutTreasure;
         if (treasureNum == 4 || treasureNum == 5) {
             // drive in slowly for 4th treasure
-            driveToTreasureDuty = 26;
+            // driveToTreasureDuty = 35;
+            driveToTreasureDuty = 28;
         } else {
-            driveToTreasureDuty = 30;
+            // driveToTreasureDuty = 45;
+            driveToTreasureDuty = 35;
         }
         if (treasureNum == 3 || treasureNum == 5) {
-            timeoutTreasure = 1.2;
+            // timeoutTreasure = 1;
+            timeoutTreasure = 1.35;
         } else {
+            // timeoutTreasure = 1.4;
             timeoutTreasure = 1.8;
         }
         inRocks = !driveToTreasureFrontSonar(avgTreasureFrontSonarDists, treasureNum, timeoutTreasure, false, driveToTreasureDuty);

@@ -92,7 +92,7 @@ namespace Executor {
 
         // obtain third treasure using IR PID
         double driveFwdCm = 5;
-        double rotateLeftDegs = 87.4;
+        double rotateLeftDegs = 87.1;
         bool cacheThirdTreasure = false;
         TreasureDetection::obtainThirdIRtreasure(driveFwdCm, rotateLeftDegs, driveDuty, cacheThirdTreasure);
 
