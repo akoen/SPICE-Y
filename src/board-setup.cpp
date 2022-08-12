@@ -1,3 +1,6 @@
+/* Credit to fpiSTM on the stm32duino forums for the only working HAL DMA
+   example on the internet: https://www.stm32duino.com/viewtopic.php?t=110 */
+
 #include <HardwareTimer.h>
 
 #include <board-setup.h>
