@@ -1,4 +1,0 @@
-# Overview
-
-# Notes & Findings
-* ```servoObj.attach(SERVO_PIN) ``` seems to send a constant PWM signal to the attached pin.
