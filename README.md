@@ -4,7 +4,9 @@
 
 ![](img/top.png)
 
-![](img/bottom.png) 
+![](img/bottom.png)
+
+![](img/cad.PNG)
 
 ## Overview & Highlights
 - Built on the STM32F103 platform with the [stm32duino](https://github.com/stm32duino/Arduino_Core_STM32) library
