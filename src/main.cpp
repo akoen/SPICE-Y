@@ -11,7 +11,7 @@
 #include "servo-controller.h"
 #include "executor.h"
 
-// the setup routine runs once when you press reset:
+/* the setup routine runs once when you press reset */
 void setup() {
     Serial.begin(115200, SERIAL_8N1);
     Setup::timerHeartbeatInit();
@@ -21,70 +21,17 @@ void setup() {
     Encoders::configEncoderPins();
     Sonars::configSonarPins();
     ReflectanceSensors::configFrontReflectanceSensors();
-    // Servos::configArmClawPins();
     Servos::configAllServoPins();
-    // /* Run the ADC calibration */
+    
+    /* Run the ADC calibration */
     HAL_ADCEx_Calibration_Start(&AdcHandle);
     pinMode(PA12, OUTPUT);
-    // /* Start ADC conversion on regular group with transfer by DMA */
+    /* Start ADC conversion on regular group with transfer by DMA */
     // HAL_ADC_Start_DMA(&AdcHandle, (uint32_t *)DMA1Data, IR_SENS_NUM_READINGS);
     Serial.println("Serial connected");
 }
-void pwmServoTest();
-long startMillis = millis();
-long currMillis = startMillis;
-
 
 void loop() {
     Executor::execute();
-    /*
-    Servos::clawServo.write(Servos::claw_part_open_angle);
-    delay(1000);
-    Servos::collectTreasure();
-    delay(400);
-    /*
-    Encoders::driveMotorsDistance(40, true, 5);
-    delay(1000);
-    Encoders::driveMotorsDistance(40, false, 5);
-    delay(1000);
-    */
-    /*
-    Servos::clawServo.write(Servos::claw_part_open_angle);
-    delay(500);
-    Servos::collectTreasure();
-    Servos::clawServo.write(Servos::claw_close_angle);
-    delay(1000);
-    Servos::clawServo.write(Servos::claw_part_open_angle);
-    delay(1000);
-    Servos::clawServo.write(Servos::claw_full_open_angle);l
-    delay(1000);
-    */
-exit(0);
-}
-
-void pwmServoTest() {
-    Servos::setServoPos(Servos::clawServo, Servos::claw_full_open_angle);
-    Servos::setServoPos(Servos::armServo, Servos::arm_lowered_angle);
-    delay(1000);
-    Servos::setServoPos(Servos::clawServo, Servos::claw_close_angle);
-    delay(1000);
-    Servos::setServoPos(Servos::armServo, Servos::arm_lifted_angle);
-    delay(1000);
-    Servos::setServoPos(Servos::clawServo, Servos::claw_part_open_angle);
-    delay(500);
-    Servos::setServoPos(Servos::armServo, Servos::arm_bomb_detect_angle);
-    delay(1000);
-
-    // pwm_start(CLAW_SERVO_PIN_PWM_FORMAT, 50, (uint32_t)(4096 * (1.5/20)), RESOLUTION_12B_COMPARE_FORMAT);
-    // pwm_start(BRIDGE_SERVO_PIN_PWM_FORMAT, 50, (uint32_t)(4096 * (1.5/20)), RESOLUTION_12B_COMPARE_FORMAT);
-    // pwm_start(BOX_SERVO_PIN_PWM_FORMAT, 50, (uint32_t)(4096 * (1.5/20)), RESOLUTION_12B_COMPARE_FORMAT);
-    // delay(1000);
-    // pwm_start(CLAW_SERVO_PIN_PWM_FORMAT, 50, (uint32_t)(4096 * (1.8/20)), RESOLUTION_12B_COMPARE_FORMAT);
-    // pwm_start(BRIDGE_SERVO_PIN_PWM_FORMAT, 50, (uint32_t)(4096 * (1.8/20)), RESOLUTION_12B_COMPARE_FORMAT);
-    // pwm_start(BOX_SERVO_PIN_PWM_FORMAT, 50, (uint32_t)(4096 * (1.8/20)), RESOLUTION_12B_COMPARE_FORMAT);
-    // delay(1000);
-    // pwm_start(CLAW_SERVO_PIN_PWM_FORMAT, 50, (uint32_t)(4096 * (1.8/20)), RESOLUTION_12B_COMPARE_FORMAT);
-    // pwm_start(BRIDGE_SERVO_PIN_PWM_FORMAT, 50, (uint32_t)(4096 * (1.8/20)), RESOLUTION_12B_COMPARE_FORMAT);
-    // pwm_start(BOX_SERVO_PIN_PWM_FORMAT, 50, (uint32_t)(4096 * (1.8/20)), RESOLUTION_12B_COMPARE_FORMAT);
-    // delay(1000);
+    exit(0);
 }
