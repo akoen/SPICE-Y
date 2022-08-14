@@ -26,6 +26,7 @@ namespace ReflectanceSensors {
         sideSensorLval = digitalRead(REFLECTANCE_PIN_SIDE_L);
         sideSensorRval = digitalRead(REFLECTANCE_PIN_SIDE_R);
     }
+    
     /* testing purposes */
     void printFrontReflectance() {
         Serial.print("Sensors(L,M,R): ");

@@ -7,7 +7,7 @@
 #include <stack>
 #include <tuple>
 namespace Encoders {
-    /* with div by 10 counter, there are */
+
     extern const double pulse_per_rev;  // divide by counter at end, increases pulse width
 
     extern volatile int interruptCountLW;
@@ -35,10 +35,23 @@ namespace Encoders {
      * Interrupt service routine (ISR) that will be called each (right) encoder pulse
      */
     void ISR_RW();
+    
+    /**
+     * Attaches external interrupts to the encoders
+     */
 
     void attachInterrupts();
+    /*
+     * Configures all encoders to be used
+     */
     void configEncoderPins();
+    /*
+     * Detaches external interrupts to the encoders 
+     */
     void detachEncoderInterrupts();
+    /**
+     * Resets the encoder values to its initial values
+     */
     void resetEncoderVals();
 
     /**
@@ -66,7 +79,7 @@ namespace Encoders {
      * 
      * Returns true if the action can be executed
      */ 
-    bool executeReverseCache(int actionDelayMillis=Motors::default_motors_stop_millis);
+    bool executeReverseCache(int actionDelayMillis=Motors::def_motors_stop_millis);
 
     /**
      * Drives the motors for the given interval of pulses.

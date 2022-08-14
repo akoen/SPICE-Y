@@ -1,6 +1,5 @@
 #include "magnetic-sensor.h"
 
-// bool BombDetection::bombEncounteredFlag = false;
 namespace BombDetection {
     bool bombEncounteredFlag = false;
     bool hasConfiged = false;

@@ -1,231 +1,230 @@
 #include "motor-driver.h"
 #include "reflectance-sensor.h"
-// TODO: need min pwm duty cycle for driving & rotation
-int Motors::min_drive_dutyCycle = 20;
-int Motors::max_drive_dutyCycle = 83;
-const int Motors::min_rotate_dutyCycle = 20;
 
-const int Motors::pwm_clock_freq = 100; // hz
-const int Motors::ref_duty_cycle = 80; // %
+namespace Motors {
+    int min_drive_dutyCycle = 20;
+    int max_drive_dutyCycle = 83;
+    const int min_rotate_dutyCycle = 20;
 
-const int Motors::default_rotate_pwm = min_rotate_dutyCycle+5; // %
-const int Motors::default_motors_offset = RW_PWM_DUTY - LW_PWM_DUTY; // > 0 for RW, < 0 for LW
-const int Motors::default_motors_stop_millis = 200;
+    const int pwm_clock_freq = 100;
+    const int def_rotate_pwm = min_rotate_dutyCycle+5;
+    const int motors_offset_dutycycle = RW_PWM_DUTY - LW_PWM_DUTY;
+    const int def_motors_stop_millis = 200;
 
-const double Motors::WHEELS_WIDTH = 24.5;   // cm
-const double Motors::WHEEL_DIAMETER = 8.7; // cm
+    const double WHEELS_WIDTH = 24.5;
+    const double WHEEL_DIAMETER = 8.7;
 
-bool Motors::hasPwmChanged = true;   // call pwm start only when changed
-int Motors::dutyCycleL = LW_PWM_DUTY;
-int Motors::dutyCycleR = RW_PWM_DUTY;
+    bool hasPwmChanged = true;
+    int dutyCycleL = LW_PWM_DUTY;
+    int dutyCycleR = RW_PWM_DUTY;
 
-bool Motors::isLWdirFwd = true;
-bool Motors::isRWdirFwd = true;
+    bool isLWdirFwd = true;
+    bool isRWdirFwd = true;
 
-std::pair<Motors::MotorAction, Motors::RotateMode> Motors::getInverseDrive(MotorAction motorAction, RotateMode rotateMode) {
-    MotorAction inverseAction;
-    RotateMode inverseRotate;
-    switch(motorAction) {
-        case DRIVE_FWD:
-            inverseAction = MotorAction::DRIVE_BACK;
-            inverseRotate = RotateMode::NONE;
-            break;
-        case DRIVE_BACK:
-            inverseAction = MotorAction::DRIVE_FWD;
-            inverseRotate = RotateMode::NONE;
-            break;
-        case ROTATE_LEFT: 
-        case ROTATE_RIGHT:
-            if (motorAction == ROTATE_LEFT) inverseAction = MotorAction::ROTATE_RIGHT;
-            if (motorAction == ROTATE_RIGHT) inverseAction = MotorAction::ROTATE_LEFT;
+    std::pair<MotorAction, RotateMode> getInverseDrive(MotorAction motorAction, RotateMode rotateMode) {
+        MotorAction inverseAction;
+        RotateMode inverseRotate;
+        switch(motorAction) {
+            case DRIVE_FWD:
+                inverseAction = MotorAction::DRIVE_BACK;
+                inverseRotate = RotateMode::NONE;
+                break;
+            case DRIVE_BACK:
+                inverseAction = MotorAction::DRIVE_FWD;
+                inverseRotate = RotateMode::NONE;
+                break;
+            case ROTATE_LEFT: 
+            case ROTATE_RIGHT:
+                if (motorAction == ROTATE_LEFT) inverseAction = MotorAction::ROTATE_RIGHT;
+                if (motorAction == ROTATE_RIGHT) inverseAction = MotorAction::ROTATE_LEFT;
 
-            switch(inverseRotate) {
-                case RotateMode::BACKWARDS: 
-                    inverseRotate = RotateMode::FORWARDS;
-                    break;
-                case RotateMode::FORWARDS: 
-                    inverseRotate = RotateMode::BACKWARDS;
-                    break;
-                case RotateMode::BOTH_WHEELS: 
-                    inverseRotate = RotateMode::BOTH_WHEELS;
-                    break;
-                default: 
-                    inverseRotate = RotateMode::NONE;
-                    break;
+                switch(inverseRotate) {
+                    case RotateMode::BACKWARDS: 
+                        inverseRotate = RotateMode::FORWARDS;
+                        break;
+                    case RotateMode::FORWARDS: 
+                        inverseRotate = RotateMode::BACKWARDS;
+                        break;
+                    case RotateMode::BOTH_WHEELS: 
+                        inverseRotate = RotateMode::BOTH_WHEELS;
+                        break;
+                    default: 
+                        inverseRotate = RotateMode::NONE;
+                        break;
+                }
+                break;
+        } 
+        return std::pair<MotorAction, RotateMode>(inverseAction, inverseRotate);
+    }
+
+    void configMotorPins() {
+        pinMode(PWM_MOTOR_FWD_L, OUTPUT);
+        pinMode(PWM_MOTOR_FWD_R, OUTPUT);
+
+        pinMode(PWM_MOTOR_BACK_L, OUTPUT);
+        pinMode(PWM_MOTOR_BACK_R, OUTPUT);
+    }
+
+    void drive() {
+        int dutyLfwd = 0;
+        int dutyLback = 0;
+
+        int dutyRfwd = 0;
+        int dutyRback = 0;
+
+        // init pwm for both wheels
+        if (hasPwmChanged) {
+            if (isLWdirFwd) {
+                dutyLfwd = dutyCycleL;
+                dutyLback = 0;
+            } else {
+                dutyLfwd = 0;
+                dutyLback = dutyCycleL;
             }
-            break;
-    } 
-    return std::pair<MotorAction, RotateMode>(inverseAction, inverseRotate);
-}
 
-void Motors::configMotorPins() {
-    pinMode(PWM_MOTOR_FWD_L, OUTPUT);
-    pinMode(PWM_MOTOR_FWD_R, OUTPUT);
+            if (isRWdirFwd) {
+                dutyRfwd = dutyCycleR;
+                dutyRback = 0;
+            } else {
+                dutyRfwd = 0;
+                dutyRback = dutyCycleR; 
+            }
 
-    pinMode(PWM_MOTOR_BACK_L, OUTPUT);
-    pinMode(PWM_MOTOR_BACK_R, OUTPUT);
-}
-
-void Motors::drive() {
-    int dutyLfwd = 0;
-    int dutyLback = 0;
-
-    int dutyRfwd = 0;
-    int dutyRback = 0;
-
-    // init pwm for both wheels
-    if (Motors::hasPwmChanged) {
-        if (Motors::isLWdirFwd) {
-            dutyLfwd = Motors::dutyCycleL;
-            dutyLback = 0;
-        } else {
-            dutyLfwd = 0;
-            dutyLback = Motors::dutyCycleL;
-        }
-
-        if (Motors::isRWdirFwd) {
-            dutyRfwd = Motors::dutyCycleR;
-            dutyRback = 0;
-        } else {
-            dutyRfwd = 0;
-            dutyRback = Motors::dutyCycleR; 
-        }
-
-        pwm_start(PWM_FORMAT_MOTOR_FWD_R, pwm_clock_freq, (int)(dutyRfwd / 100.0 * 4096), RESOLUTION_12B_COMPARE_FORMAT);
-        pwm_start(PWM_FORMAT_MOTOR_BACK_R, pwm_clock_freq, (int)(dutyRback / 100.0 * 4096), RESOLUTION_12B_COMPARE_FORMAT);
+            pwm_start(PWM_FORMAT_MOTOR_FWD_R, pwm_clock_freq, (int)(dutyRfwd / 100.0 * 4096), RESOLUTION_12B_COMPARE_FORMAT);
+            pwm_start(PWM_FORMAT_MOTOR_BACK_R, pwm_clock_freq, (int)(dutyRback / 100.0 * 4096), RESOLUTION_12B_COMPARE_FORMAT);
+            
+            pwm_start(PWM_FORMAT_MOTOR_FWD_L, pwm_clock_freq, (int)(dutyLfwd / 100.0 * 4096), RESOLUTION_12B_COMPARE_FORMAT);
+            pwm_start(PWM_FORMAT_MOTOR_BACK_L, pwm_clock_freq, (int)(dutyLback / 100.0 * 4096), RESOLUTION_12B_COMPARE_FORMAT);
         
-        pwm_start(PWM_FORMAT_MOTOR_FWD_L, pwm_clock_freq, (int)(dutyLfwd / 100.0 * 4096), RESOLUTION_12B_COMPARE_FORMAT);
-        pwm_start(PWM_FORMAT_MOTOR_BACK_L, pwm_clock_freq, (int)(dutyLback / 100.0 * 4096), RESOLUTION_12B_COMPARE_FORMAT);
-    
-        Motors::hasPwmChanged = false;
+            hasPwmChanged = false;
+        }
     }
-}
 
-void Motors::setDutyCycles(int dutyL, int dutyR) {
-    if (dutyL < 0) dutyL = 0;
-    if (dutyR < 0) dutyR = 0;
-    
-    // if (dutyL > 0 && dutyL < min_drive_dutyCycle) dutyL = min_drive_dutyCycle;
-    // if (dutyR > 0 && dutyR < min_drive_dutyCycle) dutyR = min_drive_dutyCycle;
+    void setDutyCycles(int dutyL, int dutyR) {
+        if (dutyL < 0) dutyL = 0;
+        if (dutyR < 0) dutyR = 0;
+        
+        // if (dutyL > 0 && dutyL < min_drive_dutyCycle) dutyL = min_drive_dutyCycle;
+        // if (dutyR > 0 && dutyR < min_drive_dutyCycle) dutyR = min_drive_dutyCycle;
 
-    if (dutyL > max_drive_dutyCycle) dutyL = max_drive_dutyCycle;
-    if (dutyR > max_drive_dutyCycle) dutyR = max_drive_dutyCycle;
+        if (dutyL > max_drive_dutyCycle) dutyL = max_drive_dutyCycle;
+        if (dutyR > max_drive_dutyCycle) dutyR = max_drive_dutyCycle;
 
-    Motors::dutyCycleL = dutyL;
-    Motors::dutyCycleR = dutyR;
+        dutyCycleL = dutyL;
+        dutyCycleR = dutyR;
 
-    Motors::hasPwmChanged = true;
-}
-
-void Motors::setDir(bool isLWdirFwd, bool isRWdirFwd) {
-    Motors::isLWdirFwd = isLWdirFwd;
-    Motors::isRWdirFwd = isRWdirFwd;
-
-    hasPwmChanged = true;
-}
-
-void Motors::stopMotorsPWM(int delayMillis) {
-    setDir(true, true);
-    setDutyCycles(0, 0);
-    drive();
-    delay(delayMillis);
-}
-
-
-void Motors::driveFwd(int duty) {
-    setDir(true, true);
-    setDutyCycles(duty, duty + default_motors_offset);
-    drive();
-}
-
-void Motors::driveBack(int duty) {
-    setDir(false, false);
-    setDutyCycles(duty, duty + default_motors_offset);
-    drive();
-}
-
-void Motors::rotate(int dutyCycle, bool rotateRight, RotateMode rotateMode) {
-    if (dutyCycle < default_motors_offset) dutyCycle = default_motors_offset;
-
-    bool _dirLW, _dirRW;
-    int dutyLW, dutyRW;
-
-    if (rotateRight) _dirRW = false, _dirLW = true;
-    else _dirRW = true, _dirLW = false;
-    setDir(_dirLW, _dirRW);
-
-    switch (rotateMode) {
-        case BACKWARDS:
-            if (rotateRight){
-                setDutyCycles(0, dutyCycle);
-            } else {
-                setDutyCycles(dutyCycle, 0);
-            }
-            break;
-        case FORWARDS:
-            if (rotateRight) {
-                setDutyCycles(dutyCycle, 0);
-            } else {
-                setDutyCycles(0, dutyCycle);
-            }
-            break;
-        case BOTH_WHEELS:
-            setDutyCycles(dutyCycle, dutyCycle + default_motors_offset);
-            break;
+        hasPwmChanged = true;
     }
-    drive();
-}
 
-void Motors::stopWithBrake(MotorAction initialAction, RotateMode initialRotateMode, int initialDutyCycle, int durationMillis, int stopMotorsPWMDelayMillis, int offsetDutyRW) {
-    initialDutyCycle += initialDutyCycle *0.15;
-    // bad input
-    if ((initialAction == MotorAction::DRIVE_BACK || initialAction == MotorAction::DRIVE_FWD) && initialRotateMode != RotateMode::NONE) {
-        return;
+    void setDir(bool isLWdirFwd, bool isRWdirFwd) {
+        isLWdirFwd = isLWdirFwd;
+        isRWdirFwd = isRWdirFwd;
+
+        hasPwmChanged = true;
     }
-    if ((initialAction == MotorAction::ROTATE_LEFT || initialAction == MotorAction::ROTATE_RIGHT) && initialRotateMode == RotateMode::NONE) {
-        return;
-    }  
-    bool brakeRotateRight = false;
-    RotateMode brakeRotateMode = NONE;
 
-    switch(initialAction) {
-        case DRIVE_FWD:
-        case DRIVE_BACK:
-            if (initialAction == Motors::MotorAction::DRIVE_FWD) setDir(false, false);
-            else setDir(true, true);
-            setDutyCycles(initialDutyCycle, initialDutyCycle+default_motors_offset);
-            drive();
-            break;
-        case ROTATE_LEFT: 
-        case ROTATE_RIGHT:
-            if (initialAction == ROTATE_LEFT) brakeRotateRight = true;
-            if (initialAction == ROTATE_RIGHT) brakeRotateRight = false;
-
-            if (initialRotateMode == FORWARDS) brakeRotateMode = BACKWARDS;
-            else if (initialRotateMode == BACKWARDS) brakeRotateMode = FORWARDS;
-            else brakeRotateMode = BOTH_WHEELS;
-
-            rotate(initialDutyCycle, brakeRotateRight, brakeRotateMode);
-            break;
+    void stopMotorsPWM(int delayMillis) {
+        setDir(true, true);
+        setDutyCycles(0, 0);
+        drive();
+        delay(delayMillis);
     }
-    delay(durationMillis);
-    Motors::stopMotorsPWM(stopMotorsPWMDelayMillis);
-}
 
-void Motors::driveBackRearReflectance(int duty, int stopDuty, int stopMillis) {
-    ReflectanceSensors::readSideReflectanceSensors();
-    Motors::driveBack(duty);
-    // both reflectance sensors on surface
-    while (!ReflectanceSensors::sideSensorLval && !ReflectanceSensors::sideSensorRval) {
+
+    void driveFwd(int duty) {
+        setDir(true, true);
+        setDutyCycles(duty, duty + motors_offset_dutycycle);
+        drive();
+    }
+
+    void driveBack(int duty) {
+        setDir(false, false);
+        setDutyCycles(duty, duty + motors_offset_dutycycle);
+        drive();
+    }
+
+    void rotate(int dutyCycle, bool rotateRight, RotateMode rotateMode) {
+        if (dutyCycle < motors_offset_dutycycle) dutyCycle = motors_offset_dutycycle;
+
+        bool _dirLW, _dirRW;
+        int dutyLW, dutyRW;
+
+        if (rotateRight) _dirRW = false, _dirLW = true;
+        else _dirRW = true, _dirLW = false;
+        setDir(_dirLW, _dirRW);
+
+        switch (rotateMode) {
+            case BACKWARDS:
+                if (rotateRight){
+                    setDutyCycles(0, dutyCycle);
+                } else {
+                    setDutyCycles(dutyCycle, 0);
+                }
+                break;
+            case FORWARDS:
+                if (rotateRight) {
+                    setDutyCycles(dutyCycle, 0);
+                } else {
+                    setDutyCycles(0, dutyCycle);
+                }
+                break;
+            case BOTH_WHEELS:
+                setDutyCycles(dutyCycle, dutyCycle + motors_offset_dutycycle);
+                break;
+        }
+        drive();
+    }
+
+    void stopWithBrake(MotorAction initialAction, RotateMode initialRotateMode, int initialDutyCycle, int durationMillis, int stopMotorsPWMDelayMillis, int offsetDutyRW) {
+        // bad input
+        if ((initialAction == MotorAction::DRIVE_BACK || initialAction == MotorAction::DRIVE_FWD) && initialRotateMode != RotateMode::NONE) {
+            return;
+        }
+        if ((initialAction == MotorAction::ROTATE_LEFT || initialAction == MotorAction::ROTATE_RIGHT) && initialRotateMode == RotateMode::NONE) {
+            return;
+        }  
+        
+        initialDutyCycle += initialDutyCycle *0.15;
+        
+        bool brakeRotateRight = false;
+        RotateMode brakeRotateMode = NONE;
+
+        switch(initialAction) {
+            case DRIVE_FWD:
+            case DRIVE_BACK:
+                if (initialAction == MotorAction::DRIVE_FWD) setDir(false, false);
+                else setDir(true, true);
+                setDutyCycles(initialDutyCycle, initialDutyCycle+motors_offset_dutycycle);
+                drive();
+                break;
+            case ROTATE_LEFT: 
+            case ROTATE_RIGHT:
+                if (initialAction == ROTATE_LEFT) brakeRotateRight = true;
+                if (initialAction == ROTATE_RIGHT) brakeRotateRight = false;
+
+                if (initialRotateMode == FORWARDS) brakeRotateMode = BACKWARDS;
+                else if (initialRotateMode == BACKWARDS) brakeRotateMode = FORWARDS;
+                else brakeRotateMode = BOTH_WHEELS;
+
+                rotate(initialDutyCycle, brakeRotateRight, brakeRotateMode);
+                break;
+        }
+        delay(durationMillis);
+        stopMotorsPWM(stopMotorsPWMDelayMillis);
+    }
+
+    void driveBackRearReflectance(int duty, int stopDuty, int stopMillis) {
         ReflectanceSensors::readSideReflectanceSensors();
-        Serial.print("Reflectance: ");
-        Serial.print(ReflectanceSensors::sideSensorLval);
-        Serial.print(" ");
-        Serial.println(ReflectanceSensors::sideSensorRval);
+        driveBack(duty);
+        // both reflectance sensors on surface
+        while (!ReflectanceSensors::sideSensorLval && !ReflectanceSensors::sideSensorRval) {
+            ReflectanceSensors::readSideReflectanceSensors();
+            Serial.print("Reflectance: ");
+            Serial.print(ReflectanceSensors::sideSensorLval);
+            Serial.print(" ");
+            Serial.println(ReflectanceSensors::sideSensorRval);
+        }
+        // stop w/ greater PWM in case wheels are falling off
+        stopWithBrake(MotorAction::DRIVE_BACK, RotateMode::NONE, stopDuty, stopMillis);
     }
-    // stop w/ greater PWM in case wheels are falling off
-    Motors::stopWithBrake(Motors::MotorAction::DRIVE_BACK, Motors::RotateMode::NONE, stopDuty, stopMillis);
 }
-/*
- * TODO check that pwm offset is constant across all duty cycles
- */

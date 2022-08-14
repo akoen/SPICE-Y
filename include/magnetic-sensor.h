@@ -5,7 +5,7 @@
 #include "config.h"
 
 namespace BombDetection {
-    extern bool bombEncounteredFlag;   // only one bomb
+    extern bool bombEncounteredFlag;
     extern bool hasConfiged;
     /**
      * Configures the magnetic sensor pin once and attaches an interrupt to the pin.
@@ -13,12 +13,12 @@ namespace BombDetection {
     void configMagneticSensorPin(bool usingInterrupt);
     
     /**
-     * True if sensor detects a magnet (LOW) 
+     * True if sensor detects a magnetic bomb (magnetic sensor pin LOW) 
      */ 
     bool isBombDetected();
 
     /**
-     * Attaches the magnetic sensor pin to be used with interrupts, to detemrine if a bomb has been detected when falling from
+     * Attaches the magnetic sensor pin to be used with interrupts, to detemrine if the magnetic bomb has been detected when falling from
      * HIGH to LOW.
      */ 
     void configInterrupt();

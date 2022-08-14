@@ -121,7 +121,7 @@ namespace IR {
                     turnPulsesInterval = round(angle * 2 / anglePerPulse);    // twice the angle since needs to go left -> middle -> right
                 }
             }
-            Motors::rotate(Motors::default_rotate_pwm, currTurnRight, rotateMode);
+            Motors::rotate(Motors::def_rotate_pwm, currTurnRight, rotateMode);
             checkEncoderPulses = startEncoderPulses;
             startMillis = millis();
             currMillis = startMillis;

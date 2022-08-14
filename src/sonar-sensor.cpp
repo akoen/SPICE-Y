@@ -1,7 +1,7 @@
 #include "sonar-sensor.h"
 
 namespace Sonars {
-    const double speed_sound = 0.0343; // cm/us
+    const double speed_sound = 0.0343;
 
     void configSonarPins() {
         pinMode(SONAR_TRIG_PIN_ALL, OUTPUT);
@@ -13,10 +13,7 @@ namespace Sonars {
         digitalWrite(SONAR_TRIG_PIN_ALL, LOW);
     }
 
-    // TODO: handle delayMillis=0 (func should know external delay)
     double getDistanceSinglePulse(int trigPin, int echoPin, double pulseDuration, int delayMillis) {    
-        // sonar delay for pulse interference
-
         // clear trig pin 
         digitalWrite(trigPin, LOW);
         delayMicroseconds(2);
@@ -29,6 +26,7 @@ namespace Sonars {
         double duration;
         if (delayMillis != 0) {
             duration = pulseIn(echoPin, HIGH, delayMillis*1000);
+            // sonar delay for pulse interference
             delay(delayMillis - duration/1000);
         } else {
             duration = pulseIn(echoPin, HIGH, 500000UL);

@@ -12,7 +12,7 @@ namespace Servos {
     extern const int claw_bomb_detect_angle;
     
     extern const int arm_bomb_detect_angle;
-    extern const int above_treasure_below_IR_angle;
+    extern const int arm_part_lifted_angle;
     extern const int arm_lowered_angle;
     extern const int arm_lifted_angle;
 
@@ -42,21 +42,31 @@ namespace Servos {
     void configArmClawPins();
 
     /**
-     * Claw picks up and drops treasure into storage. Handles bomb detection
-     * Starting from arm lifted, claw in part open position and ends in
-     * this position.
+     * Claw routine for picking up and dropping treasures into storage. Handles bomb detection.
+     * Assumes arm and claw are in lifted and closed claw positions, respectively, at the start. Routine ends with the 
+     * arm lifted and claw opened. 
+     * Claw should be closed externally afterwards when appropriate. This choice was due to minimize delays.
      */
     void collectTreasure();
 
+    /**
+     * Collects the treasures and handles bomb detection using interrupts
+     */
     void collectTreasureUsingInterrupt();
 
     /**
-     * Deploys the storage box to be released.
+     * Deploys the storage box.
      */
     void deployBox();
     
+    /**
+     * Deploys the bridge
+     */
     void deployBridge();
 
+    /**
+     * Sets the specified servo to the specifed angle (deg).
+     */
     void setServoPos(Servo servoObj, int deg);    
 }
 

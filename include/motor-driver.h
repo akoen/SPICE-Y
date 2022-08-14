@@ -8,19 +8,13 @@
 
 # define LW_PWM_DUTY 76
 # define RW_PWM_DUTY 72
-# define CHICKEN_WIRE_OFFSET_DUTY 14
 
 namespace Motors {
     extern const int pwm_clock_freq; // hz
-    extern const int ref_duty_cycle; // %
-    extern const int ref_pwm_duty_cycle_LW; // %
-    extern const int ref_pwm_duty_cycle_RW; // %
+    extern const int def_rotate_pwm; // %
 
-    extern const int default_rotate_pwm; // %
-
-    extern const int default_motors_offset; // %, > 0 for RW, < 0 for LW
-    extern const int default_motors_stop_millis; // %, > 0 for RW, < 0 for LW
-
+    extern const int motors_offset_dutycycle; // %, > 0 for RW, < 0 for LW
+    extern const int def_motors_stop_millis; // %, > 0 for RW, < 0 for LW
 
     extern int max_drive_dutyCycle;
     extern int min_drive_dutyCycle;
@@ -36,6 +30,9 @@ namespace Motors {
     extern bool isLWdirFwd;
     extern bool isRWdirFwd;
 
+    /**
+     * Represents the different actions that can be taken
+     */
     enum MotorAction {
         DRIVE_FWD,
         DRIVE_BACK, 
@@ -43,6 +40,9 @@ namespace Motors {
         ROTATE_RIGHT  
     };
 
+    /**
+     * Represents the different types of rotations that can be taken
+     */
     enum RotateMode {
         BACKWARDS,
         FORWARDS,
@@ -50,13 +50,20 @@ namespace Motors {
         NONE
     };
 
+    /**
+     * Gets the inverse given the motor action and rotation type.
+     * 
+     * Driving fwd <-> driving back
+     * Forwards rotation to the left <-> backwards rotation to the right
+     * Forwards rotation to the right <-> backwards rotation to the left 
+     */
     std::pair<MotorAction, RotateMode> getInverseDrive(MotorAction motorAction, RotateMode rotateMode);
 
-    void configMotorPins();
     /**
-     * Drives the motors with its duty cycles in the defined direction 
-     */ 
-    void drive();
+     * Configures all motor pins 
+     */
+    void configMotorPins();
+    
     /**
      * Sets the PWM duty cycle for left, right wheels respectively
      * Sets duty cycle = 0 if negative input
@@ -65,17 +72,29 @@ namespace Motors {
      * as it updates that pwm has been changed
      */
     void setDutyCycles(int dutyL, int dutyR);
+    
     /**
      * Sets the direction of the motor to drive.
-     * Note that duty cycle is applied to the direction set
+     * Note that duty cycle is applied to the specified direction
      */ 
     void setDir(bool isLWdirFwd, bool isRWdirFwd);
+
+    /**
+     * Drives the motors with its duty cycles in the defined direction 
+     */ 
+    void drive();
 
     /**
      * Stops the motors. Halts the program for the specified duration (ms) to account
      * for motor inertia. 
      */
-    void stopMotorsPWM(int delayMillis=default_motors_stop_millis);
+    void stopMotorsPWM(int delayMillis=def_motors_stop_millis);
+
+    /**
+     * Stops the motors by applying the opposite action at a specifc pwm
+     * duty cycle for a specified duration of the driving action.
+     */
+    void stopWithBrake(MotorAction initialAction, RotateMode initialRotateMode, int initialDutyCycle, int durationMillis, int stopMotorsPWMDelayMillis=def_motors_stop_millis, int offsetDutyRW=0);
     
     /**
      * Drives the motors forwards for the specified duty cycle. Handles any motor offset
@@ -86,18 +105,17 @@ namespace Motors {
      * Drives the motors backwards for the specified duty cycle. Handle any motor offset
      */
     void driveBack(int duty);
+    
     /**
      * Rotates motor with the given pwm duty cycle
      * Accounts for ref duty cycle offset and the given duty cycle saturates
      * if magnitude is larger than motors offset 
      */
     void rotate(int dutyCycle, bool rotateRight, RotateMode mode);
-
+    
     /**
-     * Stops the motors by applying the opposite action at a specifc pwm
-     * duty cycle for a specified duration of the driving action.
+     * Drives the motors backwards with the specified duty cycle as long as both rear reflectance sensors are reading HIGH. 
      */
-    void stopWithBrake(MotorAction initialAction, RotateMode initialRotateMode, int initialDutyCycle, int durationMillis, int stopMotorsPWMDelayMillis=default_motors_stop_millis, int offsetDutyRW=0);
     void driveBackRearReflectance(int duty, int stopDuty, int stopMillis);
 }
 

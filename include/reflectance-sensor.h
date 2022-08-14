@@ -11,14 +11,29 @@ namespace ReflectanceSensors {
     extern volatile bool frontSensorRval;
     extern volatile bool sideSensorLval;
     extern volatile bool sideSensorRval;
-
+    /**
+     * Configures the front reflectance sensor pins 
+     */
     void configFrontReflectanceSensors();
+    
+    /**
+     * Configures the side reflectance sensor pins 
+     */
     void configSideReflectanceSensors();
     
+    /**
+     * Reads and updates the front reflectance sensor values 
+     */
     void readFrontReflectanceSensors();
+    /**
+     * Reads and updates the side reflectance sensor values 
+     */
     void readSideReflectanceSensors();
-
+    
     /* testing purposes */
+    /**
+     * Prints the last-read front reflectance sensor values to serial
+     */
     void printFrontReflectance();
 }
 #endif

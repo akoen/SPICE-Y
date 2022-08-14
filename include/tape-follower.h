@@ -13,10 +13,8 @@ namespace TapeFollow {
     // chicken wire (cm)
     extern const double CHICKEN_WIRE_DIST;
     // degs both rotations
-    extern const double DEF_TAPE_SEARCH_ANGLE;
+    extern const double def_tape_search_angle;
 
-    // dist b/w wheels (cm)
-    extern const double WHEELS_WIDTH;
     // vars
     extern bool crossedChickenWire;
 
@@ -55,9 +53,10 @@ namespace TapeFollow {
      * Drives the robot with PID for the specified distance
      */
     void driveWithPidDist(double dist);
+    
     /**
-     * To be ran when encountered a chicken wire (sensors see all 1 1 1)
-     * 
+     * To be ran when encountered a chicken wire (sensors see all 1 1 1).
+     * Drives staright across the chicken wire and looks for black tape.
      */ 
     void chickenWireRoutine();
     
@@ -69,6 +68,7 @@ namespace TapeFollow {
      * Reliance:
      * 1) Never "1 1 1" when not on chicken wire 
      * 2) sensors collect at least two "on tape" (non 0 0 0) readings when turning. This may imply we need to turn slowly
+     * 
      * Returns true if tape found
      */
     bool findBlackTape(double angle, int dutyCycle, Motors::RotateMode rotateMode, bool rotateRightFirst, int timeout=-1);

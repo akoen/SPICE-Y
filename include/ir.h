@@ -3,12 +3,16 @@
 
 #include "motor-driver.h"
 namespace IR {
+    
     void getMagnitude(float magnitude[]);
     
+    /**
+     * Drives the robot using IR PID
+     */
     void driveWithPID();
     /**
      * Analogous to find black tape - finds the IR beacon.
-     * Requires two good readings to be considered found, and the last reading will be used as the previoous p value when
+     * Requires two good readings to be considered found, and the last reading will be used as the previous p value when
      * using PID after.
      * 
      * A reading is considered good when the magnitudes of the two IR sensors are above the specified value,
